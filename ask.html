@@ -33,6 +33,15 @@ button.send:disabled{opacity:.5}
 .ok button{border:1.5px solid var(--accent);background:#fff;color:var(--accent);border-radius:999px;font:inherit;font-weight:700;padding:9px 22px}
 .err{color:var(--red);font-size:14px;margin-top:10px;min-height:20px}
 .note{font-size:12.5px;color:var(--dim);margin-top:18px;line-height:1.6}
+.res{margin:6px 0 18px;padding:18px;border-radius:14px;background:#e8f0fa;text-align:left}
+.res .k{font-size:13px;color:var(--muted);font-weight:700}
+.res .big{font-size:22px;font-weight:800;line-height:1.4;margin:4px 0}
+.res .sub{font-size:14.5px;color:var(--muted)}
+.res.urgent{background:#fdecec}.res.op{background:#f7f9fb}
+.wait{color:var(--muted);font-size:15px;margin:6px 0 18px}
+.wait i{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--accent);margin:0 3px;animation:bl 1s infinite}
+.wait i:nth-child(2){animation-delay:.2s}.wait i:nth-child(3){animation-delay:.4s}
+@keyframes bl{50%{opacity:.25}}
 </style>
 </head>
 <body>
@@ -66,8 +75,9 @@ button.send:disabled{opacity:.5}
 
   <div class="card ok" id="ok">
     <div class="big">📞</div>
-    <h2>已送出，請看大螢幕</h2>
+    <h2>已送出</h2>
     <p id="okTx"></p>
+    <div id="resBox" class="wait"><i></i><i></i><i></i><br>系統判斷中，請稍候…</div>
     <button type="button" id="again">再打一通</button>
   </div>
 
@@ -87,17 +97,37 @@ $('send').onclick=async()=>{
   if(Date.now()-last<5000){ $('err').textContent='請稍等幾秒再送出'; return; }
   $('send').disabled=true;
   try{
-    const url=`https://ntfy.sh/${encodeURIComponent(TOPIC)}`, body=JSON.stringify({name:$('nm').value.trim(),tier,text});
+    const rid=Math.random().toString(36).slice(2,12).replace(/[^a-z0-9]/g,'x'), sentAt=Math.floor(Date.now()/1000)-5;
+    const url=`https://ntfy.sh/${encodeURIComponent(TOPIC)}`, body=JSON.stringify({name:$('nm').value.trim(),tier,text,rid});
     let ok=false;
     try{ const ac=new AbortController(); const tm=setTimeout(()=>ac.abort(),6000);
       const r=await fetch(url,{method:'POST',body,signal:ac.signal}); clearTimeout(tm); ok=r.ok; }catch(_){}
     if(!ok){ const r=await fetch(`${url}/publish?message=${encodeURIComponent(body)}`); ok=r.ok; }  // 有些網路會擋 POST，改用 GET 備援
     if(!ok) throw new Error('send');
-    last=Date.now(); $('okTx').textContent=`「${text}」`; $('form').style.display='none'; $('ok').style.display='block';
+    last=Date.now(); $('okTx').textContent=`「${text}」`; $('form').style.display='none'; $('ok').style.display='block'; waitReply(rid,sentAt);
   }catch(err){ $('err').textContent='送出失敗，請確認網路後再試一次'; }
   $('send').disabled=false;
 };
-$('again').onclick=()=>{ $('tx').value=''; upd(); $('ok').style.display='none'; $('form').style.display='block'; };
+let waitTimer=null;
+function waitReply(rid,since){
+  const box=$('resBox'); box.className='wait'; box.innerHTML='<i></i><i></i><i></i><br>系統判斷中，請稍候…';
+  const t0=Date.now(); clearInterval(waitTimer);
+  const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const tick=async()=>{
+    if(Date.now()-t0>90000){ clearInterval(waitTimer); box.className='wait'; box.textContent='大螢幕忙線中，請看大螢幕上的結果'; return; }
+    try{
+      const r=await fetch(`https://ntfy.sh/${encodeURIComponent(TOPIC+'-r-'+rid)}/json?poll=1&since=${since}`,{cache:'no-store'});
+      const lines=(await r.text()).split('\n').filter(Boolean);
+      for(const line of lines){ const d=JSON.parse(line); if(d.event!=='message') continue; const p=JSON.parse(d.message);
+        clearInterval(waitTimer);
+        box.className='res'+(p.kind==='urgent'?' urgent':p.kind==='operator'?' op':'');
+        box.innerHTML=`<div class="k">${p.ai?'公司 AI 平台判斷':'系統判斷'}</div><div class="big">${esc(p.title)}</div><div class="sub">接聽窗口：${esc(p.desk)}　·　服務等級：${esc(p.pname)}</div>`;
+        return; }
+    }catch(_){}
+  };
+  setTimeout(tick,2500); waitTimer=setInterval(tick,4000);
+}
+$('again').onclick=()=>{ clearInterval(waitTimer); $('tx').value=''; upd(); $('ok').style.display='none'; $('form').style.display='block'; };
 </script>
 </body>
 </html>
