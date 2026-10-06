@@ -520,7 +520,8 @@ function computePrio(r,cur){
   return {lvl,reasons,c,vip};
 }
 
-let CUR=null, LAST=null;
+let CUR=null, LAST=null, NAME_OVERRIDE='';
+const dispName=c=>NAME_OVERRIDE||(c?c.name:'客戶');
 function lookupCust(raw){
   const id=(raw||'').trim().toUpperCase();
   if(!id){CUR=null;}
@@ -530,17 +531,17 @@ function lookupCust(raw){
 }
 function renderCustMini(){
   const el=$('custMini');
-  if(!CUR){el.innerHTML='<span class="dim">尚未查詢客戶，以一般客戶處理</span>';return;}
+  if(!CUR){el.innerHTML=NAME_OVERRIDE?`<b>${esc(NAME_OVERRIDE)}</b><span class="muted">未提供身分，以一般客戶處理</span>`:'<span class="dim">尚未查詢客戶，以一般客戶處理</span>';return;}
   if(CUR.bad){el.innerHTML='<span style="color:var(--red)">身分證字號格式或檢查碼不正確</span>';return;}
-  if(CUR.unknown){el.innerHTML=`<b>${maskID(CUR.id)}</b><span class="muted">查無資料（非本行客戶），以一般客戶處理</span>`;return;}
+  if(CUR.unknown){el.innerHTML=`<b>${NAME_OVERRIDE?esc(NAME_OVERRIDE)+'　':''}${maskID(CUR.id)}</b><span class="muted">查無資料（非本行客戶），以一般客戶處理</span>`;return;}
   const c=CUR.rec;
-  el.innerHTML=`<b>${c.name}</b><span>${c.tier}</span><span class="muted">資產 ${c.aum}</span><span class="muted">貢獻度 ${c.contrib}</span><span class="muted">往來 ${tenure(c)}</span>${isVIP(c)?'<span class="tag blue">高資產高貢獻</span>':''}${isNew(c)?'<span class="tag green">新開戶</span>':''}`;
+  el.innerHTML=`<b>${esc(dispName(c))}</b><span>${c.tier}</span><span class="muted">資產 ${c.aum}</span><span class="muted">貢獻度 ${c.contrib}</span><span class="muted">往來 ${tenure(c)}</span>${isVIP(c)?'<span class="tag blue">高資產高貢獻</span>':''}${isNew(c)?'<span class="tag green">新開戶</span>':''}`;
 }
 function renderCidChips(){
   const h=CID_SAMPLES.map(([id,l])=>`<button type="button" class="chip${CUR&&CUR.id===id?' on':''}" data-id="${id}">${l}</button>`).join('');
   $('cidChips').innerHTML=h; $('cidChips13').innerHTML=h;
 }
-function pickCust(id){ $('cid').value=id; lookupCust(id); if(LAST) runJev(LAST.text); }
+function pickCust(id){ NAME_OVERRIDE=''; $('cid').value=id; lookupCust(id); if(LAST) runJev(LAST.text); }
 $('cidChips').onclick=e=>{const b=e.target.closest('.chip'); if(b) pickCust(b.dataset.id);};
 $('cidChips13').onclick=e=>{const b=e.target.closest('.chip'); if(b) pickCust(b.dataset.id);};
 $('cidGo').onclick=()=>pickCust($('cid').value);
@@ -570,7 +571,7 @@ function runJev(text,opt={}){
   const best=nonOther[0].p>=0.15?nonOther[0].c:top.c;
   const pr=computePrio(r,CUR);
   const lat=Math.round(70+Math.random()*110), ms=[Math.round(2+Math.random()*4),lat,Math.round(8+Math.random()*8),Math.round(1+Math.random()*2)];
-  LAST={text,r,best,top,nonOther,...pr,cur:CUR,lat,ms};
+  LAST={text,r,best,top,nonOther,...pr,cur:CUR,lat,ms,dname:dispName(pr.c)};
   playPipe(ms,!opt.quiet);
   document.querySelectorAll('#qChips .chip,#qMore .chip').forEach(b=>b.classList.toggle('on',b.dataset.q===text));
   renderP11(); renderP12(); renderP13(); renderDesk(); updateChrome();
@@ -644,7 +645,7 @@ function renderP12(){
 /* ---------- 1-3 ---------- */
 function renderP13(){
   const L=LAST, r=L.r, c=L.c, cur=L.cur;
-  $('crm13').innerHTML=(c?`<div class="kv"><span class="k">客戶</span><span class="v">${c.name}　${maskID(cur.id)}</span><span class="k">級距</span><span class="v">${c.tier}${isVIP(c)?' <span class="tag blue">高資產高貢獻</span>':''}</span><span class="k">資產級距</span><span class="v">${c.aum}</span><span class="k">貢獻度</span><span class="v">${c.contrib}（${c.contribNote}）</span><span class="k">往來期間</span><span class="v">${tenure(c)}${isNew(c)?' <span class="tag green">新開戶</span>':''}</span><span class="k">專屬理專</span><span class="v">${c.rm||'—'}</span></div>`
+  $('crm13').innerHTML=(c?`<div class="kv"><span class="k">客戶</span><span class="v">${esc(L.dname)}　${maskID(cur.id)}</span><span class="k">級距</span><span class="v">${c.tier}${isVIP(c)?' <span class="tag blue">高資產高貢獻</span>':''}</span><span class="k">資產級距</span><span class="v">${c.aum}</span><span class="k">貢獻度</span><span class="v">${c.contrib}（${c.contribNote}）</span><span class="k">往來期間</span><span class="v">${tenure(c)}${isNew(c)?' <span class="tag green">新開戶</span>':''}</span><span class="k">專屬理專</span><span class="v">${c.rm||'—'}</span></div>`
     :`<div class="muted" style="font-size:17px">${cur&&cur.unknown?'查無客戶資料（非本行客戶）':'未提供身分'}，以一般客戶處理。</div>`)
     +`<div style="margin-top:26px;padding-top:20px;border-top:1px solid var(--line)"><div class="label">系統判斷（來自 1-2）</div><div class="chips">${r.urgent?'<span class="tag red">急件</span>':'<span class="tag">非急件</span>'}${r.angry?'<span class="tag orange">情緒不佳</span>':'<span class="tag">情緒平穩</span>'}<span class="tag">「${esc(L.text.length>16?L.text.slice(0,16)+'…':L.text)}」</span></div></div>`;
   const pc=`var(${PCOL[L.lvl]})`;
@@ -659,15 +660,15 @@ const CAT_TIPS={'房貸':'確認需求是新申辦、轉貸還是利率調整，
 let DESK_T0=0;
 function renderDesk(){
   const L=LAST; if(!L) return; const r=L.r, c=L.c, cur=L.cur, vip=L.vip;
-  const who=c?c.name:'客戶', pc=`var(${PCOL[L.lvl]})`;
+  const who=L.dname, pc=`var(${PCOL[L.lvl]})`;
   const emoCol=r.angry?css('--red'):r.emo>0.35?css('--orange'):css('--green');
   const emoTxt=r.angry?'情緒不佳':r.emo>0.35?'略顯不耐':'平靜';
   const bp=r.probs.find(x=>x.c===L.best)||L.top;
   DESK_T0=performance.now();
   $('call21').style.setProperty('--pc',pc);
   $('call21').innerHTML=`<div class="ring"><i></i>來電中</div><div class="pl">${PNAME[L.lvl]}</div><div class="muted">${L.reasons.join('；')}</div><div class="tm" id="dkTimer">00:00</div>`;
-  $('crm21').innerHTML=c?`<div class="kv"><span class="k">客戶</span><span class="v">${c.name}　${maskID(cur.id)}</span><span class="k">級距</span><span class="v">${c.tier}${vip?' <span class="tag blue">高資產高貢獻</span>':''}</span><span class="k">資產級距</span><span class="v">${c.aum}</span><span class="k">往來期間</span><span class="v">${tenure(c)}${isNew(c)?' <span class="tag green">新開戶</span>':''}</span><span class="k">持有產品</span><span class="v">${c.products.join('、')}</span><span class="k">專屬理專</span><span class="v">${c.rm||'—'}</span><span class="k">近 7 天進線</span><span class="v">${c.calls7d} 次${c.calls7d>=2?' <span class="tag red">重複來電</span>':''}</span><span class="k">上次進線</span><span class="v">${c.lastCall}</span></div>`
-    :`<div class="muted" style="font-size:17px">${cur&&cur.unknown?'查無客戶資料（非本行客戶）':'客戶未提供身分，接聽後請先完成身分驗證'}</div>`;
+  $('crm21').innerHTML=c?`<div class="kv"><span class="k">客戶</span><span class="v">${esc(L.dname)}　${maskID(cur.id)}</span><span class="k">級距</span><span class="v">${c.tier}${vip?' <span class="tag blue">高資產高貢獻</span>':''}</span><span class="k">資產級距</span><span class="v">${c.aum}</span><span class="k">往來期間</span><span class="v">${tenure(c)}${isNew(c)?' <span class="tag green">新開戶</span>':''}</span><span class="k">持有產品</span><span class="v">${c.products.join('、')}</span><span class="k">專屬理專</span><span class="v">${c.rm||'—'}</span><span class="k">近 7 天進線</span><span class="v">${c.calls7d} 次${c.calls7d>=2?' <span class="tag red">重複來電</span>':''}</span><span class="k">上次進線</span><span class="v">${c.lastCall}</span></div>`
+    :`${NAME_OVERRIDE?`<div class="kv" style="margin-bottom:14px"><span class="k">客戶</span><span class="v">${esc(NAME_OVERRIDE)}</span></div>`:''}<div class="muted" style="font-size:17px">${cur&&cur.unknown?'查無客戶資料（非本行客戶）':'客戶未提供身分，接聽後請先完成身分驗證'}</div>`;
   $('call21b').innerHTML=`<div class="quote">「${esc(L.text)}」</div><div class="kv" style="margin-top:22px"><span class="k">問題類別</span><span class="v">${L.best}（${(bp.p*100).toFixed(0)}%）</span><span class="k">急迫度</span><span class="v">${r.urgent?'<span style="color:var(--red)">急件</span>':'一般'}</span><span class="k">客戶情緒</span><span class="v">${emoTxt}（不滿 ${(r.emo*100).toFixed(0)}%）</span></div><div class="emo"><i style="width:${(r.emo*100).toFixed(0)}%;background:${emoCol}"></i></div>
     <div class="chips" style="margin-top:16px">${r.urgent?'<span class="tag red">急件</span>':''}${r.angry?'<span class="tag orange">情緒不佳</span>':''}${r.abuse?'<span class="tag red">辱罵用語</span>':''}${r.multi?'<span class="tag blue">兩個需求</span>':''}${r.hasOpp?`<span class="tag green">商機：${r.opp.o.id}</span>`:''}</div>`;
   const steps=[];
@@ -685,7 +686,7 @@ function renderDesk(){
     :`您好，我是專員○○，了解您想詢問${L.best}的問題，我來為您說明。`;
   $('script22').textContent=`「${greet}」`;
   $('steps22').innerHTML=steps.map(s=>`<li>${s}</li>`).join('');
-  $('ctx22').innerHTML=`<div class="kv"><span class="k">客戶</span><span class="v">${c?c.name:'未驗證客戶'}</span><span class="k">服務等級</span><span class="v" style="color:${pc}">${PNAME[L.lvl]}</span><span class="k">問題類別</span><span class="v">${L.best}</span><span class="k">客戶情緒</span><span class="v">${emoTxt}</span></div><div class="emo"><i style="width:${(r.emo*100).toFixed(0)}%;background:${emoCol}"></i></div>${c&&c.calls7d>=2?`<div style="margin-top:20px" class="tag red">7 天內第 ${c.calls7d+1} 次來電</div>`:''}`;
+  $('ctx22').innerHTML=`<div class="kv"><span class="k">客戶</span><span class="v">${esc(c||NAME_OVERRIDE?L.dname:'未驗證客戶')}</span><span class="k">服務等級</span><span class="v" style="color:${pc}">${PNAME[L.lvl]}</span><span class="k">問題類別</span><span class="v">${L.best}</span><span class="k">客戶情緒</span><span class="v">${emoTxt}</span></div><div class="emo"><i style="width:${(r.emo*100).toFixed(0)}%;background:${emoCol}"></i></div>${c&&c.calls7d>=2?`<div style="margin-top:20px" class="tag red">7 天內第 ${c.calls7d+1} 次來電</div>`:''}`;
   $('dkRef').style.display=r.hasOpp&&!(r.angry||r.urgent)?'':'none';
   $('dkMsg').textContent='';
 }
@@ -848,7 +849,7 @@ const NOS=['1-1','1-2','1-3','2-1','2-2','3','4-1','4-2'];
 const STEPS=[{n:1,b:'客戶開口',s:'系統在背後判斷',pages:[0,1,2]},{n:2,b:'電話接通',s:'專員看見什麼',pages:[3,4]},{n:3,b:'主管監控',s:'全中心即時排隊',pages:[5]},{n:4,b:'數位孿生模擬',s:'全局推演',pages:[6,7]}];
 let SC=0;
 function capText(i){
-  const L=LAST, who=L&&L.c?L.c.name:'客戶';
+  const L=LAST, who=L?L.dname:'客戶';
   switch(i){
     case 0: return L?`${who}說：「${L.text}」→ 系統判斷為「${L.best}」，${L.r.urgent?'急件直轉真人專線':L.r.angry?'情緒不佳直接轉真人':L.top.p>=P.thAuto?'直接分流到對的窗口':'先反問一句再分流'}。`:'客戶遇到問題，只要說一句話；系統在背後 0.1 秒內判斷他要問什麼。';
     case 1: return '同一次判斷，系統還讀出情緒、急件、多個需求和潛在商機；情緒不佳或急件時只記錄商機、不推銷。';
@@ -928,7 +929,7 @@ function onJudge(m){
   if(SC===5) renderQueue();
   const box=$('toasts'); const el=document.createElement('div'); el.className='toast';
   el.innerHTML=`<div class="who">📱 ${esc(name)} 打進來（${esc(tier)}）</div><div class="tx">「${esc(text)}」</div><div class="rs">系統判斷：${c.cat}${c.r.urgent?'・急件':''}${c.r.angry?'・情緒不佳':''} → ${PNAME[c.lvl]}</div><button type="button">用這句走一遍</button>`;
-  el.querySelector('button').onclick=()=>{ $('cid').value=id||''; lookupCust(id||''); $('q').value=text; go(0); runJev(text); el.remove(); };
+  el.querySelector('button').onclick=()=>{ $('cid').value=id||''; NAME_OVERRIDE=(name&&name!=='評審')?name:''; lookupCust(id||''); $('q').value=text; go(0); runJev(text); el.remove(); };
   box.prepend(el); while(box.children.length>3) box.lastChild.remove();
   setTimeout(()=>el.remove(),15000);
 }
