@@ -116,7 +116,7 @@ function waitReply(rid,since){
   const tick=async()=>{
     if(Date.now()-t0>90000){ clearInterval(waitTimer); box.className='wait'; box.textContent='大螢幕忙線中，請看大螢幕上的結果'; return; }
     try{
-      const r=await fetch(`https://ntfy.sh/${encodeURIComponent(TOPIC+'-r-'+rid)}/json?poll=1&since=${since}`,{cache:'no-store'});
+      const r=await fetch(`https://ntfy.sh/${encodeURIComponent(TOPIC+'-r-'+rid)}/json?poll=1&since=all`,{cache:'no-store'});
       const lines=(await r.text()).split('\n').filter(Boolean);
       for(const line of lines){ const d=JSON.parse(line); if(d.event!=='message') continue; const p=JSON.parse(d.message);
         clearInterval(waitTimer);
