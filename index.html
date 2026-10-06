@@ -471,8 +471,9 @@ let S=1;
 
 /* ---------- 分類模擬（Jev 輸出以本機規則模擬） ---------- */
 const CATS=['房貸','信貸','信用卡','開戶','存款','理財信託','其他/真人'];
-const EXT={'房貸':'分機 1','信貸':'分機 2','信用卡':'分機 3','開戶':'分機 4','存款':'分機 5','理財信託':'分機 6','其他/真人':'客服專員'};
-const EXT_NO={'房貸':'1','信貸':'2','信用卡':'3','開戶':'4','存款':'5','理財信託':'6','其他/真人':'9'};
+const EXT={'房貸':'分機 1','信貸':'分機 2','信用卡':'分機 3','開戶':'分機 4','存款':'分機 5','理財信託':'分機 6','其他/真人':'分機 0（總機）'};
+const EXT_NO={'房貸':'1','信貸':'2','信用卡':'3','開戶':'4','存款':'5','理財信託':'6','其他/真人':'0'};
+const EXT_DESK={'房貸':'房貸專員','信貸':'信貸專員','信用卡':'信用卡專員','開戶':'開戶專員','存款':'存款專員','理財信託':'理財專員','其他/真人':'總機專員'};
 const HOTLINE='02-XXXX-XXXX（示意）';
 const KW={
   '房貸':[['房貸',3],['買房',3],['購屋',3],['房子',2.5],['房屋',2.5],['首購',2.5],['新青安',3],['青安',3],['轉貸',2],['增貸',2],['寬限期',2.5],['房',1]],
@@ -571,7 +572,7 @@ $('cid').addEventListener('keydown',e=>{if(e.key==='Enter'){pickCust(e.target.va
 
 const MAIN_SAMPLES=[
   {q:'我想買房子要跟你們借錢',t:'實測',c:'var(--orange)'},
-  {q:'錢放銀行利息太少 有沒有穩一點的可以放',t:'反問',c:'var(--accent)'},
+  {q:'錢放銀行利息太少 有沒有穩一點的可以放',t:'總機',c:'var(--muted)'},
   {q:'我想開戶順便辦一張信用卡',t:'兩個需求',c:'var(--accent)'},
   {q:'我的卡好像被盜刷了怎麼辦',t:'急件',c:'var(--red)'},
   {q:'搞什麼 轉帳到現在還沒到！！',t:'情緒',c:'var(--red)'},
@@ -624,15 +625,13 @@ function renderP11(){
   const bars=top3.map((x,i)=>`<div class="bar${i===0?' top':''}"><span class="lab">${x.c}</span><div class="tr"><div class="fl" style="width:0" data-w="${(x.p*100).toFixed(1)}"></div><div class="thr" style="left:${ta*100}%"></div></div><span class="pv">${(x.p*100).toFixed(0)}%</span></div>`).join('')
     +`<div class="bar"><span class="lab dim">其他</span><div class="tr"><div class="fl" style="width:0" data-w="${(rest*100).toFixed(1)}"></div></div><span class="pv dim">${(rest*100).toFixed(0)}%</span></div>`;
   let tt,why,col,ic,extra='';
-  const hot=c=>`<div class="hot"><div><div class="label">真人專線</div><div class="num">${HOTLINE}</div></div><div><div class="label">分機</div><div class="num">${EXT_NO[c]}</div></div></div>`;
-  if(r.urgent){tt='急件：直接轉 24 小時真人專線';why='盜刷、遺失、詐騙類不走一般流程，優先接給真人，並帶上判斷結果。';col=css('--red');ic='!';extra=hot(L.best);}
-  else if(r.angry){tt=`情緒不佳：不反問，直接轉真人 → ${L.best}`;why=`不滿程度 ${(r.emo*100).toFixed(0)}%，直接接給專員並帶上情緒標記，專員接起來就知道要先安撫。`;col=css('--red');ic='☎';extra=hot(L.best);}
-  else if(r.multi){const a=r.strong[0].c,b=r.strong[1].c;tt=`偵測到兩個需求：${a}＋${b}`;why='拆成兩張工單依序處理，不會只回答其中一個。';col=css('--accent');ic='2';}
-  else if(L.top.c==='其他/真人'){tt='轉真人客服';why='不屬於六大類，或客戶主動要求真人。';col=css('--p4');ic='☎';}
-  else if(L.top.p>=ta){tt=`直接分流 → ${L.top.c}（${EXT[L.top.c]}）`;why=`信心 ${(L.top.p*100).toFixed(0)}% ≥ 門檻 ${(ta*100).toFixed(0)}%，客戶不用聽語音選單，直接接到對的窗口。`;col=css('--green');ic='✓';}
-  else if(L.top.p>=tq){const a=L.nonOther[0].c,b=L.nonOther[1].c;tt=`先反問一句：「請問是 ${a} 還是 ${b}？」`;why=`信心 ${(L.top.p*100).toFixed(0)}% 介於 ${(tq*100).toFixed(0)}%–${(ta*100).toFixed(0)}%，與其猜錯，不如花 15 秒確認。`;col=css('--orange');ic='?';
-    extra=`<div class="clar"><button type="button" data-c="${a}">${a}</button><button type="button" data-c="${b}">${b}</button><button type="button" data-c="其他/真人">都不是，找真人</button></div>`;}
-  else{tt='信心不足 → 轉真人判斷';why=`最高信心只有 ${(L.top.p*100).toFixed(0)}%，交給真人判斷比較保險。`;col=css('--p4');ic='☎';}
+  const hot=(c,line)=>`<div class="hot"><div><div class="label">${line||'客服專線'}</div><div class="num">${HOTLINE}</div></div><div><div class="label">請按分機</div><div class="num" style="font-size:30px">${EXT_NO[c]}</div></div><div><div class="label">接聽窗口</div><div class="num">${EXT_DESK[c]}</div></div></div>`;
+  const known=L.top.c!=='其他/真人'&&L.top.p>=ta;
+  if(r.urgent){tt='急件：直接轉 24 小時真人專線';why='盜刷、遺失、詐騙類不走一般流程，優先接給真人，並帶上判斷結果。';col=css('--red');ic='!';extra=hot(L.best,'24 小時真人專線');}
+  else if(r.angry){tt=`情緒不佳：直接轉真人 → ${L.best}`;why=`不滿程度 ${(r.emo*100).toFixed(0)}%，直接接給專員並帶上情緒標記，專員接起來就知道要先安撫。`;col=css('--red');ic='☎';extra=hot(L.best);}
+  else if(r.multi){const a=r.strong[0].c,b=r.strong[1].c;tt=`偵測到兩個需求：${a}＋${b}`;why=`先轉 ${EXT[a]}，處理完再轉 ${EXT[b]}，不會只回答其中一個。`;col=css('--accent');ic='2';extra=hot(a);}
+  else if(known){tt=`判斷為「${L.top.c}」→ 請按分機 ${EXT_NO[L.top.c]}`;why=`信心 ${(L.top.p*100).toFixed(0)}% ≥ 門檻 ${(ta*100).toFixed(0)}%，客戶不用聽語音選單，直接接到${EXT_DESK[L.top.c]}。`;col=css('--green');ic='✓';extra=hot(L.top.c);}
+  else{tt='分不出類別 → 請按分機 0，由總機服務';why=L.top.c==='其他/真人'?'不屬於六大產品類別，或客戶主動要找真人，交給總機專員了解需求後再轉接。':`最高的「${L.nonOther[0].c}」信心只有 ${(L.nonOther[0].p*100).toFixed(0)}%，未達門檻 ${(ta*100).toFixed(0)}%，交給總機專員判斷比較保險。`;col=css('--p4');ic='0';extra=hot('其他/真人');}
   $('out11').innerHTML=`<div class="bars">${bars}</div><div class="decision" id="dec" style="--dc:${col}"><div class="tt"><span class="ic">${ic}</span>${tt}</div><div class="why">${why}</div>${extra}</div>`;
   if(!$('out11').classList.contains('wait')) requestAnimationFrame(()=>requestAnimationFrame(()=>document.querySelectorAll('#out11 .fl').forEach(el=>el.style.width=el.dataset.w+'%')));
   document.querySelectorAll('#dec .clar button').forEach(b=>b.onclick=()=>{
@@ -873,7 +872,7 @@ let SC=0;
 function capText(i){
   const L=LAST, who=L?L.dname:'客戶';
   switch(i){
-    case 0: return L?`${who}說：「${L.text}」→ 系統判斷為「${L.best}」，${L.r.urgent?'急件直轉真人專線':L.r.angry?'情緒不佳直接轉真人':L.top.p>=P.thAuto?'直接分流到對的窗口':'先反問一句再分流'}。`:'客戶遇到問題，只要說一句話；系統在背後 0.1 秒內判斷他要問什麼。';
+    case 0: return L?`${who}說：「${L.text}」→ 系統判斷為「${L.best}」，${L.r.urgent?'急件直轉 24 小時真人專線':L.r.angry?'情緒不佳直接轉真人':(L.top.c!=='其他/真人'&&L.top.p>=P.thAuto)?`直接轉分機 ${EXT_NO[L.top.c]}`:'分不出類別，轉分機 0 由總機服務'}。`:'客戶遇到問題，只要說一句話；系統判斷產品類別並給對應分機，分不出類別就轉分機 0 由總機服務。';
     case 1: return '同一次判斷，系統還讀出情緒、急件、多個需求和潛在商機；情緒不佳或急件時只記錄商機、不推銷。';
     case 2: return L?`結合行內 CRM 的資產級距與貢獻度，${who}被排入 ${PNAME[L.lvl]}；急件不論等級永遠排第一。`:'結合行內 CRM 的資產級距與貢獻度，決定服務順序。';
     case 3: return `電話接通，專員畫面已經備好${who}的資料和這通電話的判斷，客戶不用重講一次。`;
@@ -977,14 +976,8 @@ connectJudges();
 /* ---------- AI 總結全場（呼叫本機法遵系統 → 公司 AI 平台；失敗改用本機統計） ---------- */
 const DEMO_API='http://localhost:8787/api/demo/summary';  // 本機 Demo AI 服務（jev-demo-api），與法遵系統獨立
 function sumCalls(){
-  let calls=JUDGES.map(j=>({name:j.name,tier:j.tier,text:j.text,cat:j.cat,lvl:j.lvl,angry:j.angry,urgent:j.urgent}));
-  let src=`評審來電 ${calls.length} 通`;
-  if(calls.length<3){
-    const pool=[...QS.q,...QS.agents.filter(a=>a.busy).map(a=>a.busy)].filter(c=>!c.judge).slice(0,30);
-    calls=calls.concat(pool.map(c=>({name:c.cur&&c.cur.rec?c.cur.rec.name:'',tier:c.cur&&c.cur.rec?c.cur.rec.tier:(c.cur?'非本行':'未驗證'),text:c.text,cat:c.cat,lvl:c.lvl,angry:c.r.angry,urgent:c.r.urgent})));
-    src=(JUDGES.length?`評審來電 ${JUDGES.length} 通＋`:'')+`看板模擬進線 ${pool.length} 通`;
-  }
-  return {calls,src};
+  const calls=JUDGES.map(j=>({name:j.name,tier:j.tier,text:j.text,cat:j.cat,lvl:j.lvl,angry:j.angry,urgent:j.urgent}));
+  return {calls,src:`評審來電 ${calls.length} 通`};
 }
 function localSummary(calls){
   const by={}; calls.forEach(c=>{(by[c.cat]=by[c.cat]||[]).push(c);});
@@ -1007,6 +1000,7 @@ function renderSummary(d,meta){
 async function runSummary(){
   $('ovlSum').classList.add('on');
   const {calls,src}=sumCalls();
+  if(!calls.length){ $('sumBody').innerHTML='<div class="sumload">還沒有評審來電<div class="small dim" style="margin-top:10px">請評審掃描右上角「評審參與」的 QR code 送出問題後再按一次（只計算本頁開啟後送進來的來電）</div></div>'; return; }
   $('sumBody').innerHTML='<div class="sumload"><i></i><i></i><i></i><div style="margin-top:14px">公司 AI 平台分析中（最多 25 秒）…</div></div>';
   let why='AI 平台未連線';
   try{
