@@ -271,6 +271,26 @@ button{font:inherit;cursor:pointer}
 .jlist{display:flex;flex-direction:column;gap:8px;max-height:260px;overflow:auto}
 .jlist div{font-size:14.5px;padding:8px 12px;border-radius:10px;background:var(--soft)}
 .jlist b{color:var(--purple)}
+
+/* AI 總結全場 */
+.sumhead{font-size:26px;font-weight:800;line-height:1.4;margin-bottom:6px}
+.sumsrc{font-size:13px;color:var(--dim);margin-bottom:18px}
+.sumsrc b{color:var(--green)}
+.sumsrc b.off{color:var(--orange)}
+.sumgrid{display:grid;grid-template-columns:1.25fr 1fr;gap:26px}
+.theme{margin-bottom:16px}
+.theme .tl{display:flex;justify-content:space-between;align-items:baseline;font-size:17px;font-weight:700}
+.theme .tl span{font-size:14px;color:var(--muted);font-weight:400}
+.theme .bar2{height:10px;border-radius:5px;background:var(--soft);margin:6px 0 4px;overflow:hidden}
+.theme .bar2 i{display:block;height:100%;border-radius:5px;background:var(--accent)}
+.theme .ins{font-size:14.5px;color:var(--ink-2)}
+.theme .ex{font-size:13px;color:var(--dim);margin-top:2px}
+.sumlist{margin:0 0 18px;padding-left:20px;font-size:15.5px}
+.sumlist li{margin:7px 0}
+.sumlbl{font-size:14px;font-weight:800;margin-bottom:6px}
+.sumload{padding:60px 0;text-align:center;font-size:18px;color:var(--muted)}
+.sumload i{display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--accent);margin:0 4px;animation:pulse 1s infinite}
+.sumload i:nth-child(2){animation-delay:.2s}.sumload i:nth-child(3){animation-delay:.4s}
 </style>
 </head>
 <body>
@@ -369,6 +389,7 @@ button{font:inherit;cursor:pointer}
       <button type="button" class="btn" id="qInject" style="padding:10px 22px">把剛才的客戶加入排隊</button>
       <button type="button" class="mini" id="qPause" title="暫停／繼續">❚❚</button>
       <button type="button" class="mini" id="qReset" title="重新開始">↺</button>
+      <button type="button" class="btn ghost" id="aiSumBtn" style="padding:10px 18px">✨ AI 總結全場來電</button>
       <span class="small muted">值班專員 <select id="qAgents"><option>6</option><option selected>8</option><option>10</option><option>12</option></select> 位</span>
       <div class="qstat" id="qStat"></div>
     </div>
@@ -432,6 +453,7 @@ button{font:inherit;cursor:pointer}
   <div class="jurl" id="jUrl"></div>
   <div class="label">已收到的評審來電</div><div class="jlist" id="jList"><div class="dim">還沒有評審來電</div></div></div></div>
 </div></div>
+<div class="ovl" id="ovlSum"><div class="card" style="width:1180px"><button type="button" class="icon x" data-close>✕</button><div class="ch sys">AI 總結全場來電（主管視角）</div><div id="sumBody"></div></div></div>
 </main>
 <div class="toasts" id="toasts"></div>
 
@@ -923,7 +945,7 @@ function onJudge(m){
   const tier=TIER_ID[m.tier]?m.tier:'未提供身分';
   const id=TIER_ID[m.tier]||null;
   const c=makeCaller(text,id,false); c.judge=name; QS.q.push(c);
-  JUDGES.push({name,tier,text,id,cat:c.cat,lvl:c.lvl});
+  JUDGES.push({name,tier,text,id,cat:c.cat,lvl:c.lvl,angry:c.r.angry,urgent:c.r.urgent});
   $('jCount').textContent=JUDGES.length;
   if($('ovlJudge').classList.contains('on')) renderJudgePanel();
   if(SC===5) renderQueue();
@@ -951,6 +973,53 @@ async function pollJudges(){
 function connectJudges(){ if(window.__NOJUDGE) return; pollJudges(); setInterval(pollJudges,6000); }
 $('jBtn').addEventListener('click',()=>setTimeout(renderJudgePanel,0));
 connectJudges();
+
+/* ---------- AI 總結全場（呼叫本機法遵系統 → 公司 AI 平台；失敗改用本機統計） ---------- */
+const DEMO_API='http://localhost:8787/api/demo/summary';  // 本機 Demo AI 服務（jev-demo-api），與法遵系統獨立
+function sumCalls(){
+  let calls=JUDGES.map(j=>({name:j.name,tier:j.tier,text:j.text,cat:j.cat,lvl:j.lvl,angry:j.angry,urgent:j.urgent}));
+  let src=`評審來電 ${calls.length} 通`;
+  if(calls.length<3){
+    const pool=[...QS.q,...QS.agents.filter(a=>a.busy).map(a=>a.busy)].filter(c=>!c.judge).slice(0,30);
+    calls=calls.concat(pool.map(c=>({name:c.cur&&c.cur.rec?c.cur.rec.name:'',tier:c.cur&&c.cur.rec?c.cur.rec.tier:(c.cur?'非本行':'未驗證'),text:c.text,cat:c.cat,lvl:c.lvl,angry:c.r.angry,urgent:c.r.urgent})));
+    src=(JUDGES.length?`評審來電 ${JUDGES.length} 通＋`:'')+`看板模擬進線 ${pool.length} 通`;
+  }
+  return {calls,src};
+}
+function localSummary(calls){
+  const by={}; calls.forEach(c=>{(by[c.cat]=by[c.cat]||[]).push(c);});
+  const themes=Object.entries(by).sort((a,b)=>b[1].length-a[1].length).slice(0,5).map(([k,v])=>({title:k,count:v.length,examples:v.slice(0,2).map(x=>x.text),
+    insight:`${v.filter(x=>x.angry).length} 位情緒不佳、${v.filter(x=>x.urgent).length} 件急件`}));
+  const urg=calls.filter(c=>c.urgent).length, ang=calls.filter(c=>c.angry).length, top=themes[0];
+  const alerts=[]; if(urg) alerts.push(`目前有 ${urg} 件急件，確認都已優先接通`); if(ang) alerts.push(`${ang} 位客戶情緒不佳，留意是否集中在同一類問題`);
+  const actions=[]; if(top) actions.push(`「${top.title}」進線最多（${top.count} 通），檢查對應 FAQ 與智能客服回答是否完整`);
+  if(top) actions.push(`尖峰時段可把「${top.title}」窗口暫時多排 1 位專員`);
+  return {headline:`共 ${calls.length} 通進線，以「${top?top.title:'—'}」最多`,themes,alerts,actions};
+}
+function renderSummary(d,meta){
+  const max=Math.max(1,...(d.themes||[]).map(x=>x.count||0));
+  $('sumBody').innerHTML=`<div class="sumhead">${esc(d.headline||'')}</div>
+    <div class="sumsrc">資料：${esc(meta.src)}　·　分析：${meta.ai?`<b>公司 AI 平台（${esc(meta.model)}）</b>`:`<b class="off">本機統計</b>（${esc(meta.why)}）`}</div>
+    <div class="sumgrid"><div><div class="sumlbl">進線主題</div>${(d.themes||[]).map(x=>`<div class="theme"><div class="tl">${esc(x.title)}<span>${x.count||0} 通</span></div><div class="bar2"><i style="width:${(x.count||0)/max*100}%"></i></div><div class="ins">${esc(x.insight||'')}</div>${(x.examples||[]).length?`<div class="ex">例：「${(x.examples||[]).map(esc).join('」「')}」</div>`:''}</div>`).join('')}</div>
+    <div><div class="sumlbl" style="color:var(--red)">主管現在要注意</div><ul class="sumlist">${(d.alerts||[]).map(a=>`<li>${esc(a)}</li>`).join('')||'<li class="dim">沒有需要立即處理的狀況</li>'}</ul>
+    <div class="sumlbl" style="color:var(--accent)">建議行動</div><ul class="sumlist">${(d.actions||[]).map(a=>`<li>${esc(a)}</li>`).join('')}</ul></div></div>`;
+}
+async function runSummary(){
+  $('ovlSum').classList.add('on');
+  const {calls,src}=sumCalls();
+  $('sumBody').innerHTML='<div class="sumload"><i></i><i></i><i></i><div style="margin-top:14px">公司 AI 平台分析中（最多 25 秒）…</div></div>';
+  let why='AI 平台未連線';
+  try{
+    const ac=new AbortController(); const tm=setTimeout(()=>ac.abort(),25000);
+    const r=await fetch(DEMO_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({calls}),signal:ac.signal});
+    clearTimeout(tm);
+    const j=await r.json();
+    if(r.ok&&j.ok&&j.summary){ renderSummary(j.summary,{src,ai:true,model:j.model}); return; }
+    why='AI 平台回應異常';
+  }catch(e){ why=e.name==='AbortError'?'AI 平台逾時':'AI 平台未連線'; }
+  renderSummary(localSummary(calls),{src,ai:false,why});
+}
+$('aiSumBtn').onclick=runSummary;
 
 fit(); renderCidChips(); updateChrome(); qReset();
 setInterval(()=>{if(!QS.paused){qTick(5); if(SC===5) renderQueue();}},500);
