@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>打一句話給客服</title>
+<style>
+:root{--bg:#f3f5f8;--card:#fff;--soft:#f7f9fb;--line:#e1e6ee;--text:#1f2a3a;--muted:#5f6b7a;--dim:#8a95a5;--accent:#2f6db5;--navy:#1f2a3a;--purple:#b07aa1;--green:#59a14f;--red:#e15759;
+  --font:"PingFang TC","Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);-webkit-font-smoothing:antialiased}
+.wrap{max-width:520px;margin:0 auto;padding:24px 16px 40px}
+.brand{font-size:13px;color:var(--dim);letter-spacing:.06em}
+h1{font-size:26px;line-height:1.35;margin:6px 0 6px}
+.sub{color:var(--muted);font-size:15px;margin:0 0 20px}
+.card{background:var(--card);border-radius:18px;padding:20px 18px;box-shadow:0 1px 2px rgba(30,45,70,.05),0 8px 24px rgba(30,45,70,.06)}
+label{display:block;font-size:14px;color:var(--muted);font-weight:700;margin:0 0 8px}
+input,textarea{width:100%;font:inherit;font-size:17px;border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--soft);color:var(--text);outline:none}
+input:focus,textarea:focus{border-color:var(--accent);background:#fff}
+textarea{height:96px;resize:none}
+.f{margin-bottom:18px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1.5px solid var(--line);background:#fff;color:var(--muted);border-radius:999px;padding:7px 14px;font:inherit;font-size:14.5px}
+.chip.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.ex .chip{font-size:13.5px;text-align:left}
+.cnt{text-align:right;font-size:12.5px;color:var(--dim);margin-top:4px}
+button.send{width:100%;border:0;border-radius:14px;background:var(--accent);color:#fff;font:inherit;font-size:18px;font-weight:800;padding:15px;margin-top:4px}
+button.send:disabled{opacity:.5}
+.ok{display:none;text-align:center;padding:26px 10px}
+.ok .big{font-size:42px}
+.ok h2{margin:8px 0 6px;font-size:22px}
+.ok p{color:var(--muted);margin:0 0 18px}
+.ok button{border:1.5px solid var(--accent);background:#fff;color:var(--accent);border-radius:999px;font:inherit;font-weight:700;padding:9px 22px}
+.err{color:var(--red);font-size:14px;margin-top:10px;min-height:20px}
+.note{font-size:12.5px;color:var(--dim);margin-top:18px;line-height:1.6}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">客服營運數位孿生平台 · 評審參與</div>
+  <h1>換你當客戶，<br>打一句話給客服</h1>
+  <p class="sub">送出後會即時出現在大螢幕，看系統怎麼判斷、把你排在第幾位。</p>
+
+  <div class="card" id="form">
+    <div class="f"><label for="nm">你的稱呼（選填）</label><input id="nm" maxlength="12" placeholder="例：王經理"></div>
+    <div class="f"><label>你是哪一類客戶？</label>
+      <div class="chips" id="tier">
+        <button type="button" class="chip on" data-v="未提供身分">不提供身分</button>
+        <button type="button" class="chip" data-v="一般客戶">一般客戶</button>
+        <button type="button" class="chip" data-v="貴賓理財">貴賓理財</button>
+        <button type="button" class="chip" data-v="私人銀行">私人銀行</button>
+      </div></div>
+    <div class="f"><label for="tx">想問客服什麼？</label>
+      <textarea id="tx" maxlength="60" placeholder="例：我想買房子要跟你們借錢"></textarea>
+      <div class="cnt" id="cnt">0 / 60</div>
+      <div class="chips ex" style="margin-top:8px" id="ex">
+        <button type="button" class="chip">信用卡好像被盜刷了</button>
+        <button type="button" class="chip">定存下個月到期不知道怎麼放</button>
+        <button type="button" class="chip">搞什麼 轉帳到現在還沒到</button>
+        <button type="button" class="chip">想開戶順便辦信用卡</button>
+      </div></div>
+    <button type="button" class="send" id="send">送出</button>
+    <div class="err" id="err"></div>
+  </div>
+
+  <div class="card ok" id="ok">
+    <div class="big">📞</div>
+    <h2>已送出，請看大螢幕</h2>
+    <p id="okTx"></p>
+    <button type="button" id="again">再打一通</button>
+  </div>
+
+  <p class="note">此為提案競賽 Demo，系統判斷以規則模擬。請勿輸入真實姓名、身分證字號、帳號或其他個人資料；內容會經公開的訊息中繼服務傳送。</p>
+</div>
+<script>
+const TOPIC=new URLSearchParams(location.search).get('topic')||'jev-twin-demo-3esef92xcajm';
+const $=id=>document.getElementById(id);
+let tier='未提供身分', last=0;
+$('tier').onclick=e=>{const b=e.target.closest('.chip'); if(!b) return; tier=b.dataset.v; document.querySelectorAll('#tier .chip').forEach(x=>x.classList.toggle('on',x===b));};
+$('ex').onclick=e=>{const b=e.target.closest('.chip'); if(!b) return; $('tx').value=b.textContent; upd();};
+const upd=()=>$('cnt').textContent=`${$('tx').value.length} / 60`;
+$('tx').addEventListener('input',upd);
+$('send').onclick=async()=>{
+  const text=$('tx').value.trim(); $('err').textContent='';
+  if(!text){ $('err').textContent='請先輸入一句話'; return; }
+  if(Date.now()-last<5000){ $('err').textContent='請稍等幾秒再送出'; return; }
+  $('send').disabled=true;
+  try{
+    const url=`https://ntfy.sh/${encodeURIComponent(TOPIC)}`, body=JSON.stringify({name:$('nm').value.trim(),tier,text});
+    let ok=false;
+    try{ const ac=new AbortController(); const tm=setTimeout(()=>ac.abort(),6000);
+      const r=await fetch(url,{method:'POST',body,signal:ac.signal}); clearTimeout(tm); ok=r.ok; }catch(_){}
+    if(!ok){ const r=await fetch(`${url}/publish?message=${encodeURIComponent(body)}`); ok=r.ok; }  // 有些網路會擋 POST，改用 GET 備援
+    if(!ok) throw new Error('send');
+    last=Date.now(); $('okTx').textContent=`「${text}」`; $('form').style.display='none'; $('ok').style.display='block';
+  }catch(err){ $('err').textContent='送出失敗，請確認網路後再試一次'; }
+  $('send').disabled=false;
+};
+$('again').onclick=()=>{ $('tx').value=''; upd(); $('ok').style.display='none'; $('form').style.display='block'; };
+</script>
+</body>
+</html>

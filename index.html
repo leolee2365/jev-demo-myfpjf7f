@@ -1,0 +1,949 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Jev 客服數位孿生 Demo</title>
+<style>
+:root{
+  color-scheme:light;
+  --bg:#f3f5f8; --card:#ffffff; --soft:#f7f9fb; --line:#e6ebf2; --line2:#cfd7e3;
+  --text:#1f2a3a; --ink-2:#3e4a5b; --muted:#5f6b7a; --dim:#8a95a5;
+  --navy:#1f2a3a; --accent:#2f6db5;
+  --blue:#4e79a7; --orange:#f28e2b; --red:#e15759; --teal:#76b7b2; --green:#59a14f; --purple:#b07aa1; --gray:#bab0ac;
+  --p1:#e15759; --p2:#2f6db5; --p3:#f28e2b; --p4:#9aa3ae;
+  --font:"Microsoft JhengHei","PingFang TC","Noto Sans TC","Segoe UI",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:#e7ebf1}
+body{font-family:var(--font);color:var(--text);display:flex;align-items:center;justify-content:center;-webkit-font-smoothing:antialiased}
+#app{position:relative;flex:none;width:1600px;height:900px;zoom:var(--s,1);background:var(--bg);overflow:hidden;font-size:16px;line-height:1.55;font-variant-numeric:tabular-nums}
+button{font:inherit;cursor:pointer}
+.muted{color:var(--muted)} .dim{color:var(--dim)} .small{font-size:14px}
+
+/* 頂部 */
+.topbar{position:absolute;left:40px;right:40px;top:0;height:76px;display:flex;align-items:center;gap:24px;border-bottom:1px solid var(--line)}
+.brand{width:300px;font-size:19px;font-weight:800;letter-spacing:.03em}
+.brand span{display:block;font-size:12px;font-weight:600;color:var(--dim);letter-spacing:.12em}
+.nav{flex:1;display:flex;justify-content:center;align-items:center;gap:6px}
+.step{background:none;border:0;display:flex;align-items:center;gap:10px;padding:6px 10px;border-radius:12px;color:var(--dim)}
+.step:hover{background:var(--soft)}
+.step .n{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:14px;border:1.5px solid var(--line2);color:var(--dim);flex:none}
+.step .t{display:flex;flex-direction:column;align-items:flex-start;line-height:1.25}
+.step .t b{font-size:15px;font-weight:700}
+.step .t small{font-size:11.5px}
+.step .dots{display:flex;gap:4px;margin-top:4px}
+.step .dots i{width:6px;height:6px;border-radius:50%;background:var(--line2)}
+.step.on{color:var(--text)} .step.on .n{background:var(--navy);border-color:var(--navy);color:#fff}
+.step.done .n{border-color:var(--accent);color:var(--accent)}
+.step .dots i.on{background:var(--navy);width:16px;border-radius:3px}
+.step .dots i.done{background:var(--accent)}
+.arrow{color:var(--line2);font-size:16px}
+.tools{width:300px;display:flex;justify-content:flex-end}
+.icon{width:36px;height:36px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--muted);display:grid;place-items:center;font-size:17px}
+.icon:hover{color:var(--accent);border-color:var(--accent)}
+
+/* 頁面 */
+.stage{position:absolute;left:40px;right:40px;top:96px;bottom:92px}
+.page{position:absolute;inset:0;opacity:0;visibility:hidden;transform:translateX(32px);transition:opacity .4s,transform .45s cubic-bezier(.2,.7,.2,1),visibility 0s .45s;display:flex;flex-direction:column}
+.page.left{transform:translateX(-32px)}
+.page.on{opacity:1;visibility:visible;transform:none;transition:opacity .4s,transform .45s cubic-bezier(.2,.7,.2,1)}
+.ph{display:flex;align-items:center;gap:16px;margin-bottom:20px;flex:none}
+.ph .no{background:var(--navy);color:#fff;border-radius:999px;padding:3px 14px;font-weight:800;font-size:15px}
+.ph h2{margin:0;font-size:30px;font-weight:800;letter-spacing:.01em}
+.pb{flex:1;min-height:0}
+.card{background:var(--card);border-radius:16px;padding:22px 26px;box-shadow:0 1px 2px rgba(30,45,70,.05),0 8px 24px rgba(30,45,70,.06);display:flex;flex-direction:column;min-height:0}
+.page.on .card{animation:up .5s cubic-bezier(.2,.7,.2,1) both;animation-delay:var(--d,0s)}
+@keyframes up{from{opacity:0;transform:translateY(10px)}}
+.ch{font-size:14px;font-weight:700;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:8px;flex:none}
+.ch::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--accent)}
+.ch.sys::before{background:var(--teal)}
+.ch .r{margin-left:auto;font-weight:400;color:var(--dim)}
+.grid2{display:grid;gap:24px;height:100%;grid-template-rows:minmax(0,1fr)}
+
+/* 共用元件 */
+.inrow{display:flex;gap:10px}
+.inrow input{flex:1;min-width:0;font:inherit;font-size:20px;padding:12px 16px;border-radius:12px;border:1.5px solid var(--line2);background:var(--soft);color:var(--text);outline:none}
+.inrow input:focus{border-color:var(--accent);background:#fff;box-shadow:0 0 0 4px rgba(47,109,181,.12)}
+.btn{border:0;border-radius:12px;padding:0 22px;background:var(--accent);color:#fff;font-weight:700;font-size:16px}
+.btn:hover{background:#255a96}
+.btn.ghost{background:var(--soft);color:var(--ink-2);border:1px solid var(--line)}
+.btn.ghost:hover{border-color:var(--accent);color:var(--accent);background:#fff}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--line);background:var(--card);color:var(--ink-2);padding:6px 14px;border-radius:999px;font-size:14.5px;text-align:left;line-height:1.4}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+.chip.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.chip i{font-style:normal;font-size:12px;font-weight:700;margin-right:6px}
+.tag{display:inline-block;font-size:12.5px;font-weight:700;padding:1px 9px;border-radius:999px;background:var(--soft);color:var(--muted);white-space:nowrap}
+.tag.red{background:#fdecec;color:#c0393b} .tag.orange{background:#fef1e4;color:#c26a12} .tag.blue{background:#e8f0fa;color:#255a96} .tag.green{background:#eaf4e8;color:#3d7a35}
+.label{font-size:13px;color:var(--dim);margin-bottom:6px}
+.empty{flex:1;display:grid;place-items:center;color:var(--dim);font-size:17px;text-align:center}
+.kv{display:grid;grid-template-columns:100px 1fr;gap:12px 14px;font-size:17px;align-content:start}
+.kv .k{color:var(--dim);font-size:15px;padding-top:1px}
+.kv .v{font-weight:700}
+.quote{font-size:24px;font-weight:700;line-height:1.5;padding:16px 22px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 12px 12px 0}
+
+/* 1-1 */
+.p11{grid-template-columns:600px 1fr}
+.custmini{margin-top:14px;padding:12px 16px;border-radius:12px;background:var(--soft);font-size:15.5px;display:flex;gap:18px;flex-wrap:wrap;align-items:center;min-height:50px}
+.custmini b{font-size:16.5px}
+.more{background:none;border:0;color:var(--accent);font-size:14px;padding:6px 4px}
+.bars{display:flex;flex-direction:column;gap:16px;margin-top:4px}
+.bar{display:grid;grid-template-columns:110px 1fr 64px;align-items:center;gap:16px}
+.bar .lab{font-size:19px;color:var(--ink-2)}
+.bar.top .lab{font-weight:800;color:var(--text)}
+.bar .tr{height:16px;background:var(--soft);border-radius:8px;position:relative;overflow:visible}
+.bar .fl{position:absolute;left:0;top:0;bottom:0;border-radius:8px;background:#c9d7ea;transition:width .55s cubic-bezier(.2,.7,.2,1)}
+.bar.top .fl{background:var(--accent)}
+.bar .thr{position:absolute;top:-6px;bottom:-6px;border-left:2px dashed var(--purple)}
+.bar .pv{font-size:19px;text-align:right;font-weight:700;color:var(--muted)}
+.bar.top .pv{color:var(--accent)}
+.decision{margin-top:26px;padding:20px 24px;border-radius:14px;background:var(--soft);border-left:5px solid var(--dc,var(--line2))}
+.decision .tt{font-size:24px;font-weight:800;display:flex;align-items:center;gap:12px}
+.decision .ic{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:15px;font-weight:900;flex:none;background:var(--dc)}
+.decision .why{margin-top:8px;font-size:16.5px;color:var(--muted)}
+.clar{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+.clar button{border:1.5px solid var(--accent);background:#fff;color:var(--accent);border-radius:999px;padding:6px 18px;font-size:15.5px;font-weight:700}
+.clar button:hover{background:#e8f0fa}
+.hot{display:flex;gap:36px;margin-top:14px}
+.hot .num{font-size:22px;font-weight:800}
+
+/* 1-2 */
+.sig4{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:22px}
+.sig{background:var(--card);border-radius:16px;padding:20px 22px;box-shadow:0 1px 2px rgba(30,45,70,.05),0 8px 24px rgba(30,45,70,.06);border-top:5px solid var(--line);display:flex;flex-direction:column;gap:6px}
+.sig .nm{font-size:15px;color:var(--muted);font-weight:700}
+.sig .val{font-size:42px;font-weight:800;line-height:1.15;color:var(--dim)}
+.sig .st{font-size:15.5px;color:var(--muted)}
+.sig.on{border-top-color:var(--sc)} .sig.on .val{color:var(--sc)} .sig.on .st{color:var(--text);font-weight:700}
+.meter{height:8px;border-radius:4px;background:var(--soft);overflow:hidden;margin-top:6px}
+.meter i{display:block;height:100%;border-radius:4px;background:var(--line2);transition:width .5s}
+.sig.on .meter i{background:var(--sc)}
+.ref{margin-top:22px;display:grid;grid-template-columns:1fr 420px;gap:20px}
+.refbox{border-radius:16px;padding:20px 24px;background:#f2f8f1;border:1.5px dashed #9cc896}
+.refbox.mute{background:var(--soft);border-color:var(--line2)}
+.refbox .tt{font-size:19px;font-weight:800;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.refbox .pitch{margin-top:10px;font-size:16px;padding:12px 16px;background:#fff;border-radius:10px}
+.refbox .acts{display:flex;gap:10px;margin-top:12px}
+.refbox .acts button{border:1.5px solid var(--green);background:#fff;color:#3d7a35;border-radius:999px;padding:5px 16px;font-size:15px;font-weight:700}
+.refbox .acts button.no{border-color:var(--line2);color:var(--muted)}
+.rules{border-radius:16px;padding:20px 24px;background:var(--navy);color:#fff}
+.rules b{display:block;font-size:15px;color:#a9c4e6;margin-bottom:10px}
+.rules li{margin:6px 0;font-size:15.5px}
+.rules ul{margin:0;padding-left:20px}
+
+/* 1-3 */
+.p13{grid-template-columns:500px 1fr}
+.rcol{display:flex;flex-direction:column;gap:24px;min-height:0}
+.result{flex-direction:row;align-items:center;gap:26px;border-left:6px solid var(--pc)}
+.result .badge{font-size:34px;font-weight:900;color:var(--pc);white-space:nowrap}
+.result .tgt{font-size:18px;font-weight:700}
+.result .rs{font-size:15.5px;color:var(--muted);margin-top:4px}
+.ladder{display:flex;flex-direction:column;gap:10px}
+.lrow{display:grid;grid-template-columns:150px 1fr 150px;gap:16px;align-items:center;padding:14px 18px;border-radius:12px;background:var(--soft);border:2px solid transparent;font-size:16px}
+.lrow b{font-size:17px}
+.lrow.on{background:#fff;border-color:var(--pc);box-shadow:0 6px 18px rgba(30,45,70,.08)}
+.lrow .tg{text-align:right;font-weight:700;color:var(--muted)}
+.lrow.on .tg{color:var(--pc)}
+.rulebar{margin-top:14px;font-size:14.5px;color:var(--muted)}
+
+/* 2-1 / 2-2 */
+.callbar{flex-direction:row;align-items:center;gap:22px;padding:16px 26px;border-left:6px solid var(--pc);margin-bottom:24px;flex:none}
+.callbar .ring{font-size:22px;font-weight:800;display:flex;align-items:center;gap:12px}
+.callbar .ring i{width:14px;height:14px;border-radius:50%;background:var(--pc);animation:pulse 1.2s infinite}
+@keyframes pulse{50%{opacity:.3}}
+.callbar .pl{font-size:20px;font-weight:800;color:var(--pc)}
+.callbar .tm{margin-left:auto;font-size:22px;font-weight:700;color:var(--muted)}
+.p21{grid-template-columns:1fr 1fr;align-items:start}
+.emo{height:10px;border-radius:5px;background:var(--soft);overflow:hidden;margin-top:14px}
+.emo i{display:block;height:100%;border-radius:5px}
+.p22{grid-template-columns:420px 1fr;align-items:start}
+.script{font-size:26px;font-weight:700;line-height:1.6;padding:22px 26px;border-radius:14px;background:#e8f0fa;color:#1d3f6b}
+.steps{margin:20px 0 0;padding-left:26px;font-size:18px}
+.steps li{margin:10px 0}
+.acts2{display:flex;gap:12px;margin-top:8px;padding-top:18px}
+.acts2 .btn{padding:10px 22px}
+.msg{margin-top:10px;font-size:15px;color:var(--green);min-height:22px}
+
+/* 3 */
+.qtop{display:flex;align-items:center;gap:16px;margin-bottom:20px;flex:none}
+.qstat{display:flex;gap:34px;margin-left:auto}
+.qstat div{font-size:14px;color:var(--muted)}
+.qstat b{display:block;font-size:30px;font-weight:800;color:var(--text);line-height:1.15}
+.qcols{flex:1;min-height:0;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:minmax(0,1fr);gap:18px}
+.qcol{background:var(--card);border-radius:16px;box-shadow:0 1px 2px rgba(30,45,70,.05),0 8px 24px rgba(30,45,70,.06);border-top:5px solid var(--pc);display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.qh{padding:14px 18px 10px}
+.qh b{font-size:18px;color:var(--pc)}
+.qh span{font-size:13.5px;color:var(--muted);margin-left:8px}
+.ql{padding:4px 12px 12px;display:flex;flex-direction:column;gap:8px;overflow:hidden}
+.qi{border-radius:10px;background:var(--soft);padding:8px 12px;font-size:14px;display:grid;grid-template-columns:1fr auto;gap:2px 8px}
+.qi .w{font-weight:700;color:var(--muted)}
+.qi .t{grid-column:1/-1;display:flex;gap:6px;align-items:center;color:var(--muted);font-size:13px}
+.qi.mine{background:#e8f0fa;outline:2px solid var(--accent)}
+.agents{display:flex;gap:18px;flex-wrap:wrap;margin-top:18px;font-size:13.5px;color:var(--muted);flex:none;align-items:center}
+.agents .ag{display:flex;align-items:center;gap:6px}
+.agents .ag i{width:10px;height:10px;border-radius:50%;background:var(--pc)}
+.qtop select{font:inherit;font-size:14px;padding:4px 8px;border-radius:8px;border:1px solid var(--line2);background:#fff}
+.mini{border:1px solid var(--line);background:#fff;border-radius:10px;width:38px;height:38px;color:var(--muted);font-size:15px}
+.mini:hover{color:var(--accent);border-color:var(--accent)}
+
+/* 4-1 */
+.p41{grid-template-columns:400px 1fr;align-items:start}
+.ctl{margin-bottom:22px}
+.ctl label{display:flex;justify-content:space-between;font-size:16px;color:var(--ink-2);margin-bottom:6px}
+.ctl output{font-weight:800;color:var(--accent)}
+.ctl input[type=range]{width:100%;accent-color:var(--accent)}
+.ctl .hint{font-size:13px;color:var(--dim)}
+.pbtn{display:flex;gap:10px;margin-top:8px}
+.pbtn .btn{padding:10px 16px;font-size:15px}
+.hero{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.hero .big{font-size:58px;font-weight:800;color:var(--accent);line-height:1.1}
+.hero .u{font-size:17px;color:var(--muted);margin-top:4px}
+.heronote{font-size:13px;color:var(--dim);margin-top:14px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:24px}
+.kpi{background:var(--card);border-radius:16px;padding:18px 22px;box-shadow:0 1px 2px rgba(30,45,70,.05),0 8px 24px rgba(30,45,70,.06)}
+.kpi .k{font-size:15px;color:var(--muted)}
+.kpi .v{font-size:32px;font-weight:800;line-height:1.25}
+.kpi .c{font-size:14px;color:var(--dim)}
+.kpi .d{font-size:15px;font-weight:700;color:var(--green)}
+.kpi .d.bad{color:var(--red)}
+
+/* 4-2 */
+.lanes{display:grid;grid-template-columns:1fr 1fr;gap:24px;flex:1;min-height:0;grid-template-rows:minmax(0,1fr)}
+.lane .lh{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px}
+.lane .lh b{font-size:20px}
+.lane canvas{width:100%;flex:1;min-height:0;border-radius:12px;background:var(--soft);display:block}
+.lane .cnt{display:flex;gap:28px;margin-top:14px}
+.lane .cnt div{font-size:14px;color:var(--muted)}
+.lane .cnt b{display:block;font-size:26px;font-weight:800;color:var(--text)}
+.legend{display:flex;gap:20px;font-size:14px;color:var(--muted);margin-left:auto}
+.legend span{display:flex;align-items:center;gap:6px}
+.legend i{width:10px;height:10px;border-radius:50%}
+.stack{display:flex;height:14px;border-radius:7px;overflow:hidden;gap:2px;margin-top:10px}
+
+/* 疊加視窗 */
+.ovl{position:absolute;inset:0;background:rgba(20,30,45,.35);backdrop-filter:blur(2px);display:none;align-items:center;justify-content:center;z-index:20}
+.ovl.on{display:flex}
+.ovl .card{width:1000px;max-height:92%;overflow:auto;position:relative}
+.ovl .x{position:absolute;right:18px;top:16px}
+.ovl .cgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px 28px}
+.ovl ul{margin:0;padding-left:20px;font-size:15.5px;color:var(--ink-2)} .ovl li{margin:8px 0}
+.tip{position:absolute;pointer-events:none;background:#fff;border:1px solid var(--line2);border-radius:8px;padding:6px 10px;font-size:13px;box-shadow:0 6px 18px rgba(30,45,70,.12);display:none;white-space:nowrap}
+
+/* 底部字幕 */
+.cap{position:absolute;left:40px;right:40px;bottom:22px;height:52px;display:flex;align-items:center;gap:16px;padding:0 10px 0 20px;background:var(--card);border-radius:14px;box-shadow:0 1px 2px rgba(30,45,70,.05),0 6px 18px rgba(30,45,70,.05)}
+.cap .no{font-weight:800;color:#fff;background:var(--navy);border-radius:999px;padding:2px 12px;font-size:14px}
+#capTxt{margin:0;flex:1;font-size:17px;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prog{position:absolute;left:0;right:0;bottom:0;height:3px;background:var(--line)}
+.prog i{display:block;height:100%;background:var(--accent);transition:width .45s}
+
+/* 背後流程 */
+.pipe{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:6px;flex:none}
+.pnode{position:relative;border-radius:12px;background:var(--soft);padding:10px 12px;border:1.5px solid transparent;transition:background .25s,border-color .25s}
+.pnode b{display:block;font-size:15px;color:var(--ink-2)}
+.pnode small{font-size:12.5px;color:var(--dim)}
+.pnode .ms{position:absolute;right:10px;top:10px;font-size:13px;font-weight:800;color:var(--accent);opacity:0;transition:opacity .2s}
+.pnode.run{border-color:var(--accent);background:#fff;animation:ring 0.6s ease-in-out infinite alternate}
+.pnode.done{background:#e8f0fa}.pnode.done b{color:var(--text)}.pnode.done .ms{opacity:1}
+@keyframes ring{from{box-shadow:0 0 0 0 rgba(47,109,181,.25)}to{box-shadow:0 0 0 6px rgba(47,109,181,.08)}}
+.pipe-note{font-size:12.5px;color:var(--dim);margin-bottom:14px;flex:none}
+#out11{transition:opacity .3s}
+#out11.wait{opacity:0}
+.bars{gap:12px}
+/* 評審參與 */
+.tools{gap:10px;align-items:center}
+.jbtn{display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--card);border-radius:10px;height:36px;padding:0 14px;font-size:14.5px;font-weight:700;color:var(--ink-2)}
+.jbtn:hover{border-color:var(--purple);color:var(--purple)}
+.jbtn i{width:9px;height:9px;border-radius:50%;background:var(--gray)}
+.jbtn i.on{background:var(--green)}
+.jbtn span{font-weight:400;color:var(--dim)}
+.toasts{position:absolute;right:40px;top:88px;z-index:30;display:flex;flex-direction:column;gap:10px;width:460px;pointer-events:none}
+.toast{pointer-events:auto;background:#fff;border-radius:14px;box-shadow:0 12px 32px rgba(30,45,70,.20);padding:14px 18px;border-left:5px solid var(--purple);animation:tin .45s cubic-bezier(.2,.7,.2,1)}
+.toast .who{font-size:13px;color:var(--purple);font-weight:800}
+.toast .tx{font-size:17px;font-weight:700;margin:4px 0}
+.toast .rs{font-size:14px;color:var(--muted)}
+.toast button{margin-top:8px;border:1.5px solid var(--purple);background:#fff;color:var(--purple);border-radius:999px;padding:3px 14px;font-size:13.5px;font-weight:700}
+.toast button:hover{background:#f6eef4}
+@keyframes tin{from{opacity:0;transform:translateX(30px)}}
+.jgrid{display:grid;grid-template-columns:340px 1fr;gap:32px;align-items:start}
+.qr{width:340px;height:340px;border-radius:16px;background:var(--soft);display:grid;place-items:center;overflow:hidden}
+.qr svg,.qr img{width:320px;height:320px}
+.jurl{font-size:15px;word-break:break-all;background:var(--soft);border-radius:10px;padding:10px 14px;margin:10px 0 18px}
+.jlist{display:flex;flex-direction:column;gap:8px;max-height:260px;overflow:auto}
+.jlist div{font-size:14.5px;padding:8px 12px;border-radius:10px;background:var(--soft)}
+.jlist b{color:var(--purple)}
+</style>
+</head>
+<body>
+<div id="app">
+
+<header class="topbar">
+  <div class="brand"><span>JEV × DIGITAL TWIN</span>客服營運數位孿生平台</div>
+  <nav class="nav" id="nav"></nav>
+  <div class="tools"><button type="button" class="jbtn" id="jBtn" data-ovl="ovlJudge"><i id="jDot"></i>評審參與<span id="jCount"></span></button><button type="button" class="icon" id="fsBtn" title="全螢幕（F）">⛶</button></div>
+</header>
+
+<main class="stage">
+
+<!-- 1-1 -->
+<section class="page on" id="p11">
+  <div class="ph"><span class="no">1-1</span><h2>客戶說一句話，系統就知道他要問什麼</h2></div>
+  <div class="pb grid2 p11">
+    <div class="card" style="--d:.05s">
+      <div class="ch">客戶</div>
+      <div class="label">客戶身分（電話端由語音驗證取得，只在行內 CRM 查詢）</div>
+      <div class="inrow"><input id="cid" placeholder="身分證字號" maxlength="10" autocomplete="off" style="text-transform:uppercase"><button type="button" class="btn" id="cidGo">查詢</button></div>
+      <div class="chips" id="cidChips" style="margin-top:12px"></div>
+      <div class="custmini" id="custMini"><span class="dim">尚未查詢客戶，以一般客戶處理</span></div>
+      <div class="label" style="margin-top:26px">客戶說的一句話</div>
+      <div class="inrow"><input id="q" placeholder="例：我想買房子要跟你們借錢" autocomplete="off"><button type="button" class="btn" id="go">送出</button></div>
+      <div class="chips" id="qChips" style="margin-top:12px"></div>
+      <div><button type="button" class="more" id="moreBtn">更多範例 ▾</button></div>
+      <div class="chips" id="qMore" style="display:none;margin-top:4px"></div>
+    </div>
+    <div class="card" style="--d:.12s">
+      <div class="ch sys">系統在背後判斷<span class="r" id="lat"></span></div>
+      <div class="pipe" id="pipe"></div><div class="pipe-note" id="pipeNote">客戶一開口，系統依序完成這四步</div>
+      <div id="out11" style="display:flex;flex-direction:column;flex:1;min-height:0"><div class="empty">輸入一句話，或點左邊的範例</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 1-2 -->
+<section class="page" id="p12">
+  <div class="ph"><span class="no">1-2</span><h2>同一句話，系統還讀出情緒、急件和商機</h2></div>
+  <div class="pb" id="out12" style="display:flex;flex-direction:column"></div>
+</section>
+
+<!-- 1-3 -->
+<section class="page" id="p13">
+  <div class="ph"><span class="no">1-3</span><h2>結合行內 CRM，決定誰先被服務</h2></div>
+  <div class="pb grid2 p13">
+    <div class="card" style="--d:.05s">
+      <div class="ch">客戶（行內 CRM）</div>
+      <div class="chips" id="cidChips13" style="margin-bottom:20px"></div>
+      <div id="crm13" style="flex:1"></div>
+    </div>
+    <div class="rcol">
+      <div class="card result" id="res13" style="--d:.12s"></div>
+      <div class="card" style="--d:.2s;flex:1">
+        <div class="ch sys">服務等級規則</div>
+        <div class="ladder" id="ladder"></div>
+        <div class="rulebar">急件不論客戶等級一律最優先；身分證字號只在行內 CRM 查詢，不送外部模型。級距與目標接聽時間為示意。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 2-1 -->
+<section class="page" id="p21">
+  <div class="ph"><span class="no">2-1</span><h2>電話接通，專員已經知道他是誰、要什麼</h2></div>
+  <div class="pb" style="display:flex;flex-direction:column">
+    <div class="card callbar" id="call21" style="--d:.05s"></div>
+    <div class="grid2 p21" style="flex:1;min-height:0">
+      <div class="card" style="--d:.12s"><div class="ch">客戶資料（行內 CRM）</div><div id="crm21"></div></div>
+      <div class="card" style="--d:.2s"><div class="ch sys">本次來電（系統判斷）</div><div id="call21b"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 2-2 -->
+<section class="page" id="p22">
+  <div class="ph"><span class="no">2-2</span><h2>專員不用想，系統給出處理步驟和開場話術</h2></div>
+  <div class="pb grid2 p22">
+    <div class="card" style="--d:.05s"><div class="ch">這通電話</div><div id="ctx22"></div></div>
+    <div class="card" style="--d:.12s">
+      <div class="ch sys">建議開場話術</div>
+      <div class="script" id="script22"></div>
+      <ol class="steps" id="steps22"></ol>
+      <div class="acts2"><button type="button" class="btn" id="dkAnswer">接聽</button><button type="button" class="btn ghost" id="dkXfer">轉接</button><button type="button" class="btn ghost" id="dkRef">建立轉介單</button></div>
+      <div class="msg" id="dkMsg"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 -->
+<section class="page" id="p3">
+  <div class="ph"><span class="no">3</span><h2>主管看見全中心，急件永遠排第一</h2></div>
+  <div class="pb" style="display:flex;flex-direction:column">
+    <div class="qtop">
+      <button type="button" class="btn" id="qInject" style="padding:10px 22px">把剛才的客戶加入排隊</button>
+      <button type="button" class="mini" id="qPause" title="暫停／繼續">❚❚</button>
+      <button type="button" class="mini" id="qReset" title="重新開始">↺</button>
+      <span class="small muted">值班專員 <select id="qAgents"><option>6</option><option selected>8</option><option>10</option><option>12</option></select> 位</span>
+      <div class="qstat" id="qStat"></div>
+    </div>
+    <div class="qcols" id="qCols"></div>
+    <div class="agents" id="qAgentsRow"></div>
+  </div>
+</section>
+
+<!-- 4-1 -->
+<section class="page" id="p41">
+  <div class="ph"><span class="no">4-1</span><h2>上線前先推演：導入後一年省下多少</h2></div>
+  <div class="pb grid2 p41">
+    <div class="card" style="--d:.05s">
+      <div class="ch">推演參數（拉動即時重算）</div>
+      <div id="controls"></div>
+      <div class="pbtn"><button type="button" class="btn ghost" data-ovl="ovlAdv">進階參數</button><button type="button" class="btn ghost" data-ovl="ovlAsm">模型假設</button></div>
+    </div>
+    <div style="display:flex;flex-direction:column;min-height:0">
+      <div class="card" style="--d:.12s">
+        <div class="ch sys">導入後，每年可省下（假設值）</div>
+        <div class="hero" id="hero"></div>
+        <div class="heronote" id="heroNote"></div>
+      </div>
+      <div class="kpis" id="kpis"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 4-2 -->
+<section class="page" id="p42">
+  <div class="ph"><span class="no">4-2</span><h2>同樣的進線量，現況和導入後差在哪裡</h2>
+    <div class="legend"><span><i style="background:#6b7787"></i>處理中</span><span><i style="background:var(--orange)"></i>反問確認</span><span><i style="background:var(--red)"></i>轉錯窗口</span><span><i style="background:var(--green)"></i>解決</span>
+    <button type="button" class="btn ghost" data-ovl="ovlCurve" style="padding:6px 14px;font-size:14px">門檻分析</button></div></div>
+  <div class="lanes">
+    <div class="card lane" style="--d:.05s"><div class="lh"><b style="color:var(--orange)">現況：語音選單／總機</b><span class="muted small" id="c0"></span></div><canvas id="cv0"></canvas>
+      <div class="cnt" id="cnt0"></div></div>
+    <div class="card lane" style="--d:.12s"><div class="lh"><b style="color:var(--accent)">導入 Jev：一句話直接分流</b><span class="muted small" id="c1"></span></div><canvas id="cv1"></canvas>
+      <div class="cnt" id="cnt1"></div></div>
+  </div>
+</section>
+
+<div class="ovl" id="ovlAdv"><div class="card"><button type="button" class="icon x" data-close>✕</button><div class="ch">進階參數</div><div class="cgrid" id="controlsAdv"></div></div></div>
+<div class="ovl" id="ovlAsm"><div class="card"><button type="button" class="icon x" data-close>✕</button><div class="ch">模型假設（皆可用參數調整）</div>
+  <ul>
+    <li><b>電話現況</b>：所有來電先聽語音選單；一部分撥總機由人工分類，其餘自己選分機，選錯就轉接並重新排隊。</li>
+    <li><b>電話導入 Jev</b>：客戶說一句話，信心 ≥ 分流門檻就直接轉分機；介於兩個門檻之間先反問一句（約 15 秒，確認後準確率 97%）；低於反問門檻轉人工分類。</li>
+    <li><b>校準</b>：Jev 的信心度經過校準，信心 0.9 的案件約有 90% 會分對，模型直接用信心度當分對的機率。</li>
+    <li><b>排隊</b>：以尖峰小時（占全日 12%）的進線量，用 Erlang C 計算平均等待時間和 20 秒內接聽率。</li>
+    <li><b>文字客服</b>：答非所問的客戶平均多來回 2 輪，其中 40% 最後轉真人。導入後答錯率 = 分錯窗口比例 + 5%（知識庫本身沒有答案）。</li>
+    <li><b>人力換算</b>：每位客服每天有效工時 7.5 小時、占用率 85%；一年以 250 個工作天計算。</li>
+  </ul></div></div>
+<div class="ovl" id="ovlCurve"><div class="card"><button type="button" class="icon x" data-close>✕</button><div class="ch">門檻怎麼設最省時間？</div>
+  <div class="muted small">門檻太低，分錯變多；太高，反問和轉人工變多。曲線最低點就是最佳門檻。</div>
+  <div class="stack" id="stack"></div><div class="small muted" id="stackLegend" style="margin-top:8px;display:flex;gap:18px"></div>
+  <div style="position:relative;height:320px;margin-top:12px"><svg id="curve" style="width:100%;height:100%;display:block"></svg><div class="tip" id="tip"></div></div>
+</div></div>
+<div class="ovl" id="ovlJudge"><div class="card"><button type="button" class="icon x" data-close>✕</button><div class="ch" style="--accent:var(--purple)">評審參與：換你當客戶</div>
+  <div class="jgrid"><div class="qr" id="qrBox"></div>
+  <div><div style="font-size:24px;font-weight:800;line-height:1.4">拿出手機掃描 QR code，<br>打一句話給客服</div>
+  <div class="muted" style="margin-top:8px">送出後會即時出現在這個 Demo：系統判斷類別與優先等級，並排進主管的即時排隊看板。</div>
+  <div class="jurl" id="jUrl"></div>
+  <div class="label">已收到的評審來電</div><div class="jlist" id="jList"><div class="dim">還沒有評審來電</div></div></div></div>
+</div></div>
+</main>
+<div class="toasts" id="toasts"></div>
+
+<footer class="cap"><span class="no" id="capNo">1-1</span><p id="capTxt"></p>
+  <button type="button" class="icon" id="prevBtn" title="上一頁">‹</button><button type="button" class="icon" id="nextBtn" title="下一頁">›</button></footer>
+<div class="prog"><i id="progBar"></i></div>
+</div>
+
+<script>
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const fmt=(x,d=0)=>Number(x).toLocaleString('zh-TW',{minimumFractionDigits:d,maximumFractionDigits:d});
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let S=1;
+
+/* ---------- 分類模擬（Jev 輸出以本機規則模擬） ---------- */
+const CATS=['房貸','信貸','信用卡','開戶','存款','理財信託','其他/真人'];
+const EXT={'房貸':'分機 1','信貸':'分機 2','信用卡':'分機 3','開戶':'分機 4','存款':'分機 5','理財信託':'分機 6','其他/真人':'客服專員'};
+const EXT_NO={'房貸':'1','信貸':'2','信用卡':'3','開戶':'4','存款':'5','理財信託':'6','其他/真人':'9'};
+const HOTLINE='02-XXXX-XXXX（示意）';
+const KW={
+  '房貸':[['房貸',3],['買房',3],['購屋',3],['房子',2.5],['房屋',2.5],['首購',2.5],['新青安',3],['青安',3],['轉貸',2],['增貸',2],['寬限期',2.5],['房',1]],
+  '信貸':[['信貸',3],['信用貸款',3],['借錢',1.6],['週轉',2.4],['周轉',2.4],['缺錢',2],['借款',1.5],['貸款',1.2],['債務整合',2.5],['萬周轉',1],['萬週轉',1],['借',1]],
+  '信用卡':[['信用卡',3],['刷卡',2.5],['卡費',3],['帳單',2],['盜刷',3],['額度',1.2],['分期',1.8],['紅利',2],['年費',2.5],['apple pay',2],['行動支付',1.5],['掛失',1.5],['卡',0.8],['回饋',1.5],['繳款',1],['扣',0.8]],
+  '開戶':[['開戶',3],['開帳戶',3],['數位帳戶',3.5],['大戶',2],['dawho',2],['存摺',1.2],['金融卡',1.5],['網銀',1.2],['網路銀行',1.2],['密碼',1],['帶什麼',0.8]],
+  '存款':[['定存',3],['存款',2.5],['利息',2],['利率',1.2],['外幣',2],['美金',1.8],['日幣',2.5],['日圓',2.5],['換外幣',3],['換匯',2.5],['歐元',2],['去日本',1.5],['出國',2.5],['出國玩',1.5],['到期',1.5],['匯款',2.5],['轉帳',2.2],['餘額',2.2],['扣款',1.5],['扣了',1.5],['被扣',1.5],['提款',2],['存錢',2],['放銀行',1.5]],
+  '理財信託':[['基金',3],['投資',2.5],['理財',3],['信託',3],['etf',3],['債券',3],['保險',2],['股票',2],['報酬',2],['定期定額',3],['穩一點',1.6],['穩',0.8],['配息',2.5],['理賠',2.5],['保單',2.5]],
+  '其他/真人':[['真人',3],['專員',2.5],['客服人員',3],['分行',2.2],['幾點',1.5],['營業時間',2.5],['抱怨',2.5],['客訴',3],['不知道',0.8]],
+};
+const URGENT=['盜刷','被盜','詐騙','被騙','遺失','不見','掉了','掛失','冒用','異常交易'];
+const EMO_KW=[['生氣',2],['氣死',2.5],['很煩',1.8],['煩死',2.5],['不爽',2.2],['搞什麼',2.5],['到底',1.5],['都沒人',2],['沒人處理',2.2],['等很久',1.8],['等了',1.2],['第幾次',2],['三次',1.2],['好幾次',1.5],['一直',1],['投訴',2.5],['客訴',2.5],['差勁',2.5],['離譜',2.2],['太扯',2.2],['很扯',2],['受夠',2.5],['垃圾',2.8],['爛',1.8],['誇張',1.5],['浪費時間',2.2],['解約',1.8],['剪卡',2],['什麼鬼',2.5],['有病',2.8],['找人講',1.2],['拖了',2],['拖很久',2.2],['還沒下來',1.5],['要等多久',1.8],['等多久',1.2],['都不回',2],['！！',1.2],['!!',1.2],['？？',1],['??',1]];
+const EMO_TH=0.6, OPP_TH=0.6;
+const OPPS=[
+  {id:'保障需求',kw:[['理賠',3],['保單',2.5],['保險',2],['保費',1.5],['住院',2],['意外險',2.5],['醫療險',2.5]],action:'轉介理專',owner:'理財專員',offer:'免費保障健檢',pitch:'理賠的問題已經幫您處理。另外，要不要請理專幫您免費檢視一下，目前的保障夠不夠？',yes:'請理專聯繫我'},
+  {id:'外幣需求',kw:[['出國',3],['旅遊',2],['換外幣',3],['外幣現鈔',2.5],['日圓',2.5],['日幣',2.5],['歐元',2],['留學',2.5],['機票',1.5],['換匯',2.5],['去日本',2],['去美國',2]],action:'推薦外幣定存專案',owner:'外幣定存專案（示意）',offer:'外幣定存優惠利率＋線上換匯、機場領鈔',pitch:'出國前可以先把預計要用的外幣存成外幣定存，匯率好的時候分批換，出發前再領現鈔。要看看目前的外幣定存優惠嗎？',yes:'查看專案'},
+  {id:'財富管理需求',kw:[['退休',3],['定存到期',3],['到期',1.2],['閒錢',2.5],['一筆錢',2],['資產配置',3],['年終',2],['獎金',2],['利息太少',2.5],['穩一點',1.2],['怎麼放',1.5]],action:'轉介理專',owner:'理財專員',offer:'一對一資產配置諮詢',pitch:'如果這筆錢暫時用不到，理專可以依您的風險屬性，幫您比較定存、債券和基金的組合。要安排理專跟您聊聊嗎？',yes:'請理專聯繫我'},
+  {id:'子女教育金',kw:[['小孩',2],['孩子',2],['教育基金',3],['學費',2.2],['讀大學',2.5]],action:'推薦定期定額',owner:'基金定期定額（示意）',offer:'每月小額定期定額',pitch:'教育金的準備時間通常很長，可以考慮每月小額定期定額。要看看試算嗎？',yes:'查看試算'},
+];
+function detectOpp(s){let best=null;for(const o of OPPS){let v=-2;for(const [k,w] of o.kw) if(s.includes(k)) v+=w;const p=1/(1+Math.exp(-v));if(!best||p>best.p) best={o,p};}return best;}
+function emotionScore(s){let v=-2.2;for(const [k,w] of EMO_KW){if(s.includes(k)) v+=w;}return 1/(1+Math.exp(-v));}
+function classify(text){
+  const s=text.toLowerCase(); const raw={};
+  for(const c of CATS){let v=c==='其他/真人'?1.0:0;for(const [k,w] of KW[c]){if(s.includes(k)) v+=w;}raw[c]=v;}
+  const T=1.15; const ex=CATS.map(c=>Math.exp(raw[c]/T)); const Z=ex.reduce((a,b)=>a+b,0);
+  const probs=CATS.map((c,i)=>({c,p:ex[i]/Z,raw:raw[c]})).sort((a,b)=>b.p-a.p);
+  const urgent=URGENT.some(k=>s.includes(k));
+  const strong=probs.filter(x=>x.c!=='其他/真人'&&x.raw>=2.5);
+  const multi=strong.length>=2&&strong[1].raw>=strong[0].raw*0.5;
+  const emo=emotionScore(s), opp=detectOpp(s);
+  return {probs,urgent,multi,strong,emo,angry:emo>=EMO_TH,opp,hasOpp:opp.p>=OPP_TH,
+    pu:urgent?0.94:0.03+Math.random()*0.04, pm:multi?0.88:0.05+Math.random()*0.05};
+}
+
+/* ---------- 行內 CRM（虛構測試資料） ---------- */
+const CRM={
+  'A123456789':{name:'客戶甲',tier:'私人銀行',aum:'3,000 萬以上',contrib:'高',contribNote:'年度貢獻度前 1%',products:['房貸','信託','外幣定存'],rm:'陳○○',calls7d:0,lastCall:'—'},
+  'F123456784':{name:'客戶乙',tier:'貴賓理財',aum:'300 萬–3,000 萬',contrib:'高',contribNote:'年度貢獻度前 10%',products:['基金','信用卡','外幣存款'],rm:'林○○',calls7d:1,lastCall:'09/27 基金贖回進度'},
+  'H200000000':{name:'客戶丙',tier:'貴賓理財',aum:'300 萬–3,000 萬',contrib:'中',contribNote:'年度貢獻度中等',products:['定存','信用卡'],rm:'黃○○',calls7d:2,lastCall:'09/29 轉帳未入帳（未解決）'},
+  'B200000004':{name:'客戶丁',tier:'一般',aum:'300 萬以下',contrib:'低',contribNote:'年度貢獻度一般',products:['活存'],rm:null,calls7d:0,lastCall:'—'},
+};
+const CID_SAMPLES=[['A123456789','私人銀行'],['F123456784','貴賓・高貢獻'],['H200000000','貴賓・中貢獻'],['B200000004','一般'],['A100000001','非本行']];
+const TWID_MAP={A:10,B:11,C:12,D:13,E:14,F:15,G:16,H:17,I:34,J:18,K:19,L:20,M:21,N:22,O:35,P:23,Q:24,R:25,S:26,T:27,U:28,V:29,W:32,X:30,Y:31,Z:33};
+function validTWID(id){if(!/^[A-Z][12]\d{8}$/.test(id)) return false;const n=TWID_MAP[id[0]];const d=[Math.floor(n/10),n%10,...id.slice(1).split('').map(Number)];const w=[1,9,8,7,6,5,4,3,2,1,1];return d.reduce((s,v,i)=>s+v*w[i],0)%10===0;}
+const maskID=id=>id.slice(0,3)+'****'+id.slice(7);
+function isVIP(c){return !!c&&(c.tier==='私人銀行'||(c.tier==='貴賓理財'&&c.contrib==='高'));}
+const PNAME={1:'P1 緊急優先',2:'P2 貴賓優先',3:'P3 優先',4:'P4 一般排隊'};
+const PCOL={1:'--p1',2:'--p2',3:'--p3',4:'--p4'};
+const PTGT={1:'立即接通',2:'10 秒內接聽',3:'30 秒內接聽',4:'依序排隊'};
+function computePrio(r,cur){
+  const c=cur&&cur.rec, vip=isVIP(c); let lvl=4; const reasons=[];
+  if(r.urgent){lvl=1;reasons.push('急件（盜刷、遺失、詐騙類）不論客戶等級一律最優先');}
+  if(vip){if(lvl>2) lvl=2;reasons.push(`${c.tier}・資產 ${c.aum}・貢獻度${c.contrib}`);}
+  if(r.angry){if(lvl>3) lvl=3;reasons.push(`情緒不佳（不滿程度 ${(r.emo*100).toFixed(0)}%）`);}
+  if(c&&c.tier==='貴賓理財'&&!vip){if(lvl>3) lvl=3;reasons.push('貴賓理財客戶');}
+  if(!reasons.length) reasons.push(cur&&cur.unknown?'查無客戶資料，一般排隊':cur?'一般客戶，一般排隊':'未提供身分，一般排隊');
+  return {lvl,reasons,c,vip};
+}
+
+let CUR=null, LAST=null;
+function lookupCust(raw){
+  const id=(raw||'').trim().toUpperCase();
+  if(!id){CUR=null;}
+  else if(!validTWID(id)){CUR={id,bad:true};}
+  else CUR=CRM[id]?{id,rec:CRM[id]}:{id,unknown:true};
+  renderCustMini(); renderCidChips();
+}
+function renderCustMini(){
+  const el=$('custMini');
+  if(!CUR){el.innerHTML='<span class="dim">尚未查詢客戶，以一般客戶處理</span>';return;}
+  if(CUR.bad){el.innerHTML='<span style="color:var(--red)">身分證字號格式或檢查碼不正確</span>';return;}
+  if(CUR.unknown){el.innerHTML=`<b>${maskID(CUR.id)}</b><span class="muted">查無資料（非本行客戶），以一般客戶處理</span>`;return;}
+  const c=CUR.rec;
+  el.innerHTML=`<b>${c.name}</b><span>${c.tier}</span><span class="muted">資產 ${c.aum}</span><span class="muted">貢獻度 ${c.contrib}</span>${isVIP(c)?'<span class="tag blue">高資產高貢獻</span>':''}`;
+}
+function renderCidChips(){
+  const h=CID_SAMPLES.map(([id,l])=>`<button type="button" class="chip${CUR&&CUR.id===id?' on':''}" data-id="${id}">${l}</button>`).join('');
+  $('cidChips').innerHTML=h; $('cidChips13').innerHTML=h;
+}
+function pickCust(id){ $('cid').value=id; lookupCust(id); if(LAST) runJev(LAST.text); }
+$('cidChips').onclick=e=>{const b=e.target.closest('.chip'); if(b) pickCust(b.dataset.id);};
+$('cidChips13').onclick=e=>{const b=e.target.closest('.chip'); if(b) pickCust(b.dataset.id);};
+$('cidGo').onclick=()=>pickCust($('cid').value);
+$('cid').addEventListener('keydown',e=>{if(e.key==='Enter'){pickCust(e.target.value);e.target.blur();}});
+
+const MAIN_SAMPLES=[
+  {q:'我想買房子要跟你們借錢',t:'實測',c:'var(--orange)'},
+  {q:'錢放銀行利息太少 有沒有穩一點的可以放',t:'反問',c:'var(--accent)'},
+  {q:'我想開戶順便辦一張信用卡',t:'兩個需求',c:'var(--accent)'},
+  {q:'我的卡好像被盜刷了怎麼辦',t:'急件',c:'var(--red)'},
+  {q:'搞什麼 轉帳到現在還沒到！！',t:'情緒',c:'var(--red)'},
+  {q:'下個月要去日本 想換日幣',t:'商機',c:'var(--green)'},
+];
+const MORE_SAMPLES=['上個月帳戶被扣了一筆錢不知道是什麼','新青安現在還能申請嗎','我想借30萬周轉','卡費可以分期嗎','想開數位帳戶要帶什麼','美金定存利率多少','我要找真人','我已經打三次了都沒人處理信用卡的問題 到底要怎樣','你們房貸利率也太扯了吧 我要找人講','保險理賠要準備什麼文件','定存下個月到期 不知道要怎麼放','保險理賠拖了兩個月還沒下來 到底要等多久'];
+$('qChips').innerHTML=MAIN_SAMPLES.map((s,i)=>`<button type="button" class="chip" data-q="${s.q}"><i style="color:${s.c}">${s.t}</i>${s.q}</button>`).join('');
+$('qMore').innerHTML=MORE_SAMPLES.map(q=>`<button type="button" class="chip" data-q="${q}">${q}</button>`).join('');
+const onChip=e=>{const b=e.target.closest('.chip'); if(!b) return; $('q').value=b.dataset.q; runJev(b.dataset.q);};
+$('qChips').onclick=onChip; $('qMore').onclick=onChip;
+$('moreBtn').onclick=()=>{const m=$('qMore'); const open=m.style.display==='none'; m.style.display=open?'flex':'none'; $('moreBtn').textContent=open?'收起範例 ▴':'更多範例 ▾';};
+$('go').onclick=()=>runJev($('q').value);
+$('q').addEventListener('keydown',e=>{if(e.key==='Enter'){runJev(e.target.value);e.target.blur();}});
+
+function runJev(text,opt={}){
+  text=(text||'').trim().slice(0,80); if(!text) return;
+  const r=classify(text);
+  const top=r.probs[0], nonOther=r.probs.filter(x=>x.c!=='其他/真人');
+  const best=nonOther[0].p>=0.15?nonOther[0].c:top.c;
+  const pr=computePrio(r,CUR);
+  const lat=Math.round(70+Math.random()*110), ms=[Math.round(2+Math.random()*4),lat,Math.round(8+Math.random()*8),Math.round(1+Math.random()*2)];
+  LAST={text,r,best,top,nonOther,...pr,cur:CUR,lat,ms};
+  playPipe(ms,!opt.quiet);
+  document.querySelectorAll('#qChips .chip,#qMore .chip').forEach(b=>b.classList.toggle('on',b.dataset.q===text));
+  renderP11(); renderP12(); renderP13(); renderDesk(); updateChrome();
+}
+
+/* ---------- 1-1 背後流程 ---------- */
+const PIPE=[['遮蔽個資','身分證、卡號、帳號'],['Jev 判斷','類別・情緒・急件・商機'],['查詢行內 CRM','資產級距、貢獻度'],['決定分流','窗口與優先等級']];
+$('pipe').innerHTML=PIPE.map((p,i)=>`<div class="pnode" id="pn${i}"><span class="ms" id="pm${i}"></span><b>${i+1}. ${p[0]}</b><small>${p[1]}</small></div>`).join('');
+let PIPE_T=[];
+function playPipe(ms,anim){
+  PIPE_T.forEach(clearTimeout); PIPE_T=[];
+  const out=$('out11');
+  for(let i=0;i<4;i++){ $('pn'+i).className='pnode'; $('pm'+i).textContent=ms[i]+' ms'; }
+  $('pipeNote').textContent=`慢動作播放；實際總耗時約 ${(ms.reduce((a,b)=>a+b,0)/1000).toFixed(2)} 秒`;
+  if(!anim){ for(let i=0;i<4;i++) $('pn'+i).className='pnode done'; out.classList.remove('wait'); return; }
+  out.classList.add('wait');
+  const st=340;
+  for(let i=0;i<4;i++) PIPE_T.push(setTimeout(()=>{ if(i>0) $('pn'+(i-1)).className='pnode done'; $('pn'+i).className='pnode run'; },i*st));
+  PIPE_T.push(setTimeout(()=>{ $('pn3').className='pnode done'; out.classList.remove('wait');
+    requestAnimationFrame(()=>document.querySelectorAll('#out11 .fl').forEach(el=>el.style.width=el.dataset.w+'%')); },4*st));
+}
+
+/* ---------- 1-1 ---------- */
+function renderP11(){
+  const L=LAST, r=L.r, ta=P.thAuto, tq=P.thAsk;
+  $('lat').textContent=`總耗時 ${L.ms.reduce((a,b)=>a+b,0)} ms`;
+  const top3=r.probs.slice(0,3), rest=r.probs.slice(3).reduce((a,x)=>a+x.p,0);
+  const bars=top3.map((x,i)=>`<div class="bar${i===0?' top':''}"><span class="lab">${x.c}</span><div class="tr"><div class="fl" style="width:0" data-w="${(x.p*100).toFixed(1)}"></div><div class="thr" style="left:${ta*100}%"></div></div><span class="pv">${(x.p*100).toFixed(0)}%</span></div>`).join('')
+    +`<div class="bar"><span class="lab dim">其他</span><div class="tr"><div class="fl" style="width:0" data-w="${(rest*100).toFixed(1)}"></div></div><span class="pv dim">${(rest*100).toFixed(0)}%</span></div>`;
+  let tt,why,col,ic,extra='';
+  const hot=c=>`<div class="hot"><div><div class="label">真人專線</div><div class="num">${HOTLINE}</div></div><div><div class="label">分機</div><div class="num">${EXT_NO[c]}</div></div></div>`;
+  if(r.urgent){tt='急件：直接轉 24 小時真人專線';why='盜刷、遺失、詐騙類不走一般流程，優先接給真人，並帶上判斷結果。';col=css('--red');ic='!';extra=hot(L.best);}
+  else if(r.angry){tt=`情緒不佳：不反問，直接轉真人 → ${L.best}`;why=`不滿程度 ${(r.emo*100).toFixed(0)}%，直接接給專員並帶上情緒標記，專員接起來就知道要先安撫。`;col=css('--red');ic='☎';extra=hot(L.best);}
+  else if(r.multi){const a=r.strong[0].c,b=r.strong[1].c;tt=`偵測到兩個需求：${a}＋${b}`;why='拆成兩張工單依序處理，不會只回答其中一個。';col=css('--accent');ic='2';}
+  else if(L.top.c==='其他/真人'){tt='轉真人客服';why='不屬於六大類，或客戶主動要求真人。';col=css('--p4');ic='☎';}
+  else if(L.top.p>=ta){tt=`直接分流 → ${L.top.c}（${EXT[L.top.c]}）`;why=`信心 ${(L.top.p*100).toFixed(0)}% ≥ 門檻 ${(ta*100).toFixed(0)}%，客戶不用聽語音選單，直接接到對的窗口。`;col=css('--green');ic='✓';}
+  else if(L.top.p>=tq){const a=L.nonOther[0].c,b=L.nonOther[1].c;tt=`先反問一句：「請問是 ${a} 還是 ${b}？」`;why=`信心 ${(L.top.p*100).toFixed(0)}% 介於 ${(tq*100).toFixed(0)}%–${(ta*100).toFixed(0)}%，與其猜錯，不如花 15 秒確認。`;col=css('--orange');ic='?';
+    extra=`<div class="clar"><button type="button" data-c="${a}">${a}</button><button type="button" data-c="${b}">${b}</button><button type="button" data-c="其他/真人">都不是，找真人</button></div>`;}
+  else{tt='信心不足 → 轉真人判斷';why=`最高信心只有 ${(L.top.p*100).toFixed(0)}%，交給真人判斷比較保險。`;col=css('--p4');ic='☎';}
+  $('out11').innerHTML=`<div class="bars">${bars}</div><div class="decision" id="dec" style="--dc:${col}"><div class="tt"><span class="ic">${ic}</span>${tt}</div><div class="why">${why}</div>${extra}</div>`;
+  if(!$('out11').classList.contains('wait')) requestAnimationFrame(()=>requestAnimationFrame(()=>document.querySelectorAll('#out11 .fl').forEach(el=>el.style.width=el.dataset.w+'%')));
+  document.querySelectorAll('#dec .clar button').forEach(b=>b.onclick=()=>{
+    const c=b.dataset.c; $('dec').style.setProperty('--dc',css('--green'));
+    $('dec').innerHTML=`<div class="tt"><span class="ic">✓</span>客戶確認 → ${c}（${EXT[c]}）</div><div class="why">多花一輪確認，避免轉錯窗口後重新排隊。</div>`;
+  });
+}
+
+/* ---------- 1-2 ---------- */
+function renderP12(){
+  const L=LAST, r=L.r;
+  const sig=(nm,val,p,on,col,st)=>`<div class="sig${on?' on':''}" style="--sc:${col}"><div class="nm">${nm}</div><div class="val">${val}</div><div class="meter"><i style="width:${(p*100).toFixed(0)}%"></i></div><div class="st">${st}</div></div>`;
+  const oppTxt=r.hasOpp?(r.angry||r.urgent?'偵測到，但本次不推薦':`問題解決後${r.opp.o.action}`):'未偵測到商機';
+  let ref='';
+  const owner=r.hasOpp?((L.c&&L.c.rm&&r.opp.o.owner==='理財專員')?`專屬理專 ${L.c.rm}`:r.opp.o.owner):'';
+  if(r.hasOpp&&(r.angry||r.urgent)) ref=`<div class="refbox mute"><div class="tt">⏸ 偵測到商機：${r.opp.o.id}，本次不推薦</div><div class="muted" style="margin-top:8px">客戶${r.urgent?'遇到急件':'情緒不佳'}，這時候推銷只會更反感。系統只把「${r.opp.o.id} → ${r.opp.o.action}」記錄到 CRM，問題解決後由${owner}擇期跟進。</div></div>`;
+  else if(r.hasOpp) ref=`<div class="refbox" id="refbox"><div class="tt">＄ 商機轉介：${r.opp.o.id} → ${r.opp.o.action}</div><div class="pitch">「${r.opp.o.pitch}」</div><div class="acts"><button type="button" class="yes">${r.opp.o.yes}</button><button type="button" class="no">不用了，謝謝</button></div></div>`;
+  else ref=`<div class="refbox mute"><div class="tt">這句話沒有偵測到商機</div><div class="muted" style="margin-top:8px">可以回到 1-1 點「商機」範例，例如「下個月要去日本 想換日幣」。</div></div>`;
+  $('out12').innerHTML=`<div class="quote">「${esc(L.text)}」</div>
+    <div class="sig4">
+      ${sig('客戶情緒（不滿程度）',(r.emo*100).toFixed(0)+'%',r.emo,r.angry,css('--red'),r.angry?'情緒不佳：先安撫、不推銷':'情緒平穩')}
+      ${sig('是否急件',(r.pu*100).toFixed(0)+'%',r.pu,r.urgent,css('--red'),r.urgent?'急件：立即轉真人專線':'非急件')}
+      ${sig('是否包含多個需求',(r.pm*100).toFixed(0)+'%',r.pm,r.multi,css('--accent'),r.multi?`${r.strong[0].c}、${r.strong[1].c}，拆單處理`:'單一需求')}
+      ${sig('潛在商機',r.hasOpp?r.opp.o.id:'無',r.hasOpp?r.opp.p:0,r.hasOpp,css('--green'),oppTxt)}
+    </div>
+    <div class="ref">${ref}<div class="rules"><b>商機轉介的底線（公平待客）</b><ul><li>先解決客戶的問題，最後才推薦</li><li>客戶同意才建立轉介單</li><li>情緒不佳或急件：只記錄、不推銷</li><li>婉拒後 30 天內不重複推薦</li></ul></div></div>`;
+  const rb=$('refbox');
+  if(rb){ rb.querySelector('.yes').onclick=()=>{const id='RF'+new Date().toISOString().slice(2,10).replace(/-/g,'')+String(Math.floor(Math.random()*9000+1000)); rb.innerHTML=`<div class="tt">✓ 已建立轉介單 ${id}</div><div class="muted" style="margin-top:8px">轉給：${owner}　·　客戶已同意聯繫，預計 1 個工作天內回電</div>`;};
+    rb.querySelector('.no').onclick=()=>{rb.classList.add('mute'); rb.innerHTML='<div class="tt">客戶婉拒，已記錄</div><div class="muted" style="margin-top:8px">30 天內不再重複推薦同一項商品。</div>';}; }
+}
+
+/* ---------- 1-3 ---------- */
+function renderP13(){
+  const L=LAST, r=L.r, c=L.c, cur=L.cur;
+  $('crm13').innerHTML=(c?`<div class="kv"><span class="k">客戶</span><span class="v">${c.name}　${maskID(cur.id)}</span><span class="k">級距</span><span class="v">${c.tier}${isVIP(c)?' <span class="tag blue">高資產高貢獻</span>':''}</span><span class="k">資產級距</span><span class="v">${c.aum}</span><span class="k">貢獻度</span><span class="v">${c.contrib}（${c.contribNote}）</span><span class="k">專屬理專</span><span class="v">${c.rm||'—'}</span></div>`
+    :`<div class="muted" style="font-size:17px">${cur&&cur.unknown?'查無客戶資料（非本行客戶）':'未提供身分'}，以一般客戶處理。</div>`)
+    +`<div style="margin-top:26px;padding-top:20px;border-top:1px solid var(--line)"><div class="label">系統判斷（來自 1-2）</div><div class="chips">${r.urgent?'<span class="tag red">急件</span>':'<span class="tag">非急件</span>'}${r.angry?'<span class="tag orange">情緒不佳</span>':'<span class="tag">情緒平穩</span>'}<span class="tag">「${esc(L.text.length>16?L.text.slice(0,16)+'…':L.text)}」</span></div></div>`;
+  const pc=`var(${PCOL[L.lvl]})`;
+  const res=$('res13'); res.style.setProperty('--pc',pc);
+  res.innerHTML=`<div class="badge">${PNAME[L.lvl]}</div><div><div class="tgt">${PTGT[L.lvl]}${L.vip&&c.rm?`　·　指派專屬理專 ${c.rm}`:''}</div><div class="rs">依據：${L.reasons.join('；')}</div></div>`;
+  const rows=[[1,'急件（盜刷、遺失、詐騙），不論客戶等級','立即接通'],[2,'私人銀行，或貴賓理財且貢獻度高','10 秒內'],[3,'情緒不佳，或一般貢獻的貴賓理財','30 秒內'],[4,'其他客戶、未提供身分','依序排隊']];
+  $('ladder').innerHTML=rows.map(([l,cond,t])=>`<div class="lrow${l===L.lvl?' on':''}" style="--pc:var(${PCOL[l]})"><b style="color:var(${PCOL[l]})">${PNAME[l]}</b><span>${cond}</span><span class="tg">${t}</span></div>`).join('');
+}
+
+/* ---------- 2-1 / 2-2 ---------- */
+const CAT_TIPS={'房貸':'確認需求是新申辦、轉貸還是利率調整，必要時轉房貸專員','信貸':'確認借款金額與用途，說明線上申辦與審核時間','信用卡':'完成身分驗證後，查詢帳單、額度或交易明細','開戶':'說明應備文件，並引導數位開戶流程','存款':'查詢帳戶交易紀錄、匯款狀態或定存資訊','理財信託':'確認商品名稱與風險屬性，必要時轉理專','其他/真人':'先釐清需求，再決定是否轉接'};
+let DESK_T0=0;
+function renderDesk(){
+  const L=LAST; if(!L) return; const r=L.r, c=L.c, cur=L.cur, vip=L.vip;
+  const who=c?c.name:'客戶', pc=`var(${PCOL[L.lvl]})`;
+  const emoCol=r.angry?css('--red'):r.emo>0.35?css('--orange'):css('--green');
+  const emoTxt=r.angry?'情緒不佳':r.emo>0.35?'略顯不耐':'平靜';
+  const bp=r.probs.find(x=>x.c===L.best)||L.top;
+  DESK_T0=performance.now();
+  $('call21').style.setProperty('--pc',pc);
+  $('call21').innerHTML=`<div class="ring"><i></i>來電中</div><div class="pl">${PNAME[L.lvl]}</div><div class="muted">${L.reasons.join('；')}</div><div class="tm" id="dkTimer">00:00</div>`;
+  $('crm21').innerHTML=c?`<div class="kv"><span class="k">客戶</span><span class="v">${c.name}　${maskID(cur.id)}</span><span class="k">級距</span><span class="v">${c.tier}${vip?' <span class="tag blue">高資產高貢獻</span>':''}</span><span class="k">資產級距</span><span class="v">${c.aum}</span><span class="k">持有產品</span><span class="v">${c.products.join('、')}</span><span class="k">專屬理專</span><span class="v">${c.rm||'—'}</span><span class="k">近 7 天進線</span><span class="v">${c.calls7d} 次${c.calls7d>=2?' <span class="tag red">重複來電</span>':''}</span><span class="k">上次進線</span><span class="v">${c.lastCall}</span></div>`
+    :`<div class="muted" style="font-size:17px">${cur&&cur.unknown?'查無客戶資料（非本行客戶）':'客戶未提供身分，接聽後請先完成身分驗證'}</div>`;
+  $('call21b').innerHTML=`<div class="quote">「${esc(L.text)}」</div><div class="kv" style="margin-top:22px"><span class="k">問題類別</span><span class="v">${L.best}（${(bp.p*100).toFixed(0)}%）</span><span class="k">急迫度</span><span class="v">${r.urgent?'<span style="color:var(--red)">急件</span>':'一般'}</span><span class="k">客戶情緒</span><span class="v">${emoTxt}（不滿 ${(r.emo*100).toFixed(0)}%）</span></div><div class="emo"><i style="width:${(r.emo*100).toFixed(0)}%;background:${emoCol}"></i></div>
+    <div class="chips" style="margin-top:16px">${r.urgent?'<span class="tag red">急件</span>':''}${r.angry?'<span class="tag orange">情緒不佳</span>':''}${r.multi?'<span class="tag blue">兩個需求</span>':''}${r.hasOpp?`<span class="tag green">商機：${r.opp.o.id}</span>`:''}</div>`;
+  const steps=[];
+  if(r.angry) steps.push('<b>先道歉、先安撫</b>，不要急著問問題或推銷');
+  if(c&&c.calls7d>=2) steps.push(`客戶 7 天內已進線 ${c.calls7d} 次（${c.lastCall}），先說明上次問題的處理進度`);
+  if(r.urgent) steps.push('<b>立即協助掛失／凍結</b>，再說明後續爭議款處理流程');
+  if(r.multi) steps.push(`客戶有兩個需求（${r.strong[0].c}、${r.strong[1].c}），逐一處理，結束前確認都已解決`);
+  steps.push(CAT_TIPS[L.best]);
+  if(vip) steps.push(`結束後通知專屬理專 ${c.rm}，由理專後續關懷`);
+  if(r.hasOpp) steps.push((r.angry||r.urgent)?`偵測到商機（${r.opp.o.id}），<b>本次不推薦</b>，只記錄到 CRM`:`問題解決後，再提及：${r.opp.o.offer}`);
+  const greet=r.angry?`${who}您好，很抱歉讓您久等了，我是專員○○，我現在就來協助您處理${L.best}的問題。`
+    :r.urgent?`${who}您好，我是專員○○，我先立即協助您處理，請不用擔心。`
+    :vip?`${who}您好，我是專員○○，了解您想詢問${L.best}的問題，我來為您說明。`
+    :`您好，我是專員○○，了解您想詢問${L.best}的問題，我來為您說明。`;
+  $('script22').textContent=`「${greet}」`;
+  $('steps22').innerHTML=steps.map(s=>`<li>${s}</li>`).join('');
+  $('ctx22').innerHTML=`<div class="kv"><span class="k">客戶</span><span class="v">${c?c.name:'未驗證客戶'}</span><span class="k">服務等級</span><span class="v" style="color:${pc}">${PNAME[L.lvl]}</span><span class="k">問題類別</span><span class="v">${L.best}</span><span class="k">客戶情緒</span><span class="v">${emoTxt}</span></div><div class="emo"><i style="width:${(r.emo*100).toFixed(0)}%;background:${emoCol}"></i></div>${c&&c.calls7d>=2?`<div style="margin-top:20px" class="tag red">7 天內第 ${c.calls7d+1} 次來電</div>`:''}`;
+  $('dkRef').style.display=r.hasOpp&&!(r.angry||r.urgent)?'':'none';
+  $('dkMsg').textContent='';
+}
+$('dkAnswer').onclick=()=>$('dkMsg').textContent='已接聽，通話紀錄與系統判斷已自動帶入工單。';
+$('dkXfer').onclick=()=>$('dkMsg').textContent=`已轉接 ${EXT[LAST.best]}，客戶資料一併帶過去，客戶不用重講一次。`;
+$('dkRef').onclick=()=>$('dkMsg').textContent=`已建立轉介單 → ${LAST.vip&&LAST.c.rm?'專屬理專 '+LAST.c.rm:LAST.r.opp.o.owner}（需客戶同意後送出）。`;
+
+/* ---------- 3 排隊看板 ---------- */
+const QPOOL_Q=MAIN_SAMPLES.map(s=>s.q).concat(MORE_SAMPLES,['信用卡帳單怎麼還沒寄來','房貸利率可以調降嗎','請問定存怎麼解約','我的金融卡不見了','外幣匯款要多久','網銀密碼忘記了']);
+const QPOOL_ID=[[null,55],['B200000004',20],['H200000000',12],['F123456784',8],['A123456789',5]];
+let QS={t:0,q:[],agents:[],seq:0,paused:false,served:0,waitSum:0};
+function pickId(){let x=Math.random()*100;for(const [id,w] of QPOOL_ID){if((x-=w)<0) return id;}return null;}
+function makeCaller(text,id,mine){const r=classify(text);const cur=id?(CRM[id]?{id,rec:CRM[id]}:{id,unknown:true}):null;const {lvl}=computePrio(r,cur);const tp=r.probs.filter(x=>x.c!=='其他/真人')[0];return {n:++QS.seq,text,cur,r,lvl,cat:tp.p>=0.15?tp.c:r.probs[0].c,arr:QS.t,mine:!!mine};}
+const rnd=()=>QPOOL_Q[Math.floor(Math.random()*QPOOL_Q.length)];
+function qReset(){const n=+$('qAgents').value;QS={t:0,q:[],agents:Array.from({length:n},(_,i)=>({id:i+1,busy:null,until:0})),seq:0,paused:QS.paused,served:0,waitSum:0};
+  for(let i=0;i<14;i++){const c=makeCaller(rnd(),pickId());c.arr=-Math.random()*240;QS.q.push(c);}
+  QS.agents.forEach(a=>{a.busy=makeCaller(rnd(),pickId());a.until=60+Math.random()*240;}); renderQueue();}
+const mmss=s=>{s=Math.max(0,Math.round(s));return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');};
+function qTick(dt){QS.t+=dt; if(QS.q.length<40&&Math.random()<dt/32) QS.q.push(makeCaller(rnd(),pickId()));
+  QS.agents.forEach(a=>{if(a.busy&&QS.t>=a.until) a.busy=null; if(!a.busy&&QS.q.length){QS.q.sort((x,y)=>x.lvl-y.lvl||x.arr-y.arr);const c=QS.q.shift();QS.served++;QS.waitSum+=QS.t-c.arr;a.busy=c;a.until=QS.t+(c.lvl===1?150:180)+Math.random()*200;}});}
+function renderQueue(){
+  const q=[...QS.q].sort((x,y)=>x.lvl-y.lvl||x.arr-y.arr); const waits=q.map(c=>QS.t-c.arr);
+  $('qStat').innerHTML=`<div>等待中<b>${q.length} 人</b></div><div>平均等待<b>${q.length?mmss(waits.reduce((a,b)=>a+b,0)/q.length):'00:00'}</b></div><div>急件<b style="color:var(--red)">${q.filter(c=>c.r.urgent).length} 件</b></div>`;
+  $('qCols').innerHTML=[1,2,3,4].map(l=>{const L0=q.filter(c=>c.lvl===l);let L=L0;const mi=L0.findIndex(c=>c.mine);if(mi>=7){L=[...L0.slice(0,6),L0[mi],...L0.slice(6).filter(c=>!c.mine)];}
+    return `<div class="qcol" style="--pc:var(${PCOL[l]})"><div class="qh"><b>${PNAME[l]}</b><span>${L0.length} 人</span></div><div class="ql">${L.slice(0,7).map(c=>{const rec=c.cur&&c.cur.rec;
+      return `<div class="qi${c.mine?' mine':''}"${c.judge?' style="background:#f6eef4"':''}><span>${c.judge?`<b style="color:var(--purple)">📱 ${esc(c.judge)}</b> · `:''}${c.mine?'<b style="color:var(--accent)">剛才的客戶</b> · ':''}${rec?rec.tier:(c.cur?'非本行':'未驗證')}</span><span class="w">${mmss(QS.t-c.arr)}</span><span class="t">${c.cat}${c.r.urgent?' <span class="tag red">急件</span>':''}${c.r.angry?' <span class="tag orange">情緒不佳</span>':''}</span></div>`;}).join('')}
+      ${L.length>7?`<div class="small dim" style="padding:2px 4px">還有 ${L.length-7} 人…</div>`:''}</div></div>`;}).join('');
+  $('qAgentsRow').innerHTML='<span>專員狀態</span>'+QS.agents.map(a=>`<span class="ag" style="--pc:${a.busy?`var(${PCOL[a.busy.lvl]})`:'var(--green)'}"><i></i>專員 ${a.id}${a.busy?(a.busy.mine?'（剛才的客戶）':''):'（空閒）'}</span>`).join('');
+  if(SC===5) $('capTxt').textContent=capText(5);
+}
+$('qInject').onclick=()=>{ensureDemo(); QS.q.push(makeCaller(LAST.text,LAST.cur&&!LAST.cur.bad?LAST.cur.id:null,true)); renderQueue();};
+$('qPause').onclick=e=>{QS.paused=!QS.paused; e.currentTarget.textContent=QS.paused?'▶':'❚❚';};
+$('qReset').onclick=qReset;
+$('qAgents').onchange=e=>{qReset(); e.target.blur();};
+
+/* ---------- 4 數位孿生 ---------- */
+const P={};
+const CTRL=[
+  {k:'vPhone',l:'每日電話進線',min:1000,max:15000,step:500,v:5000,f:v=>fmt(v)+' 通'},
+  {k:'agents',l:'尖峰電話客服人數',min:20,max:120,step:1,v:52,f:v=>v+' 人',h:'拉到 46 人以下，現況會爆線'},
+  {k:'acc',l:'Jev 平均準確度',min:0.6,max:0.98,step:0.01,v:0.88,f:v=>(v*100).toFixed(0)+'%',h:'假設值，待以行內資料實測'},
+];
+const CTRL_ADV=[
+  {k:'vText',l:'每日文字進線',min:1000,max:20000,step:500,v:8000,f:v=>fmt(v)+' 則'},
+  {k:'fOp',l:'撥總機比例',min:0,max:0.8,step:0.01,v:0.40,f:v=>(v*100).toFixed(0)+'%'},
+  {k:'eSelf',l:'自己選分機選錯的比例',min:0,max:0.5,step:0.01,v:0.20,f:v=>(v*100).toFixed(0)+'%'},
+  {k:'missAsis',l:'文字客服答非所問比例',min:0.05,max:0.8,step:0.01,v:0.35,f:v=>(v*100).toFixed(0)+'%'},
+  {k:'thAuto',l:'直接分流門檻',min:0.5,max:0.99,step:0.01,v:0.80,f:v=>v.toFixed(2)},
+  {k:'thAsk',l:'反問門檻',min:0.2,max:0.9,step:0.01,v:0.50,f:v=>v.toFixed(2)},
+  {k:'aht',l:'專員平均處理時間',min:120,max:600,step:10,v:240,f:v=>v+' 秒'},
+  {k:'tOp',l:'總機人工分類時間',min:20,max:180,step:5,v:60,f:v=>v+' 秒'},
+  {k:'tRe',l:'轉錯後重新說明時間',min:30,max:240,step:10,v:90,f:v=>v+' 秒'},
+  {k:'ivr',l:'語音選單聆聽時間',min:20,max:120,step:5,v:60,f:v=>v+' 秒'},
+  {k:'salary',l:'每位客服年人事成本',min:40,max:150,step:1,v:72,f:v=>v+' 萬'},
+  {k:'eOp',l:'總機人工分錯比例',min:0,max:0.3,step:0.01,v:0.05,f:v=>(v*100).toFixed(0)+'%'},
+];
+function buildCtl(list,el){
+  el.innerHTML=list.map(c=>`<div class="ctl"><label for="c_${c.k}">${c.l}<output id="o_${c.k}"></output></label><input type="range" id="c_${c.k}" min="${c.min}" max="${c.max}" step="${c.step}" value="${c.v}">${c.h?`<div class="hint">${c.h}</div>`:''}</div>`).join('');
+  list.forEach(c=>{P[c.k]=c.v;const inp=$('c_'+c.k),out=$('o_'+c.k);out.textContent=c.f(c.v);
+    inp.addEventListener('input',()=>{P[c.k]=+inp.value;
+      if(c.k==='thAsk'&&P.thAsk>P.thAuto){P.thAuto=P.thAsk;syncCtl('thAuto');}
+      if(c.k==='thAuto'&&P.thAuto<P.thAsk){P.thAsk=P.thAuto;syncCtl('thAsk');}
+      out.textContent=c.f(P[c.k]);recompute();});
+    inp.addEventListener('change',()=>inp.blur());});
+}
+function syncCtl(k){const c=[...CTRL,...CTRL_ADV].find(x=>x.k===k);$('c_'+k).value=P[k];$('o_'+k).textContent=c.f(P[k]);}
+buildCtl(CTRL,$('controls')); buildCtl(CTRL_ADV,$('controlsAdv'));
+function lgamma(z){const g=7,c=[0.99999999999980993,676.5203681218851,-1259.1392167224028,771.32342877765313,-176.61502916214059,12.507343278686905,-0.13857109526572012,9.9843695780195716e-6,1.5056327351493116e-7];
+  if(z<0.5) return Math.log(Math.PI/Math.sin(Math.PI*z))-lgamma(1-z); z-=1; let x=c[0]; for(let i=1;i<g+2;i++) x+=c[i]/(z+i); const t=z+g+0.5; return 0.5*Math.log(2*Math.PI)+(z+0.5)*Math.log(t)-t+Math.log(x);}
+function betaGrid(m,k=6,n=400){const a=m*k,b=(1-m)*k,lB=lgamma(a)+lgamma(b)-lgamma(a+b);const xs=[],ws=[];let s=0;for(let i=0;i<n;i++){const p=(i+0.5)/n;const w=Math.exp((a-1)*Math.log(p)+(b-1)*Math.log(1-p)-lB);xs.push(p);ws.push(w);s+=w;}return {xs,ws:ws.map(w=>w/s)};}
+function routing(thA,thQ){const G=betaGrid(P.acc);let auto=0,autoErr=0,ask=0,human=0;G.xs.forEach((p,i)=>{const w=G.ws[i];if(p>=thA){auto+=w;autoErr+=w*(1-p);}else if(p>=thQ){ask+=w;}else human+=w;});return {auto,ask,human,mis:autoErr+ask*0.03+human*P.eOp};}
+function erlangC(N,A){if(A>=N) return 1;let sum=0,term=1;for(let k=0;k<N;k++){if(k>0) term*=A/k;sum+=term;}const tN=term*A/N;const last=tN*N/(N-A);return last/(sum+last);}
+function queue(vDay,svc,N){const lam=vDay*0.12/3600;const A=lam*svc;if(A>=N) return {asa:Infinity,sl:0};const C=erlangC(N,A);return {asa:C*svc/(N-A),sl:1-C*Math.exp(-(N-A)*20/svc)};}
+const W_OP=30;
+function phoneModel(mode,thA,thQ){
+  if(mode==='asis'){const mis=P.fOp*P.eOp+(1-P.fOp)*P.eSelf;const svc=P.aht+P.fOp*P.tOp+mis*P.tRe;const q=queue(P.vPhone,svc,P.agents);return {mis,svc,q,cust:P.ivr+P.fOp*(W_OP+P.tOp)+q.asa+P.aht+mis*(q.asa+P.tRe),transfers:P.vPhone*(P.fOp+mis)};}
+  const r=routing(thA,thQ);const svc=P.aht+r.human*P.tOp+r.mis*P.tRe;const q=queue(P.vPhone,svc,P.agents);
+  return {mis:r.mis,svc,q,r,cust:10+r.ask*15+r.human*(W_OP+P.tOp)+q.asa+P.aht+r.mis*(q.asa+P.tRe),transfers:P.vPhone*(r.human+r.mis)};
+}
+function textModel(mode){const base=90;if(mode==='asis'){const m=P.missAsis,esc=m*0.4;return {miss:m,cust:base+m*80+esc*300,escN:P.vText*esc,agentSec:P.vText*esc*300};}
+  const r=routing(P.thAuto,P.thAsk);const m=Math.min(1,r.mis+0.05),esc=m*0.4+r.human;return {miss:m,cust:base+r.ask*15+m*80+esc*300,escN:P.vText*esc,agentSec:P.vText*esc*300};}
+const fmtSec=s=>!isFinite(s)?'爆線':s>=60?`${Math.floor(s/60)} 分 ${Math.round(s%60)} 秒`:`${Math.round(s)} 秒`;
+let SIM={};
+function recompute(){
+  const A=phoneModel('asis'),B=phoneModel('tobe',P.thAuto,P.thAsk),TA=textModel('asis'),TB=textModel('tobe');
+  const shift=7.5*3600*0.85;
+  const fte=((P.vPhone*A.svc+TA.agentSec)-(P.vPhone*B.svc+TB.agentSec))/shift;
+  const jevCost=(P.vPhone+P.vText)*500*365/1e6*0.042*32/1e4;
+  const custHrs=((isFinite(A.cust)&&isFinite(B.cust)?(A.cust-B.cust)*P.vPhone:0)+(TA.cust-TB.cust)*P.vText)*250/3600;
+  $('hero').innerHTML=`<div><div class="big">${fmt(Math.max(0,fte),1)}</div><div class="u">位客服人力</div></div><div><div class="big">${fmt(Math.max(0,fte*P.salary-jevCost),0)}</div><div class="u">萬元人事成本</div></div><div><div class="big">${fmt(Math.max(0,custHrs),0)}</div><div class="u">小時客戶等待與溝通時間</div></div>`;
+  $('heroNote').textContent=`已扣除 Jev 模型費用（每則約 500 token、每百萬 token US$0.042，一年約 ${fmt(jevCost*1e4,0)} 元）。所有數字為假設值，待以行內資料與 Jev 實測校正。`;
+  const kp=(k,va,vb,better,f)=>{const d=vb-va;const good=better==='low'?d<0:d>0;const pct=va&&isFinite(va)&&isFinite(vb)?Math.abs(d/va*100):null;
+    return `<div class="kpi"><div class="k">${k}</div><div class="v"${good?'':' style="color:var(--red)"'}>${f(vb)}</div><div class="c">現況 ${f(va)}</div><div class="d${good?'':' bad'}">${pct===null?'':(good?'改善 ':'惡化 ')+pct.toFixed(0)+'%'}</div></div>`;};
+  $('kpis').innerHTML=kp('電話：客戶平均總耗時',A.cust,B.cust,'low',fmtSec)+kp('電話：尖峰平均等待',A.q.asa,B.q.asa,'low',fmtSec)+kp('電話：轉錯窗口比例',A.mis,B.mis,'low',v=>(v*100).toFixed(1)+'%')+kp('文字：每日轉真人',TA.escN,TB.escN,'low',v=>fmt(v)+' 則');
+  const r=B.r, segs=[['直接分流',r.auto,'var(--accent)'],['反問確認',r.ask,'var(--orange)'],['轉人工分類',r.human,'var(--gray)']];
+  $('stack').innerHTML=segs.map(s=>`<div style="flex:0 0 calc(${s[1]*100}% - 2px);background:${s[2]}"></div>`).join('');
+  $('stackLegend').innerHTML=segs.map(s=>`<span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${s[2]};margin-right:6px"></span>${s[0]} <b>${(s[1]*100).toFixed(0)}%</b></span>`).join('');
+  $('cnt0').innerHTML=`<div>客戶平均總耗時<b>${fmtSec(A.cust)}</b></div><div>轉錯窗口<b>${(A.mis*100).toFixed(1)}%</b></div><div>每日轉接<b>${fmt(A.transfers)} 次</b></div>`;
+  $('cnt1').innerHTML=`<div>客戶平均總耗時<b style="color:var(--accent)">${fmtSec(B.cust)}</b></div><div>轉錯窗口<b style="color:var(--accent)">${(B.mis*100).toFixed(1)}%</b></div><div>每日轉接<b style="color:var(--accent)">${fmt(B.transfers)} 次</b></div>`;
+  SIM={A,B}; drawCurve();
+  if(LAST&&SC===0) renderP11();
+}
+function drawCurve(){
+  const svg=$('curve'); if(!svg||!P.acc) return; const Wd=svg.clientWidth,H=svg.clientHeight; if(!Wd||!H) return;
+  const m={l:56,r:16,t:16,b:32}; const xs=[]; for(let t=0.5;t<=0.99+1e-9;t+=0.01) xs.push(+t.toFixed(2));
+  const pts=xs.map(t=>({t,y:phoneModel('tobe',t,Math.min(P.thAsk,t)).cust})).filter(p=>isFinite(p.y)); if(!pts.length){svg.innerHTML='';return;}
+  let ymin=Math.min(...pts.map(p=>p.y)),ymax=Math.max(...pts.map(p=>p.y)); const pad=(ymax-ymin)*0.15||10; ymin=Math.max(0,ymin-pad); ymax+=pad;
+  const X=t=>m.l+(t-0.5)/0.49*(Wd-m.l-m.r), Y=v=>m.t+(1-(v-ymin)/(ymax-ymin))*(H-m.t-m.b);
+  const best=pts.reduce((a,b)=>b.y<a.y?b:a), cur=pts.find(p=>Math.abs(p.t-P.thAuto)<0.005)||pts[0];
+  const ac=css('--accent'), mu=css('--dim'), gr=css('--line'), pu=css('--purple');
+  let g=''; for(let i=0;i<=3;i++){const v=ymin+(ymax-ymin)*i/3; g+=`<line x1="${m.l}" x2="${Wd-m.r}" y1="${Y(v)}" y2="${Y(v)}" stroke="${gr}"/><text x="${m.l-8}" y="${Y(v)+4}" text-anchor="end" font-size="12" fill="${mu}">${Math.round(v)} 秒</text>`;}
+  [0.5,0.6,0.7,0.8,0.9,0.99].forEach(t=>g+=`<text x="${X(t)}" y="${H-10}" text-anchor="middle" font-size="12" fill="${mu}">${t.toFixed(2)}</text>`);
+  const d=pts.map((p,i)=>(i?'L':'M')+X(p.t).toFixed(1)+','+Y(p.y).toFixed(1)).join('');
+  g+=`<path d="${d}" fill="none" stroke="${ac}" stroke-width="2.5"/><line x1="${X(best.t)}" x2="${X(best.t)}" y1="${m.t}" y2="${H-m.b}" stroke="${pu}" stroke-dasharray="4 4"/><text x="${X(best.t)+8}" y="${m.t+14}" font-size="13" fill="${pu}">最佳 ${best.t.toFixed(2)}（${Math.round(best.y)} 秒）</text><circle cx="${X(cur.t)}" cy="${Y(cur.y)}" r="6" fill="${ac}" stroke="#fff" stroke-width="2"/><text x="${X(cur.t)}" y="${Y(cur.y)-12}" text-anchor="middle" font-size="13" font-weight="700" fill="${css('--text')}">目前</text>`;
+  svg.setAttribute('viewBox',`0 0 ${Wd} ${H}`); svg.innerHTML=g;
+}
+
+/* 流量動畫 */
+const LANES=[{cv:$('cv0'),mode:'asis',dots:[],stat:{done:0,mis:0}},{cv:$('cv1'),mode:'tobe',dots:[],stat:{done:0,mis:0}}];
+const BOX=['房貸','信貸','信用卡','開戶','存款','理財'];
+function laneGeom(cv){const dpr=(devicePixelRatio||1)*S;const w=cv.clientWidth,h=cv.clientHeight||300;
+  if(cv.width!==Math.round(w*dpr)||cv.height!==Math.round(h*dpr)){cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);}
+  const ctx=cv.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);return {ctx,w,h,hubX:w*0.38,boxes:BOX.map((b,i)=>({x:w*0.80,y:24+i*(h-48)/5}))};}
+let lastT=performance.now(), spawnAcc=[0,0];
+function spawn(L){const g=laneGeom(L.cv);const target=Math.floor(Math.random()*6);let wrong=-1,ask=false,hubDwell;
+  if(L.mode==='asis'){const m=SIM.A?SIM.A.mis:0.14;if(Math.random()<m) wrong=(target+1+Math.floor(Math.random()*5))%6;hubDwell=(P.ivr+P.fOp*(W_OP+P.tOp))/30;}
+  else{const r=SIM.B?SIM.B.r:{ask:0.2,human:0.05},m=SIM.B?SIM.B.mis:0.06;if(Math.random()<m) wrong=(target+1+Math.floor(Math.random()*5))%6;ask=Math.random()<r.ask;hubDwell=(10+(ask?15:0)+(Math.random()<r.human?(W_OP+P.tOp):0))/30;}
+  L.dots.push({x:10,y:g.h/2+(Math.random()-0.5)*60,phase:0,target,wrong,ask,hubDwell,dwell:0,col:'ink'});}
+function rr(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath();}
+function mv(d,tx,ty,dist){const dx=tx-d.x,dy=ty-d.y,L=Math.hypot(dx,dy);if(L<=dist){d.x=tx;d.y=ty;return true;}d.x+=dx/L*dist;d.y+=dy/L*dist;return false;}
+const DOT={ink:'#6b7787',warn:'#f28e2b',crit:'#e15759',good:'#59a14f'};
+function step(now){
+  const dt=Math.min(0.05,(now-lastT)/1000); lastT=now; const vis=SC===7;
+  LANES.forEach((L,li)=>{
+    spawnAcc[li]+=dt*(P.vPhone||5000)/2500; while(spawnAcc[li]>=1){spawnAcc[li]-=1; if(L.dots.length<90) spawn(L);}
+    const {ctx,w,h,hubX,boxes}=laneGeom(L.cv); const sp=w*0.33;
+    L.dots.forEach(d=>{
+      if(d.phase===0){d.x+=sp*dt;if(d.x>=hubX-44) d.phase=1;}
+      else if(d.phase===1){d.dwell+=dt;d.col=d.ask?'warn':'ink';if(d.dwell>=d.hubDwell){d.phase=2;d.col='ink';}}
+      else if(d.phase===2){const b=boxes[d.wrong>=0?d.wrong:d.target];if(mv(d,b.x-12,b.y,sp*1.2*dt)){if(d.wrong>=0){d.phase=3;d.col='crit';L.stat.mis++;}else{d.phase=4;d.col='good';d.dwell=0;}}}
+      else if(d.phase===3){const b=boxes[d.target];if(mv(d,b.x-12,b.y,sp*0.35*dt)){d.phase=4;d.col='good';d.dwell=0;}}
+      else if(d.phase===4){d.dwell+=dt;if(d.dwell>0.5){d.dead=true;L.stat.done++;}}
+    });
+    L.dots=L.dots.filter(d=>!d.dead);
+    if(!vis) return;
+    ctx.clearRect(0,0,w,h);
+    const hc=L.mode==='asis'?'#f28e2b':'#2f6db5';
+    ctx.fillStyle='#fff';ctx.strokeStyle=hc;ctx.lineWidth=2;rr(ctx,hubX-58,h/2-24,116,48,10);ctx.fill();ctx.stroke();
+    ctx.fillStyle='#1f2a3a';ctx.font='700 15px "Microsoft JhengHei",sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(L.mode==='asis'?'語音選單／總機':'Jev 一句話分流',hubX,h/2);
+    boxes.forEach((b,i)=>{ctx.fillStyle='#fff';ctx.strokeStyle='#cfd7e3';ctx.lineWidth=1;rr(ctx,b.x-6,b.y-13,Math.min(80,w-b.x-4),26,6);ctx.fill();ctx.stroke();ctx.fillStyle='#3e4a5b';ctx.font='14px "Microsoft JhengHei",sans-serif';ctx.textAlign='left';ctx.fillText(BOX[i],b.x+6,b.y+1);});
+    L.dots.forEach(d=>{ctx.beginPath();ctx.arc(d.x,d.y,5,0,Math.PI*2);ctx.fillStyle=DOT[d.col];ctx.fill();});
+    $('c'+li).textContent=L.stat.done?`已服務 ${L.stat.done} 通 · 轉錯 ${L.stat.mis} 通（${(L.stat.mis/Math.max(1,L.stat.done)*100).toFixed(0)}%）`:'';
+  });
+  requestAnimationFrame(step);
+}
+
+/* ---------- 頁面切換 ---------- */
+const PAGES=['p11','p12','p13','p21','p22','p3','p41','p42'];
+const NOS=['1-1','1-2','1-3','2-1','2-2','3','4-1','4-2'];
+const STEPS=[{n:1,b:'客戶開口',s:'系統在背後判斷',pages:[0,1,2]},{n:2,b:'電話接通',s:'專員看見什麼',pages:[3,4]},{n:3,b:'主管監控',s:'全中心即時排隊',pages:[5]},{n:4,b:'數位孿生模擬',s:'全局推演',pages:[6,7]}];
+let SC=0;
+function capText(i){
+  const L=LAST, who=L&&L.c?L.c.name:'客戶';
+  switch(i){
+    case 0: return L?`${who}說：「${L.text}」→ 系統判斷為「${L.best}」，${L.r.urgent?'急件直轉真人專線':L.r.angry?'情緒不佳直接轉真人':L.top.p>=P.thAuto?'直接分流到對的窗口':'先反問一句再分流'}。`:'客戶遇到問題，只要說一句話；系統在背後 0.1 秒內判斷他要問什麼。';
+    case 1: return '同一次判斷，系統還讀出情緒、急件、多個需求和潛在商機；情緒不佳或急件時只記錄商機、不推銷。';
+    case 2: return L?`結合行內 CRM 的資產級距與貢獻度，${who}被排入 ${PNAME[L.lvl]}；急件不論等級永遠排第一。`:'結合行內 CRM 的資產級距與貢獻度，決定服務順序。';
+    case 3: return `電話接通，專員畫面已經備好${who}的資料和這通電話的判斷，客戶不用重講一次。`;
+    case 4: return '系統依情緒、急件、重複來電和商機，給出處理步驟與開場話術，新進專員也能一次到位。';
+    case 5: {const q=[...QS.q].sort((x,y)=>x.lvl-y.lvl||x.arr-y.arr);const pos=q.findIndex(c=>c.mine);const ag=QS.agents.find(a=>a.busy&&a.busy.mine);
+      return pos>=0?`主管看見全中心：${who}目前排在第 ${pos+1} 位（${PNAME[q[pos].lvl]}）；專員空下來，一律先接等級最高的客戶。`:ag?`${who}已由專員 ${ag.id} 接起。`:'主管看見全中心：誰最急、誰等最久、哪位專員空著；按「把剛才的客戶加入排隊」看他排在哪裡。';}
+    case 6: return '上線前先推演：用同樣的進線量，比較導入前後需要的人力、成本與客戶等待時間；數字皆為假設值。';
+    case 7: return '左邊是現況的語音選單與總機，右邊是一句話分流；紅點代表轉錯窗口、要重新排隊。';
+  }
+}
+function ensureDemo(){ if(LAST) return; $('cid').value='H200000000'; lookupCust('H200000000'); $('q').value='搞什麼 轉帳到現在還沒到！！'; runJev('搞什麼 轉帳到現在還沒到！！',{quiet:true}); }
+function renderNav(){
+  $('nav').innerHTML=STEPS.map((st,k)=>{const on=st.pages.includes(SC), done=st.pages[st.pages.length-1]<SC;
+    const dots=st.pages.length>1?`<span class="dots">${st.pages.map(p=>`<i class="${p===SC?'on':p<SC?'done':''}"></i>`).join('')}</span>`:'';
+    return (k?'<span class="arrow">→</span>':'')+`<button type="button" class="step${on?' on':''}${done?' done':''}" data-p="${st.pages[0]}"><span class="n">${st.n}</span><span class="t"><b>${st.b}</b><small>${st.s}</small>${dots}</span></button>`;}).join('');
+}
+function updateChrome(){ renderNav(); $('capNo').textContent=NOS[SC]; $('capTxt').textContent=capText(SC); $('progBar').style.width=((SC+1)/PAGES.length*100)+'%'; }
+function go(i){
+  i=Math.max(0,Math.min(PAGES.length-1,i)); if(i===SC) return;
+  if(i>=1&&i<=5) ensureDemo();
+  document.querySelectorAll('.ovl.on').forEach(o=>o.classList.remove('on'));
+  PAGES.forEach((id,k)=>{const el=$(id); el.classList.toggle('on',k===i); el.classList.toggle('left',k<i);});
+  SC=i; updateChrome();
+  if(i===5) renderQueue();
+}
+$('nav').onclick=e=>{const b=e.target.closest('.step'); if(b) go(+b.dataset.p);};
+$('prevBtn').onclick=()=>go(SC-1); $('nextBtn').onclick=()=>go(SC+1);
+document.querySelectorAll('[data-ovl]').forEach(b=>b.onclick=()=>{$(b.dataset.ovl).classList.add('on'); if(b.dataset.ovl==='ovlCurve') setTimeout(drawCurve,20);});
+document.querySelectorAll('.ovl').forEach(o=>o.addEventListener('click',e=>{if(e.target===o||e.target.closest('[data-close]')) o.classList.remove('on');}));
+const app=$('app');
+app.addEventListener('click',e=>{const b=e.target.closest('button'); if(b) setTimeout(()=>b.blur(),0);
+  if(e.target.closest('button,input,select,textarea,label,a,canvas,svg,.ovl,.chip,.toast')) return;
+  if(String(window.getSelection())) return; go(SC+1);});
+document.addEventListener('keydown',e=>{
+  const ae=document.activeElement, typing=ae&&/^(INPUT|SELECT|TEXTAREA)$/.test(ae.tagName);
+  if(e.key==='Escape'&&document.querySelector('.ovl.on')){document.querySelectorAll('.ovl.on').forEach(o=>o.classList.remove('on'));return;}
+  if(typing){if(e.key==='Escape') ae.blur(); if(e.key!=='PageDown'&&e.key!=='PageUp') return;}
+  if(['ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();go(SC+1);}
+  else if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();go(SC-1);}
+  else if(/^[1-4]$/.test(e.key)) go(STEPS[+e.key-1].pages[0]);
+  else if(e.key==='f'||e.key==='F') toggleFS();
+});
+function toggleFS(){if(document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();}
+$('fsBtn').onclick=toggleFS;
+function fit(){S=Math.min(innerWidth/1600,innerHeight/900); app.style.setProperty('--s',S);}
+addEventListener('resize',fit);
+setInterval(()=>{const t=$('dkTimer'); if(t) t.textContent=mmss((performance.now()-DESK_T0)/1000);},1000);
+
+
+/* ---------- 評審參與（經 ntfy.sh 中繼） ---------- */
+const QS_URL=new URLSearchParams(location.search);
+const TOPIC=QS_URL.get('topic')||'jev-twin-demo-3esef92xcajm';
+const TIER_ID={'私人銀行':'A123456789','貴賓理財':'F123456784','一般客戶':'B200000004'};
+const JUDGES=[]; let jRecent=[];
+function askUrl(){ const u=new URL('ask.html',location.href); if(QS_URL.get('topic')) u.searchParams.set('topic',TOPIC); return u.href; }
+function renderJudgePanel(){
+  const url=askUrl(); $('jUrl').textContent=url;
+  const box=$('qrBox');
+  if(location.protocol==='file:') box.innerHTML='<div class="dim" style="padding:20px;text-align:center">上傳到 GitHub Pages 後<br>才能產生手機可掃的 QR code</div>';
+  else if(typeof qrcode==='function'){ const q=qrcode(0,'M'); q.addData(url); q.make(); box.innerHTML=q.createSvgTag(8,2); }
+  else box.innerHTML='<div class="dim" style="padding:20px;text-align:center">QR code 元件載入失敗<br>請改用下方網址</div>';
+  $('jList').innerHTML=JUDGES.length?JUDGES.slice().reverse().map(j=>`<div><b>${esc(j.name)}</b>（${esc(j.tier)}）：「${esc(j.text)}」→ ${j.cat} · ${PNAME[j.lvl]}</div>`).join(''):'<div class="dim">還沒有評審來電</div>';
+}
+function setJ(on){ $('jDot').classList.toggle('on',on); }
+function onJudge(m){
+  const now=Date.now(); jRecent=jRecent.filter(t=>now-t<60000); if(jRecent.length>=40) return; jRecent.push(now);
+  const text=String(m.text||'').replace(/\s+/g,' ').trim().slice(0,80); if(!text) return;
+  const name=String(m.name||'評審').trim().slice(0,12)||'評審';
+  const tier=TIER_ID[m.tier]?m.tier:'未提供身分';
+  const id=TIER_ID[m.tier]||null;
+  const c=makeCaller(text,id,false); c.judge=name; QS.q.push(c);
+  JUDGES.push({name,tier,text,id,cat:c.cat,lvl:c.lvl});
+  $('jCount').textContent=JUDGES.length;
+  if($('ovlJudge').classList.contains('on')) renderJudgePanel();
+  if(SC===5) renderQueue();
+  const box=$('toasts'); const el=document.createElement('div'); el.className='toast';
+  el.innerHTML=`<div class="who">📱 ${esc(name)} 打進來（${esc(tier)}）</div><div class="tx">「${esc(text)}」</div><div class="rs">系統判斷：${c.cat}${c.r.urgent?'・急件':''}${c.r.angry?'・情緒不佳':''} → ${PNAME[c.lvl]}</div><button type="button">用這句走一遍</button>`;
+  el.querySelector('button').onclick=()=>{ $('cid').value=id||''; lookupCust(id||''); $('q').value=text; go(0); runJev(text); el.remove(); };
+  box.prepend(el); while(box.children.length>3) box.lastChild.remove();
+  setTimeout(()=>el.remove(),15000);
+}
+let SINCE=Math.floor(Date.now()/1000), SEEN=new Set(), POLLING=false;
+async function pollJudges(){
+  if(POLLING) return; POLLING=true;
+  try{
+    const r=await fetch(`https://ntfy.sh/${encodeURIComponent(TOPIC)}/json?poll=1&since=${SINCE}`,{cache:'no-store'});
+    if(!r.ok) throw new Error(r.status); setJ(true);
+    (await r.text()).split('\n').filter(Boolean).forEach(line=>{
+      let d; try{ d=JSON.parse(line); }catch(_){ return; }
+      if(d.event!=='message'||SEEN.has(d.id)) return; SEEN.add(d.id); SINCE=d.id;
+      let m; try{ m=JSON.parse(d.message); }catch(_){ m={text:d.message}; } onJudge(m||{});
+    });
+  }catch(_){ setJ(false); }
+  POLLING=false;
+}
+// 公司代理會擋即時串流，改用每 2 秒輪詢
+function connectJudges(){ if(window.__NOJUDGE) return; pollJudges(); setInterval(pollJudges,2000); }
+$('jBtn').addEventListener('click',()=>setTimeout(renderJudgePanel,0));
+connectJudges();
+
+fit(); renderCidChips(); updateChrome(); qReset();
+setInterval(()=>{if(!QS.paused){qTick(5); if(SC===5) renderQueue();}},500);
+recompute(); requestAnimationFrame(step);
+</script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+</body>
+</html>
