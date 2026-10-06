@@ -328,7 +328,7 @@ button{font:inherit;cursor:pointer}
       <div class="card" style="--d:.2s;flex:1">
         <div class="ch sys">服務等級規則</div>
         <div class="ladder" id="ladder"></div>
-        <div class="rulebar">急件不論客戶等級一律最優先；身分證字號只在行內 CRM 查詢，不送外部模型。級距與目標接聽時間為示意。</div>
+        <div class="rulebar">情緒不佳不再一律加速：高貢獻與新開戶客戶才優先，往來已久的一般客戶由專員先安撫、依序處理。身分證字號只在行內 CRM 查詢，不送外部模型；級距、往來期間門檻與目標接聽時間為示意。</div>
       </div>
     </div>
   </div>
@@ -464,6 +464,8 @@ const KW={
 const URGENT=['盜刷','被盜','詐騙','被騙','遺失','不見','掉了','掛失','冒用','異常交易'];
 const EMO_KW=[['生氣',2],['氣死',2.5],['很煩',1.8],['煩死',2.5],['不爽',2.2],['搞什麼',2.5],['到底',1.5],['都沒人',2],['沒人處理',2.2],['等很久',1.8],['等了',1.2],['第幾次',2],['三次',1.2],['好幾次',1.5],['一直',1],['投訴',2.5],['客訴',2.5],['差勁',2.5],['離譜',2.2],['太扯',2.2],['很扯',2],['受夠',2.5],['垃圾',2.8],['爛',1.8],['誇張',1.5],['浪費時間',2.2],['解約',1.8],['剪卡',2],['什麼鬼',2.5],['有病',2.8],['找人講',1.2],['拖了',2],['拖很久',2.2],['還沒下來',1.5],['要等多久',1.8],['等多久',1.2],['都不回',2],['！！',1.2],['!!',1.2],['？？',1],['??',1]];
 const EMO_TH=0.6, OPP_TH=0.6;
+// 辱罵用語：偵測到就直接判為情緒不佳（排除幹部、樹幹、能幹等正常用詞）
+const ABUSE_RE=/幹你|幹恁|幹拎|幹林|操你|他媽|他馬|媽的|馬的|靠北|靠腰|靠杯|靠夭|靠么|機掰|雞掰|白癡|白痴|智障|腦殘|低能|王八|混蛋|廢物|去死|三小|北七|垃圾銀行|爛銀行|(?<![能樹主骨才])幹(?![部線事員練勁活])|fuck|f\*ck|shit|wtf|bitch|idiot|stupid/i;
 const OPPS=[
   {id:'保障需求',kw:[['理賠',3],['保單',2.5],['保險',2],['保費',1.5],['住院',2],['意外險',2.5],['醫療險',2.5]],action:'轉介理專',owner:'理財專員',offer:'免費保障健檢',pitch:'理賠的問題已經幫您處理。另外，要不要請理專幫您免費檢視一下，目前的保障夠不夠？',yes:'請理專聯繫我'},
   {id:'外幣需求',kw:[['出國',3],['旅遊',2],['換外幣',3],['外幣現鈔',2.5],['日圓',2.5],['日幣',2.5],['歐元',2],['留學',2.5],['機票',1.5],['換匯',2.5],['去日本',2],['去美國',2]],action:'推薦外幣定存專案',owner:'外幣定存專案（示意）',offer:'外幣定存優惠利率＋線上換匯、機場領鈔',pitch:'出國前可以先把預計要用的外幣存成外幣定存，匯率好的時候分批換，出發前再領現鈔。要看看目前的外幣定存優惠嗎？',yes:'查看專案'},
@@ -471,7 +473,7 @@ const OPPS=[
   {id:'子女教育金',kw:[['小孩',2],['孩子',2],['教育基金',3],['學費',2.2],['讀大學',2.5]],action:'推薦定期定額',owner:'基金定期定額（示意）',offer:'每月小額定期定額',pitch:'教育金的準備時間通常很長，可以考慮每月小額定期定額。要看看試算嗎？',yes:'查看試算'},
 ];
 function detectOpp(s){let best=null;for(const o of OPPS){let v=-2;for(const [k,w] of o.kw) if(s.includes(k)) v+=w;const p=1/(1+Math.exp(-v));if(!best||p>best.p) best={o,p};}return best;}
-function emotionScore(s){let v=-2.2;for(const [k,w] of EMO_KW){if(s.includes(k)) v+=w;}return 1/(1+Math.exp(-v));}
+function emotionScore(s){let v=-2.2;for(const [k,w] of EMO_KW){if(s.includes(k)) v+=w;}if(ABUSE_RE.test(s)) v+=3.6;return 1/(1+Math.exp(-v));}
 function classify(text){
   const s=text.toLowerCase(); const raw={};
   for(const c of CATS){let v=c==='其他/真人'?1.0:0;for(const [k,w] of KW[c]){if(s.includes(k)) v+=w;}raw[c]=v;}
@@ -480,19 +482,22 @@ function classify(text){
   const urgent=URGENT.some(k=>s.includes(k));
   const strong=probs.filter(x=>x.c!=='其他/真人'&&x.raw>=2.5);
   const multi=strong.length>=2&&strong[1].raw>=strong[0].raw*0.5;
-  const emo=emotionScore(s), opp=detectOpp(s);
-  return {probs,urgent,multi,strong,emo,angry:emo>=EMO_TH,opp,hasOpp:opp.p>=OPP_TH,
+  const emo=emotionScore(s), opp=detectOpp(s), abuse=ABUSE_RE.test(s);
+  return {probs,urgent,multi,strong,emo,abuse,angry:emo>=EMO_TH,opp,hasOpp:opp.p>=OPP_TH,
     pu:urgent?0.94:0.03+Math.random()*0.04, pm:multi?0.88:0.05+Math.random()*0.05};
 }
 
 /* ---------- 行內 CRM（虛構測試資料） ---------- */
 const CRM={
-  'A123456789':{name:'客戶甲',tier:'私人銀行',aum:'3,000 萬以上',contrib:'高',contribNote:'年度貢獻度前 1%',products:['房貸','信託','外幣定存'],rm:'陳○○',calls7d:0,lastCall:'—'},
-  'F123456784':{name:'客戶乙',tier:'貴賓理財',aum:'300 萬–3,000 萬',contrib:'高',contribNote:'年度貢獻度前 10%',products:['基金','信用卡','外幣存款'],rm:'林○○',calls7d:1,lastCall:'09/27 基金贖回進度'},
-  'H200000000':{name:'客戶丙',tier:'貴賓理財',aum:'300 萬–3,000 萬',contrib:'中',contribNote:'年度貢獻度中等',products:['定存','信用卡'],rm:'黃○○',calls7d:2,lastCall:'09/29 轉帳未入帳（未解決）'},
-  'B200000004':{name:'客戶丁',tier:'一般',aum:'300 萬以下',contrib:'低',contribNote:'年度貢獻度一般',products:['活存'],rm:null,calls7d:0,lastCall:'—'},
+  'A123456789':{name:'客戶甲',tier:'私人銀行',aum:'3,000 萬以上',contrib:'高',contribNote:'年度貢獻度前 1%',products:['房貸','信託','外幣定存'],rm:'陳○○',calls7d:0,lastCall:'—',months:180},
+  'F123456784':{name:'客戶乙',tier:'貴賓理財',aum:'300 萬–3,000 萬',contrib:'高',contribNote:'年度貢獻度前 10%',products:['基金','信用卡','外幣存款'],rm:'林○○',calls7d:1,lastCall:'09/27 基金贖回進度',months:96},
+  'H200000000':{name:'客戶丙',tier:'貴賓理財',aum:'300 萬–3,000 萬',contrib:'中',contribNote:'年度貢獻度中等',products:['定存','信用卡'],rm:'黃○○',calls7d:2,lastCall:'09/29 轉帳未入帳（未解決）',months:72},
+  'B200000004':{name:'客戶丁',tier:'一般',aum:'300 萬以下',contrib:'低',contribNote:'年度貢獻度一般',products:['活存'],rm:null,calls7d:0,lastCall:'—',months:144},
+  'E100000005':{name:'客戶戊',tier:'一般',aum:'300 萬以下',contrib:'低',contribNote:'新戶，尚在累積',products:['數位帳戶','信用卡'],rm:null,calls7d:0,lastCall:'—',months:2},
 };
-const CID_SAMPLES=[['A123456789','私人銀行'],['F123456784','貴賓・高貢獻'],['H200000000','貴賓・中貢獻'],['B200000004','一般'],['A100000001','非本行']];
+const CID_SAMPLES=[['A123456789','私人銀行'],['F123456784','貴賓・高貢獻'],['H200000000','貴賓・中貢獻'],['B200000004','一般・往來 12 年'],['E100000005','新開戶 2 個月'],['A100000001','非本行']];
+const tenure=c=>c.months>=12?`${Math.floor(c.months/12)} 年`:`${c.months} 個月`;
+const NEW_M=12, isNew=c=>!!c&&c.months<=NEW_M;
 const TWID_MAP={A:10,B:11,C:12,D:13,E:14,F:15,G:16,H:17,I:34,J:18,K:19,L:20,M:21,N:22,O:35,P:23,Q:24,R:25,S:26,T:27,U:28,V:29,W:32,X:30,Y:31,Z:33};
 function validTWID(id){if(!/^[A-Z][12]\d{8}$/.test(id)) return false;const n=TWID_MAP[id[0]];const d=[Math.floor(n/10),n%10,...id.slice(1).split('').map(Number)];const w=[1,9,8,7,6,5,4,3,2,1,1];return d.reduce((s,v,i)=>s+v*w[i],0)%10===0;}
 const maskID=id=>id.slice(0,3)+'****'+id.slice(7);
@@ -501,12 +506,17 @@ const PNAME={1:'P1 緊急優先',2:'P2 貴賓優先',3:'P3 優先',4:'P4 一般�
 const PCOL={1:'--p1',2:'--p2',3:'--p3',4:'--p4'};
 const PTGT={1:'立即接通',2:'10 秒內接聽',3:'30 秒內接聽',4:'依序排隊'};
 function computePrio(r,cur){
-  const c=cur&&cur.rec, vip=isVIP(c); let lvl=4; const reasons=[];
+  const c=cur&&cur.rec, vip=isVIP(c), nw=isNew(c), pct=(r.emo*100).toFixed(0); let lvl=4; const reasons=[];
   if(r.urgent){lvl=1;reasons.push('急件（盜刷、遺失、詐騙類）不論客戶等級一律最優先');}
   if(vip){if(lvl>2) lvl=2;reasons.push(`${c.tier}・資產 ${c.aum}・貢獻度${c.contrib}`);}
-  if(r.angry){if(lvl>3) lvl=3;reasons.push(`情緒不佳（不滿程度 ${(r.emo*100).toFixed(0)}%）`);}
   if(c&&c.tier==='貴賓理財'&&!vip){if(lvl>3) lvl=3;reasons.push('貴賓理財客戶');}
-  if(!reasons.length) reasons.push(cur&&cur.unknown?'查無客戶資料，一般排隊':cur?'一般客戶，一般排隊':'未提供身分，一般排隊');
+  if(r.angry){
+    const ab=r.abuse?'、含辱罵用語':'';
+    if(nw){ if(lvl>3) lvl=3; reasons.push(`新開戶 ${c.months} 個月的客戶情緒不佳（不滿 ${pct}%${ab}），優先挽回`); }
+    else if(lvl===1||vip||(c&&c.tier==='貴賓理財')) reasons.push(`情緒不佳（不滿 ${pct}%${ab}），先安撫`);
+    else reasons.push(`情緒不佳（不滿 ${pct}%${ab}），但${c?`為往來 ${tenure(c)}的一般客戶`:'身分未驗證'}，依一般順序處理、專員先安撫`);
+  }
+  if(!reasons.length) reasons.push(cur&&cur.unknown?'查無客戶資料，一般排隊':cur?(nw?`新開戶 ${c.months} 個月，情緒平穩，一般排隊`:'一般客戶，一般排隊'):'未提供身分，一般排隊');
   return {lvl,reasons,c,vip};
 }
 
@@ -524,7 +534,7 @@ function renderCustMini(){
   if(CUR.bad){el.innerHTML='<span style="color:var(--red)">身分證字號格式或檢查碼不正確</span>';return;}
   if(CUR.unknown){el.innerHTML=`<b>${maskID(CUR.id)}</b><span class="muted">查無資料（非本行客戶），以一般客戶處理</span>`;return;}
   const c=CUR.rec;
-  el.innerHTML=`<b>${c.name}</b><span>${c.tier}</span><span class="muted">資產 ${c.aum}</span><span class="muted">貢獻度 ${c.contrib}</span>${isVIP(c)?'<span class="tag blue">高資產高貢獻</span>':''}`;
+  el.innerHTML=`<b>${c.name}</b><span>${c.tier}</span><span class="muted">資產 ${c.aum}</span><span class="muted">貢獻度 ${c.contrib}</span><span class="muted">往來 ${tenure(c)}</span>${isVIP(c)?'<span class="tag blue">高資產高貢獻</span>':''}${isNew(c)?'<span class="tag green">新開戶</span>':''}`;
 }
 function renderCidChips(){
   const h=CID_SAMPLES.map(([id,l])=>`<button type="button" class="chip${CUR&&CUR.id===id?' on':''}" data-id="${id}">${l}</button>`).join('');
@@ -544,7 +554,7 @@ const MAIN_SAMPLES=[
   {q:'搞什麼 轉帳到現在還沒到！！',t:'情緒',c:'var(--red)'},
   {q:'下個月要去日本 想換日幣',t:'商機',c:'var(--green)'},
 ];
-const MORE_SAMPLES=['上個月帳戶被扣了一筆錢不知道是什麼','新青安現在還能申請嗎','我想借30萬周轉','卡費可以分期嗎','想開數位帳戶要帶什麼','美金定存利率多少','我要找真人','我已經打三次了都沒人處理信用卡的問題 到底要怎樣','你們房貸利率也太扯了吧 我要找人講','保險理賠要準備什麼文件','定存下個月到期 不知道要怎麼放','保險理賠拖了兩個月還沒下來 到底要等多久'];
+const MORE_SAMPLES=['靠北 轉帳到現在還沒到 你們到底在幹什麼','上個月帳戶被扣了一筆錢不知道是什麼','新青安現在還能申請嗎','我想借30萬周轉','卡費可以分期嗎','想開數位帳戶要帶什麼','美金定存利率多少','我要找真人','我已經打三次了都沒人處理信用卡的問題 到底要怎樣','你們房貸利率也太扯了吧 我要找人講','保險理賠要準備什麼文件','定存下個月到期 不知道要怎麼放','保險理賠拖了兩個月還沒下來 到底要等多久'];
 $('qChips').innerHTML=MAIN_SAMPLES.map((s,i)=>`<button type="button" class="chip" data-q="${s.q}"><i style="color:${s.c}">${s.t}</i>${s.q}</button>`).join('');
 $('qMore').innerHTML=MORE_SAMPLES.map(q=>`<button type="button" class="chip" data-q="${q}">${q}</button>`).join('');
 const onChip=e=>{const b=e.target.closest('.chip'); if(!b) return; $('q').value=b.dataset.q; runJev(b.dataset.q);};
@@ -620,7 +630,7 @@ function renderP12(){
   else ref=`<div class="refbox mute"><div class="tt">這句話沒有偵測到商機</div><div class="muted" style="margin-top:8px">可以回到 1-1 點「商機」範例，例如「下個月要去日本 想換日幣」。</div></div>`;
   $('out12').innerHTML=`<div class="quote">「${esc(L.text)}」</div>
     <div class="sig4">
-      ${sig('客戶情緒（不滿程度）',(r.emo*100).toFixed(0)+'%',r.emo,r.angry,css('--red'),r.angry?'情緒不佳：先安撫、不推銷':'情緒平穩')}
+      ${sig('客戶情緒（不滿程度）',(r.emo*100).toFixed(0)+'%',r.emo,r.angry,css('--red'),r.abuse?'含辱罵用語：先提醒、安撫，不推銷':r.angry?'情緒不佳：先安撫、不推銷':'情緒平穩')}
       ${sig('是否急件',(r.pu*100).toFixed(0)+'%',r.pu,r.urgent,css('--red'),r.urgent?'急件：立即轉真人專線':'非急件')}
       ${sig('是否包含多個需求',(r.pm*100).toFixed(0)+'%',r.pm,r.multi,css('--accent'),r.multi?`${r.strong[0].c}、${r.strong[1].c}，拆單處理`:'單一需求')}
       ${sig('潛在商機',r.hasOpp?r.opp.o.id:'無',r.hasOpp?r.opp.p:0,r.hasOpp,css('--green'),oppTxt)}
@@ -634,13 +644,13 @@ function renderP12(){
 /* ---------- 1-3 ---------- */
 function renderP13(){
   const L=LAST, r=L.r, c=L.c, cur=L.cur;
-  $('crm13').innerHTML=(c?`<div class="kv"><span class="k">客戶</span><span class="v">${c.name}　${maskID(cur.id)}</span><span class="k">級距</span><span class="v">${c.tier}${isVIP(c)?' <span class="tag blue">高資產高貢獻</span>':''}</span><span class="k">資產級距</span><span class="v">${c.aum}</span><span class="k">貢獻度</span><span class="v">${c.contrib}（${c.contribNote}）</span><span class="k">專屬理專</span><span class="v">${c.rm||'—'}</span></div>`
+  $('crm13').innerHTML=(c?`<div class="kv"><span class="k">客戶</span><span class="v">${c.name}　${maskID(cur.id)}</span><span class="k">級距</span><span class="v">${c.tier}${isVIP(c)?' <span class="tag blue">高資產高貢獻</span>':''}</span><span class="k">資產級距</span><span class="v">${c.aum}</span><span class="k">貢獻度</span><span class="v">${c.contrib}（${c.contribNote}）</span><span class="k">往來期間</span><span class="v">${tenure(c)}${isNew(c)?' <span class="tag green">新開戶</span>':''}</span><span class="k">專屬理專</span><span class="v">${c.rm||'—'}</span></div>`
     :`<div class="muted" style="font-size:17px">${cur&&cur.unknown?'查無客戶資料（非本行客戶）':'未提供身分'}，以一般客戶處理。</div>`)
     +`<div style="margin-top:26px;padding-top:20px;border-top:1px solid var(--line)"><div class="label">系統判斷（來自 1-2）</div><div class="chips">${r.urgent?'<span class="tag red">急件</span>':'<span class="tag">非急件</span>'}${r.angry?'<span class="tag orange">情緒不佳</span>':'<span class="tag">情緒平穩</span>'}<span class="tag">「${esc(L.text.length>16?L.text.slice(0,16)+'…':L.text)}」</span></div></div>`;
   const pc=`var(${PCOL[L.lvl]})`;
   const res=$('res13'); res.style.setProperty('--pc',pc);
   res.innerHTML=`<div class="badge">${PNAME[L.lvl]}</div><div><div class="tgt">${PTGT[L.lvl]}${L.vip&&c.rm?`　·　指派專屬理專 ${c.rm}`:''}</div><div class="rs">依據：${L.reasons.join('；')}</div></div>`;
-  const rows=[[1,'急件（盜刷、遺失、詐騙），不論客戶等級','立即接通'],[2,'私人銀行，或貴賓理財且貢獻度高','10 秒內'],[3,'情緒不佳，或一般貢獻的貴賓理財','30 秒內'],[4,'其他客戶、未提供身分','依序排隊']];
+  const rows=[[1,'急件（盜刷、遺失、詐騙），不論客戶等級','立即接通'],[2,'私人銀行，或貴賓理財且貢獻度高（情緒不佳也維持優先）','10 秒內'],[3,'一般貢獻的貴賓理財；或新開戶 12 個月內且情緒不佳','30 秒內'],[4,'其他客戶；往來已久的一般客戶情緒不佳，也依序處理、先安撫','依序排隊']];
   $('ladder').innerHTML=rows.map(([l,cond,t])=>`<div class="lrow${l===L.lvl?' on':''}" style="--pc:var(${PCOL[l]})"><b style="color:var(${PCOL[l]})">${PNAME[l]}</b><span>${cond}</span><span class="tg">${t}</span></div>`).join('');
 }
 
@@ -656,11 +666,12 @@ function renderDesk(){
   DESK_T0=performance.now();
   $('call21').style.setProperty('--pc',pc);
   $('call21').innerHTML=`<div class="ring"><i></i>來電中</div><div class="pl">${PNAME[L.lvl]}</div><div class="muted">${L.reasons.join('；')}</div><div class="tm" id="dkTimer">00:00</div>`;
-  $('crm21').innerHTML=c?`<div class="kv"><span class="k">客戶</span><span class="v">${c.name}　${maskID(cur.id)}</span><span class="k">級距</span><span class="v">${c.tier}${vip?' <span class="tag blue">高資產高貢獻</span>':''}</span><span class="k">資產級距</span><span class="v">${c.aum}</span><span class="k">持有產品</span><span class="v">${c.products.join('、')}</span><span class="k">專屬理專</span><span class="v">${c.rm||'—'}</span><span class="k">近 7 天進線</span><span class="v">${c.calls7d} 次${c.calls7d>=2?' <span class="tag red">重複來電</span>':''}</span><span class="k">上次進線</span><span class="v">${c.lastCall}</span></div>`
+  $('crm21').innerHTML=c?`<div class="kv"><span class="k">客戶</span><span class="v">${c.name}　${maskID(cur.id)}</span><span class="k">級距</span><span class="v">${c.tier}${vip?' <span class="tag blue">高資產高貢獻</span>':''}</span><span class="k">資產級距</span><span class="v">${c.aum}</span><span class="k">往來期間</span><span class="v">${tenure(c)}${isNew(c)?' <span class="tag green">新開戶</span>':''}</span><span class="k">持有產品</span><span class="v">${c.products.join('、')}</span><span class="k">專屬理專</span><span class="v">${c.rm||'—'}</span><span class="k">近 7 天進線</span><span class="v">${c.calls7d} 次${c.calls7d>=2?' <span class="tag red">重複來電</span>':''}</span><span class="k">上次進線</span><span class="v">${c.lastCall}</span></div>`
     :`<div class="muted" style="font-size:17px">${cur&&cur.unknown?'查無客戶資料（非本行客戶）':'客戶未提供身分，接聽後請先完成身分驗證'}</div>`;
   $('call21b').innerHTML=`<div class="quote">「${esc(L.text)}」</div><div class="kv" style="margin-top:22px"><span class="k">問題類別</span><span class="v">${L.best}（${(bp.p*100).toFixed(0)}%）</span><span class="k">急迫度</span><span class="v">${r.urgent?'<span style="color:var(--red)">急件</span>':'一般'}</span><span class="k">客戶情緒</span><span class="v">${emoTxt}（不滿 ${(r.emo*100).toFixed(0)}%）</span></div><div class="emo"><i style="width:${(r.emo*100).toFixed(0)}%;background:${emoCol}"></i></div>
-    <div class="chips" style="margin-top:16px">${r.urgent?'<span class="tag red">急件</span>':''}${r.angry?'<span class="tag orange">情緒不佳</span>':''}${r.multi?'<span class="tag blue">兩個需求</span>':''}${r.hasOpp?`<span class="tag green">商機：${r.opp.o.id}</span>`:''}</div>`;
+    <div class="chips" style="margin-top:16px">${r.urgent?'<span class="tag red">急件</span>':''}${r.angry?'<span class="tag orange">情緒不佳</span>':''}${r.abuse?'<span class="tag red">辱罵用語</span>':''}${r.multi?'<span class="tag blue">兩個需求</span>':''}${r.hasOpp?`<span class="tag green">商機：${r.opp.o.id}</span>`:''}</div>`;
   const steps=[];
+  if(r.abuse) steps.push('客戶使用辱罵用語：<b>先提醒並安撫</b>；持續辱罵可依客服人員保護規範結束通話');
   if(r.angry) steps.push('<b>先道歉、先安撫</b>，不要急著問問題或推銷');
   if(c&&c.calls7d>=2) steps.push(`客戶 7 天內已進線 ${c.calls7d} 次（${c.lastCall}），先說明上次問題的處理進度`);
   if(r.urgent) steps.push('<b>立即協助掛失／凍結</b>，再說明後續爭議款處理流程');
@@ -684,7 +695,7 @@ $('dkRef').onclick=()=>$('dkMsg').textContent=`已建立轉介單 → ${LAST.vip
 
 /* ---------- 3 排隊看板 ---------- */
 const QPOOL_Q=MAIN_SAMPLES.map(s=>s.q).concat(MORE_SAMPLES,['信用卡帳單怎麼還沒寄來','房貸利率可以調降嗎','請問定存怎麼解約','我的金融卡不見了','外幣匯款要多久','網銀密碼忘記了']);
-const QPOOL_ID=[[null,55],['B200000004',20],['H200000000',12],['F123456784',8],['A123456789',5]];
+const QPOOL_ID=[[null,50],['B200000004',20],['E100000005',5],['H200000000',12],['F123456784',8],['A123456789',5]];
 let QS={t:0,q:[],agents:[],seq:0,paused:false,served:0,waitSum:0};
 function pickId(){let x=Math.random()*100;for(const [id,w] of QPOOL_ID){if((x-=w)<0) return id;}return null;}
 function makeCaller(text,id,mine){const r=classify(text);const cur=id?(CRM[id]?{id,rec:CRM[id]}:{id,unknown:true}):null;const {lvl}=computePrio(r,cur);const tp=r.probs.filter(x=>x.c!=='其他/真人')[0];return {n:++QS.seq,text,cur,r,lvl,cat:tp.p>=0.15?tp.c:r.probs[0].c,arr:QS.t,mine:!!mine};}
@@ -892,7 +903,7 @@ setInterval(()=>{const t=$('dkTimer'); if(t) t.textContent=mmss((performance.now
 /* ---------- 評審參與（經 ntfy.sh 中繼） ---------- */
 const QS_URL=new URLSearchParams(location.search);
 const TOPIC=QS_URL.get('topic')||'jev-twin-demo-3esef92xcajm';
-const TIER_ID={'私人銀行':'A123456789','貴賓理財':'F123456784','一般客戶':'B200000004'};
+const TIER_ID={'私人銀行':'A123456789','貴賓理財':'F123456784','一般客戶':'B200000004','新開戶客戶':'E100000005'};
 const JUDGES=[]; let jRecent=[];
 function askUrl(){ const u=new URL('ask.html',location.href); if(QS_URL.get('topic')) u.searchParams.set('topic',TOPIC); return u.href; }
 function renderJudgePanel(){
@@ -905,7 +916,7 @@ function renderJudgePanel(){
 }
 function setJ(on){ $('jDot').classList.toggle('on',on); }
 function onJudge(m){
-  const now=Date.now(); jRecent=jRecent.filter(t=>now-t<60000); if(jRecent.length>=40) return; jRecent.push(now);
+  const now=Date.now(); jRecent=jRecent.filter(t=>now-t<60000); if(jRecent.length>=150) return; jRecent.push(now);
   const text=String(m.text||'').replace(/\s+/g,' ').trim().slice(0,80); if(!text) return;
   const name=String(m.name||'評審').trim().slice(0,12)||'評審';
   const tier=TIER_ID[m.tier]?m.tier:'未提供身分';
@@ -935,8 +946,8 @@ async function pollJudges(){
   }catch(_){ setJ(false); }
   POLLING=false;
 }
-// 公司代理會擋即時串流，改用每 2 秒輪詢
-function connectJudges(){ if(window.__NOJUDGE) return; pollJudges(); setInterval(pollJudges,2000); }
+// 公司代理會擋即時串流，改用輪詢；ntfy 每 5 秒補 1 次額度，每 6 秒輪詢才不會被擋
+function connectJudges(){ if(window.__NOJUDGE) return; pollJudges(); setInterval(pollJudges,6000); }
 $('jBtn').addEventListener('click',()=>setTimeout(renderJudgePanel,0));
 connectJudges();
 
