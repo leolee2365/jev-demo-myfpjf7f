@@ -119,26 +119,38 @@ $('send').onclick=async()=>{
   }catch(err){ $('err').textContent='送出失敗，請確認網路後再試一次'; }
   $('send').disabled=false;
 };
-let waitTimer=null;
+let waitTimer=null, waitES=null;
+function stopWait(){ clearTimeout(waitTimer); clearInterval(waitTimer); waitTimer=null; if(waitES){ waitES.close(); waitES=null; } }
 function waitReply(rid,since){
   const box=$('resBox'); box.className='wait'; box.innerHTML='<i></i><i></i><i></i><br>系統判斷中，請稍候…';
-  const t0=Date.now(); clearInterval(waitTimer);
+  const t0=Date.now(); stopWait();
   const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const base=`https://ntfy.sh/${encodeURIComponent(TOPIC+'-r-'+rid)}`;
+  let done=false;
+  const show=p=>{
+    if(done) return; done=true; stopWait();
+    box.className='res'+(p.kind==='urgent'?' urgent':p.kind==='operator'?' op':'');
+    box.innerHTML=`<div class="k">${p.ai?'API 判斷':'系統判斷'}</div><div class="big">${esc(p.title)}</div><div class="sub">接聽窗口：${esc(p.desk)}　·　服務等級：${esc(p.pname)}</div>`;
+  };
+  // 長連線：回覆一送出就收到
+  try{
+    waitES=new EventSource(`${base}/sse?since=all`);
+    waitES.onmessage=e=>{ try{ const d=JSON.parse(e.data); if(d.event==='message') show(JSON.parse(d.message)); }catch(_){} };
+  }catch(_){}
+  // 備援：長連線不通時定時查
   const tick=async()=>{
-    if(Date.now()-t0>90000){ clearInterval(waitTimer); box.className='wait'; box.textContent='大螢幕忙線中，請看大螢幕上的結果'; return; }
+    if(done) return;
+    if(Date.now()-t0>90000){ stopWait(); box.className='wait'; box.textContent='大螢幕忙線中，請看大螢幕上的結果'; return; }
     try{
-      const r=await fetch(`https://ntfy.sh/${encodeURIComponent(TOPIC+'-r-'+rid)}/json?poll=1&since=all`,{cache:'no-store'});
-      const lines=(await r.text()).split('\n').filter(Boolean);
-      for(const line of lines){ const d=JSON.parse(line); if(d.event!=='message') continue; const p=JSON.parse(d.message);
-        clearInterval(waitTimer);
-        box.className='res'+(p.kind==='urgent'?' urgent':p.kind==='operator'?' op':'');
-        box.innerHTML=`<div class="k">${p.ai?'API 判斷':'系統判斷'}</div><div class="big">${esc(p.title)}</div><div class="sub">接聽窗口：${esc(p.desk)}　·　服務等級：${esc(p.pname)}</div>`;
-        return; }
+      const r=await fetch(`${base}/json?poll=1&since=all`,{cache:'no-store'});
+      for(const line of (await r.text()).split('\n').filter(Boolean)){ const d=JSON.parse(line); if(d.event==='message'){ show(JSON.parse(d.message)); return; } }
     }catch(_){}
   };
-  setTimeout(tick,1500); waitTimer=setInterval(tick,2000);  // 每 2 秒查一次回覆
+  // 備援每 1 秒查一次；40 秒後仍沒收到就放慢到 3 秒，避免用完手機的 ntfy 額度
+  const loop=()=>{ if(done) return; tick(); waitTimer=setTimeout(loop,Date.now()-t0<40000?1000:3000); };
+  waitTimer=setTimeout(loop,1000);
 }
-$('again').onclick=()=>{ clearInterval(waitTimer); cancelAuto(); $('micTx').textContent='點一下開始說話'; $('tx').value=''; upd(); $('ok').style.display='none'; $('form').style.display='block'; };
+$('again').onclick=()=>{ stopWait(); cancelAuto(); $('micTx').textContent='點一下開始說話'; $('tx').value=''; upd(); $('ok').style.display='none'; $('form').style.display='block'; };
 
 /* ---------- 語音輸入（瀏覽器內建語音辨識；不支援時隱藏，改打字） ---------- */
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;

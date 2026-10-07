@@ -1036,7 +1036,7 @@ function renderJudgePanel(){
   $('jList').innerHTML=JUDGES.length?JUDGES.slice().reverse().map(j=>`<div><b>${esc(j.name)}</b>（${esc(j.tier)}）：「${esc(j.text)}」→ ${j.cat} · ${PNAME[j.lvl]}</div>`).join(''):'<div class="dim">還沒有評審來電</div>';
 }
 function setJ(on){ $('jDot').classList.toggle('on',on); }
-function onJudge(m){
+function onJudge(m,pre){
   const now=Date.now(); jRecent=jRecent.filter(t=>now-t<60000); if(jRecent.length>=150) return; jRecent.push(now);
   const text=String(m.text||'').replace(/\s+/g,' ').trim().slice(0,80); if(!text) return;
   const name=String(m.name||'評審').trim().slice(0,12)||'評審';
@@ -1059,8 +1059,9 @@ function onJudge(m){
     if(rid) sendReply(rid,{title:rt.title,cat:rt.cat,ext:rt.ext,desk:rt.desk,kind:rt.kind,pname:PNAME[c.lvl],ai:!!ai,name});
     if(SC===5) renderQueue(); if($('ovlJudge').classList.contains('on')) renderJudgePanel();
   };
-  if(!AIOK) return finish(false);
-  aiCall('/api/demo/classify',{text}).then(res=>{
+  if(!AIOK&&!pre) return finish(false);
+  // 本機服務收到來電時已預先判斷，直接套用；沒有才自己呼叫 API
+  (pre&&pre.result?Promise.resolve(pre):aiCall('/api/demo/classify',{text})).then(res=>{
     const r2=res&&applyAI(c.r,res.result);
     if(r2){ c.r=r2; c.lvl=computePrio(r2,c.cur).lvl; const tp=r2.probs.filter(x=>x.c!=='其他/真人')[0]; c.cat=tp.p>=0.15?tp.c:r2.probs[0].c;
       Object.assign(jrec,{cat:c.cat,lvl:c.lvl,angry:r2.angry,urgent:r2.urgent}); }
@@ -1071,15 +1072,15 @@ function sendReply(rid,payload){
   fetch(`https://ntfy.sh/${encodeURIComponent(TOPIC+'-r-'+rid)}/publish?message=${encodeURIComponent(JSON.stringify(payload))}`,{cache:'no-store'}).catch(()=>{});
 }
 let SINCE=Math.floor(Date.now()/1000), SEEN=new Set(), POLLING=false, LSEQ=-1, TICK=0;
-function takeMsg(id,message){
+function takeMsg(id,message,ai){
   if(!id||SEEN.has(id)) return; SEEN.add(id);
-  let m; try{ m=JSON.parse(message); }catch(_){ m={text:message}; } onJudge(m||{});
+  let m; try{ m=JSON.parse(message); }catch(_){ m={text:message}; } onJudge(m||{},ai||null);
 }
 // 本機服務在跑：問本機收件匣（本機服務對 ntfy 維持長連線，不受 ntfy 額度限制）
 async function pollLocal(){
   const r=await fetch(`${AI_BASE}/api/demo/inbox?topic=${encodeURIComponent(TOPIC)}&after=${LSEQ}`,{cache:'no-store'});
   const j=await r.json(); if(!j.ok) throw new Error('inbox');
-  if(LSEQ>=0) j.items.forEach(x=>takeMsg(x.id,x.message));
+  if(LSEQ>=0) j.items.forEach(x=>takeMsg(x.id,x.message,x.ai));
   LSEQ=j.seq; setJ(!!j.connected);
 }
 // 本機服務沒開：直接查 ntfy（ntfy 每 5 秒補 1 次額度，所以只能每 6 秒查一次）
@@ -1095,12 +1096,12 @@ async function pollJudges(){
   if(POLLING) return; POLLING=true; TICK++;
   try{
     if(AIOK) await pollLocal();
-    else if(TICK%3===1) await pollNtfy();
+    else if(TICK%6===1) await pollNtfy();
   }catch(_){ setJ(false); }
   POLLING=false;
 }
-// 每 2 秒查一次評審來電
-function connectJudges(){ if(window.__NOJUDGE) return; pollJudges(); setInterval(pollJudges,2000); }
+// 每 1 秒問本機收件匣；本機服務沒開時每 6 秒直接查 ntfy
+function connectJudges(){ if(window.__NOJUDGE) return; pollJudges(); setInterval(pollJudges,1000); }
 $('jBtn').addEventListener('click',()=>setTimeout(renderJudgePanel,0));
 connectJudges();
 
