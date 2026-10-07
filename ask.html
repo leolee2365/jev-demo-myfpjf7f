@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>打一句話給客服</title>
+<title>打給客服</title>
 <style>
 :root{--bg:#f3f5f8;--card:#fff;--soft:#f7f9fb;--line:#e1e6ee;--text:#1f2a3a;--muted:#5f6b7a;--dim:#8a95a5;--accent:#2f6db5;--navy:#1f2a3a;--purple:#b07aa1;--green:#59a14f;--red:#e15759;
   --font:"PingFang TC","Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif}
@@ -42,13 +42,21 @@ button.send:disabled{opacity:.5}
 .wait i{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--accent);margin:0 3px;animation:bl 1s infinite}
 .wait i:nth-child(2){animation-delay:.2s}.wait i:nth-child(3){animation-delay:.4s}
 @keyframes bl{50%{opacity:.25}}
+.mic{display:flex;flex-direction:column;align-items:center;gap:10px;margin:4px 0 14px}
+.micbtn{width:96px;height:96px;border-radius:50%;border:0;background:var(--accent);color:#fff;font-size:40px;display:grid;place-items:center;box-shadow:0 8px 22px rgba(47,109,181,.35);-webkit-tap-highlight-color:transparent}
+.micbtn.on{background:var(--red);box-shadow:0 0 0 0 rgba(225,87,89,.5);animation:ring 1.2s infinite}
+@keyframes ring{0%{box-shadow:0 0 0 0 rgba(225,87,89,.45)}100%{box-shadow:0 0 0 22px rgba(225,87,89,0)}}
+.mictx{font-size:14.5px;color:var(--muted);text-align:center;min-height:20px}
+.or{display:flex;align-items:center;gap:10px;color:var(--dim);font-size:13px;margin:4px 0 12px}
+.or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
+textarea.live{border-color:var(--red);background:#fff}
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="brand">客服營運數位孿生平台 · 評審參與</div>
-  <h1>換你當客戶，<br>打一句話給客服</h1>
-  <p class="sub">送出後會即時出現在大螢幕，看系統怎麼判斷、把你排在第幾位。</p>
+  <h1>換你當客戶，<br>打給客服說一句話</h1>
+  <p class="sub">用講的或打字都可以。送出後會即時出現在大螢幕，系統判斷完，你的手機會收到要轉哪個分機。</p>
 
   <div class="card" id="form">
     <div class="f"><label for="nm">你的稱呼（選填）</label><input id="nm" maxlength="12" placeholder="例：王經理"></div>
@@ -61,6 +69,8 @@ button.send:disabled{opacity:.5}
         <button type="button" class="chip" data-v="私人銀行">私人銀行</button>
       </div></div>
     <div class="f"><label for="tx">想問客服什麼？</label>
+      <div class="mic" id="micWrap"><button type="button" class="micbtn" id="micBtn" aria-label="開始說話">🎤</button><div class="mictx" id="micTx">點一下開始說話</div></div>
+      <div class="or" id="orLine">或打字</div>
       <textarea id="tx" maxlength="60" placeholder="例：我想買房子要跟你們借錢"></textarea>
       <div class="cnt" id="cnt">0 / 60</div>
       <div class="chips ex" style="margin-top:8px" id="ex">
@@ -81,7 +91,7 @@ button.send:disabled{opacity:.5}
     <button type="button" id="again">再打一通</button>
   </div>
 
-  <p class="note">此為提案競賽 Demo，系統判斷以規則模擬。請勿輸入真實姓名、身分證字號、帳號或其他個人資料；內容會經公開的訊息中繼服務傳送。</p>
+  <p class="note">此為提案競賽 Demo，資料皆為示意。請勿說出或輸入真實姓名、身分證字號、帳號或其他個人資料。語音由手機瀏覽器的語音辨識服務（Google／Apple）轉成文字，內容會經公開的訊息中繼服務傳送。</p>
 </div>
 <script>
 const TOPIC=new URLSearchParams(location.search).get('topic')||'jev-twin-demo-3esef92xcajm';
@@ -92,6 +102,7 @@ $('ex').onclick=e=>{const b=e.target.closest('.chip'); if(!b) return; $('tx').va
 const upd=()=>$('cnt').textContent=`${$('tx').value.length} / 60`;
 $('tx').addEventListener('input',upd);
 $('send').onclick=async()=>{
+  cancelAuto();
   const text=$('tx').value.trim(); $('err').textContent='';
   if(!text){ $('err').textContent='請先輸入一句話'; return; }
   if(Date.now()-last<5000){ $('err').textContent='請稍等幾秒再送出'; return; }
@@ -127,7 +138,42 @@ function waitReply(rid,since){
   };
   setTimeout(tick,2500); waitTimer=setInterval(tick,4000);
 }
-$('again').onclick=()=>{ clearInterval(waitTimer); $('tx').value=''; upd(); $('ok').style.display='none'; $('form').style.display='block'; };
+$('again').onclick=()=>{ clearInterval(waitTimer); cancelAuto(); $('micTx').textContent='點一下開始說話'; $('tx').value=''; upd(); $('ok').style.display='none'; $('form').style.display='block'; };
+
+/* ---------- 語音輸入（瀏覽器內建語音辨識；不支援時隱藏，改打字） ---------- */
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+let rec=null, listening=false, finalTx='', autoT=null, autoN=0;
+function cancelAuto(){ if(autoT){ clearInterval(autoT); autoT=null; $('send').textContent='送出'; } }
+function startAuto(){
+  cancelAuto(); autoN=3; $('send').textContent=`${autoN} 秒後自動送出（點文字可修改）`;
+  autoT=setInterval(()=>{ autoN--; if(autoN<=0){ cancelAuto(); $('send').click(); } else $('send').textContent=`${autoN} 秒後自動送出（點文字可修改）`; },1000);
+}
+$('tx').addEventListener('focus',()=>{ if(autoT){ cancelAuto(); $('micTx').textContent='可以修改文字，改好按送出'; } });
+if(!SR){ $('micWrap').style.display='none'; $('orLine').style.display='none'; }
+else{
+  $('micBtn').onclick=()=>{
+    if(listening){ rec&&rec.stop(); return; }
+    cancelAuto(); finalTx=''; $('err').textContent='';
+    rec=new SR(); rec.lang='zh-TW'; rec.interimResults=true; rec.continuous=false; rec.maxAlternatives=1;
+    rec.onstart=()=>{ listening=true; $('micBtn').classList.add('on'); $('micBtn').textContent='■'; $('micTx').textContent='聆聽中…說完會自動停止，也可以再點一下結束'; $('tx').classList.add('live'); $('tx').value=''; upd(); };
+    rec.onresult=e=>{
+      let interim=''; for(let i=e.resultIndex;i<e.results.length;i++){ const s=e.results[i][0].transcript; if(e.results[i].isFinal) finalTx+=s; else interim+=s; }
+      $('tx').value=(finalTx+interim).slice(0,60); upd();
+    };
+    rec.onerror=e=>{
+      const m={'not-allowed':'沒有麥克風權限，請在瀏覽器允許麥克風，或改用打字','service-not-allowed':'這個瀏覽器不能使用語音，請改用打字',
+        'no-speech':'沒有聽到聲音，請再點一次重新說','network':'語音辨識需要網路，請確認連線或改用打字','audio-capture':'找不到麥克風，請改用打字'}[e.error];
+      $('micTx').textContent=m||'語音辨識失敗，請再試一次或改用打字';
+    };
+    rec.onend=()=>{
+      listening=false; $('micBtn').classList.remove('on'); $('micBtn').textContent='🎤'; $('tx').classList.remove('live');
+      const t=$('tx').value.trim();
+      if(t){ $('micTx').textContent='辨識完成，確認文字沒問題就會送出'; startAuto(); }
+      else if(!/麥克風|語音|聲音|網路/.test($('micTx').textContent)) $('micTx').textContent='點一下開始說話';
+    };
+    try{ rec.start(); }catch(_){ $('micTx').textContent='語音啟動失敗，請再點一次'; }
+  };
+}
 </script>
 </body>
 </html>
