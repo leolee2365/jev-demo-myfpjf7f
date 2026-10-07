@@ -121,7 +121,7 @@ function waitReply(rid,since){
       for(const line of lines){ const d=JSON.parse(line); if(d.event!=='message') continue; const p=JSON.parse(d.message);
         clearInterval(waitTimer);
         box.className='res'+(p.kind==='urgent'?' urgent':p.kind==='operator'?' op':'');
-        box.innerHTML=`<div class="k">${p.ai?'公司 AI 平台判斷':'系統判斷'}</div><div class="big">${esc(p.title)}</div><div class="sub">接聽窗口：${esc(p.desk)}　·　服務等級：${esc(p.pname)}</div>`;
+        box.innerHTML=`<div class="k">${p.ai?'API 判斷':'系統判斷'}</div><div class="big">${esc(p.title)}</div><div class="sub">接聽窗口：${esc(p.desk)}　·　服務等級：${esc(p.pname)}</div>`;
         return; }
     }catch(_){}
   };

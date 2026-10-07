@@ -310,7 +310,7 @@ mark.ev{background:#ffe28a;color:inherit;border-radius:4px;padding:0 2px}
 <header class="topbar">
   <div class="brand"><span>JEV × DIGITAL TWIN</span>客服營運數位孿生平台</div>
   <nav class="nav" id="nav"></nav>
-  <div class="tools"><span class="aibadge" id="aiBadge" title="本機 Demo AI 服務 → 公司 AI 平台"><i></i>規則模式</span><button type="button" class="jbtn" id="jBtn" data-ovl="ovlJudge"><i id="jDot"></i>評審參與<span id="jCount"></span></button><button type="button" class="icon" id="fsBtn" title="全螢幕（F）">⛶</button></div>
+  <div class="tools"><span class="aibadge" id="aiBadge" title="本機 Demo AI 服務 → API"><i></i>規則模式</span><button type="button" class="jbtn" id="jBtn" data-ovl="ovlJudge"><i id="jDot"></i>評審參與<span id="jCount"></span></button><button type="button" class="icon" id="fsBtn" title="全螢幕（F）">⛶</button></div>
 </header>
 
 <main class="stage">
@@ -479,7 +479,7 @@ const fmt=(x,d=0)=>Number(x).toLocaleString('zh-TW',{minimumFractionDigits:d,max
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let S=1;
-/* ---------- 本機 Demo AI 服務（→ 公司 AI 平台）；連不到就用規則 ---------- */
+/* ---------- 本機 Demo AI 服務（→ API）；連不到就用規則 ---------- */
 const AI_BASE='http://localhost:8787';
 let AIOK=false, AIMODEL='';
 async function aiHealth(){
@@ -490,7 +490,7 @@ async function aiHealth(){
   renderAIBadge();
 }
 function renderAIBadge(){ const b=document.getElementById('aiBadge'); if(!b) return;
-  b.classList.toggle('on',AIOK); b.innerHTML=`<i></i>${AIOK?'公司 AI 已連線':'規則模式'}`; }
+  b.classList.toggle('on',AIOK); b.innerHTML=`<i></i>${AIOK?'API 已連線':'規則模式'}`; }
 const aiQ=[]; let aiBusy=0;
 function aiCall(path,body,{front=false,timeout=25000}={}){
   if(!AIOK) return Promise.resolve(null);
@@ -625,7 +625,7 @@ $('moreBtn').onclick=()=>{const m=$('qMore'); const open=m.style.display==='none
 $('go').onclick=()=>runJev($('q').value);
 $('q').addEventListener('keydown',e=>{if(e.key==='Enter'){runJev(e.target.value);e.target.blur();}});
 
-// 把公司 AI 的判斷合併進規則判斷的結構（介面沿用同一套欄位）
+// 把API 的判斷合併進規則判斷的結構（介面沿用同一套欄位）
 function applyAI(r,a){
   if(!a||!CATS.includes(a.category)) return null;
   const conf=Math.max(0.05,Math.min(0.99,+a.confidence||0.5));
@@ -677,7 +677,7 @@ function runJev(text,opt={}){
     if(!LAST||LAST.seq!==seq) return;
     const took=Math.round(performance.now()-t0), r2=res&&applyAI(r,res.result);
     if(r2){ LAST=buildLast(text,r2,cur,{lat:took,ms:[ms[0],took,ms[2],ms[3]],seq,aiState:'done',aiModel:res.model,aiTook:took,script:null});
-      $('pm1').textContent=took+' ms'; $('pipeNote').textContent=`Jev 判斷由公司 AI 平台複核，實際耗時約 ${(took/1000).toFixed(1)} 秒`; }
+      $('pm1').textContent=took+' ms'; $('pipeNote').textContent=`Jev 判斷由API複核，實際耗時約 ${(took/1000).toFixed(1)} 秒`; }
     else LAST.aiState='fail';
     renderAll(); if(SC===3||SC===4) ensureScript();
   });
@@ -715,7 +715,7 @@ function renderP11(){
   else if(r.multi){const a=r.strong[0].c,b=r.strong[1].c;tt=`偵測到兩個需求：${a}＋${b}`;why=`先轉 ${EXT[a]}，處理完再轉 ${EXT[b]}，不會只回答其中一個。`;col=css('--accent');ic='2';extra=hot(a);}
   else if(known){tt=`判斷為「${L.top.c}」→ 請按分機 ${EXT_NO[L.top.c]}`;why=`信心 ${(L.top.p*100).toFixed(0)}% ≥ 門檻 ${(ta*100).toFixed(0)}%，客戶不用聽語音選單，直接接到${EXT_DESK[L.top.c]}。`;col=css('--green');ic='✓';extra=hot(L.top.c);}
   else{tt='分不出類別 → 請按分機 0，由總機服務';why=L.top.c==='其他/真人'?'不屬於六大產品類別，或客戶主動要找真人，交給總機專員了解需求後再轉接。':`最高的「${L.nonOther[0].c}」信心只有 ${(L.nonOther[0].p*100).toFixed(0)}%，未達門檻 ${(ta*100).toFixed(0)}%，交給總機專員判斷比較保險。`;col=css('--p4');ic='0';extra=hot('其他/真人');}
-  const aist=L.aiState==='pending'?`<div class="aist pend">⏳ 公司 AI 平台複核中…（先顯示規則初判）</div>`:L.aiState==='done'?`<div class="aist ok">✓ 公司 AI 平台複核完成（${esc(L.aiModel||'')}，${(L.aiTook/1000).toFixed(1)} 秒）：${esc(r.ai?r.ai.reason:'')}<span class="q">「${hlText(L.text,r.ai?r.ai.evidence:[])}」</span></div>`:L.aiState==='fail'?'<div class="aist off">公司 AI 平台未回應，維持規則判斷</div>':'';
+  const aist=L.aiState==='pending'?`<div class="aist pend">⏳ API複核中…（先顯示規則初判）</div>`:L.aiState==='done'?`<div class="aist ok">✓ API複核完成（${esc(L.aiModel||'')}，${(L.aiTook/1000).toFixed(1)} 秒）：${esc(r.ai?r.ai.reason:'')}<span class="q">「${hlText(L.text,r.ai?r.ai.evidence:[])}」</span></div>`:L.aiState==='fail'?'<div class="aist off">API未回應，維持規則判斷</div>':'';
   $('out11').innerHTML=`<div class="bars">${bars}</div>${aist}<div class="decision" id="dec" style="--dc:${col}"><div class="tt"><span class="ic">${ic}</span>${tt}</div><div class="why">${why}</div>${extra}</div>`;
   if(!$('out11').classList.contains('wait')) requestAnimationFrame(()=>requestAnimationFrame(()=>document.querySelectorAll('#out11 .fl').forEach(el=>el.style.width=el.dataset.w+'%')));
   document.querySelectorAll('#dec .clar button').forEach(b=>b.onclick=()=>{
@@ -789,7 +789,7 @@ function renderDesk(){
     :r.urgent?`${who}您好，我是專員○○，我先立即協助您處理，請不用擔心。`
     :vip?`${who}您好，我是專員○○，了解您想詢問${L.best}的問題，我來為您說明。`
     :`您好，我是專員○○，了解您想詢問${L.best}的問題，我來為您說明。`;
-  if(L.script){ $('script22').textContent=`「${L.script.greeting}」`; $('steps22').innerHTML=L.script.steps.map(s=>`<li>${esc(s)}</li>`).join(''); $('scriptSt').textContent=`公司 AI 平台生成（${(L.script.took/1000).toFixed(1)} 秒）`; }
+  if(L.script){ $('script22').textContent=`「${L.script.greeting}」`; $('steps22').innerHTML=L.script.steps.map(s=>`<li>${esc(s)}</li>`).join(''); $('scriptSt').textContent=`API生成（${(L.script.took/1000).toFixed(1)} 秒）`; }
   else { $('script22').textContent=`「${greet}」`; $('steps22').innerHTML=steps.map(s=>`<li>${s}</li>`).join(''); $('scriptSt').textContent=L.scriptPending?'AI 生成中…（先顯示範本）':(AIOK?'':'範本話術'); }
   $('ctx22').innerHTML=`<div class="kv"><span class="k">客戶</span><span class="v">${esc(c||NAME_OVERRIDE?L.dname:'未驗證客戶')}</span><span class="k">服務等級</span><span class="v" style="color:${pc}">${PNAME[L.lvl]}</span><span class="k">問題類別</span><span class="v">${L.best}</span><span class="k">客戶情緒</span><span class="v">${emoTxt}</span></div><div class="emo"><i style="width:${(r.emo*100).toFixed(0)}%;background:${emoCol}"></i></div>${c&&c.calls7d>=2?`<div style="margin-top:20px" class="tag red">7 天內第 ${c.calls7d+1} 次來電</div>`:''}`;
   $('dkRef').style.display=r.hasOpp&&!(r.angry||r.urgent)?'':'none';
@@ -1049,13 +1049,13 @@ function onJudge(m){
   if($('ovlJudge').classList.contains('on')) renderJudgePanel();
   if(SC===5) renderQueue();
   const box=$('toasts'); const el=document.createElement('div'); el.className='toast';
-  el.innerHTML=`<div class="who">📱 ${esc(name)} 打進來（${esc(tier)}）</div><div class="tx">「${esc(text)}」</div><div class="rs">${AIOK?'⏳ 公司 AI 平台複核中…':`系統判斷：${routeOf(c.r).title} · ${PNAME[c.lvl]}`}</div><button type="button">用這句走一遍</button>`;
+  el.innerHTML=`<div class="who">📱 ${esc(name)} 打進來（${esc(tier)}）</div><div class="tx">「${esc(text)}」</div><div class="rs">${AIOK?'⏳ API複核中…':`系統判斷：${routeOf(c.r).title} · ${PNAME[c.lvl]}`}</div><button type="button">用這句走一遍</button>`;
   el.querySelector('button').onclick=()=>{ $('cid').value=id||''; NAME_OVERRIDE=(name&&name!=='評審')?name:''; lookupCust(id||''); $('q').value=text; go(0); runJev(text); el.remove(); };
   box.prepend(el); while(box.children.length>3) box.lastChild.remove();
   setTimeout(()=>el.remove(),20000);
   const finish=(ai)=>{
     const rt=routeOf(c.r);
-    const rs=el.querySelector('.rs'); if(rs) rs.textContent=`${ai?'公司 AI 判斷':'規則判斷'}：${rt.title} · ${PNAME[c.lvl]}`;
+    const rs=el.querySelector('.rs'); if(rs) rs.textContent=`${ai?'API 判斷':'規則判斷'}：${rt.title} · ${PNAME[c.lvl]}`;
     if(rid) sendReply(rid,{title:rt.title,cat:rt.cat,ext:rt.ext,desk:rt.desk,kind:rt.kind,pname:PNAME[c.lvl],ai:!!ai,name});
     if(SC===5) renderQueue(); if($('ovlJudge').classList.contains('on')) renderJudgePanel();
   };
@@ -1089,7 +1089,7 @@ function connectJudges(){ if(window.__NOJUDGE) return; pollJudges(); setInterval
 $('jBtn').addEventListener('click',()=>setTimeout(renderJudgePanel,0));
 connectJudges();
 
-/* ---------- AI 總結全場（呼叫本機法遵系統 → 公司 AI 平台；失敗改用本機統計） ---------- */
+/* ---------- AI 總結全場（呼叫本機法遵系統 → API；失敗改用本機統計） ---------- */
 const DEMO_API='http://localhost:8787/api/demo/summary';  // 本機 Demo AI 服務（jev-demo-api），與法遵系統獨立
 function sumCalls(){
   const calls=JUDGES.map(j=>({name:j.name,tier:j.tier,text:j.text,cat:j.cat,lvl:j.lvl,angry:j.angry,urgent:j.urgent}));
@@ -1108,7 +1108,7 @@ function localSummary(calls){
 function renderSummary(d,meta){
   const max=Math.max(1,...(d.themes||[]).map(x=>x.count||0));
   $('sumBody').innerHTML=`<div class="sumhead">${esc(d.headline||'')}</div>
-    <div class="sumsrc">資料：${esc(meta.src)}　·　分析：${meta.ai?`<b>公司 AI 平台（${esc(meta.model)}）</b>`:`<b class="off">本機統計</b>（${esc(meta.why)}）`}</div>
+    <div class="sumsrc">資料：${esc(meta.src)}　·　分析：${meta.ai?`<b>API（${esc(meta.model)}）</b>`:`<b class="off">本機統計</b>（${esc(meta.why)}）`}</div>
     <div class="sumgrid"><div><div class="sumlbl">進線主題</div>${(d.themes||[]).map(x=>`<div class="theme"><div class="tl">${esc(x.title)}<span>${x.count||0} 通</span></div><div class="bar2"><i style="width:${(x.count||0)/max*100}%"></i></div><div class="ins">${esc(x.insight||'')}</div>${(x.examples||[]).length?`<div class="ex">例：「${(x.examples||[]).map(esc).join('」「')}」</div>`:''}</div>`).join('')}</div>
     <div><div class="sumlbl" style="color:var(--red)">主管現在要注意</div><ul class="sumlist">${(d.alerts||[]).map(a=>`<li>${esc(a)}</li>`).join('')||'<li class="dim">沒有需要立即處理的狀況</li>'}</ul>
     <div class="sumlbl" style="color:var(--accent)">建議行動</div><ul class="sumlist">${(d.actions||[]).map(a=>`<li>${esc(a)}</li>`).join('')}</ul></div></div>`;
@@ -1117,7 +1117,7 @@ async function runSummary(){
   $('ovlSum').classList.add('on');
   const {calls,src}=sumCalls();
   if(!calls.length){ $('sumBody').innerHTML='<div class="sumload">還沒有評審來電<div class="small dim" style="margin-top:10px">請評審掃描右上角「評審參與」的 QR code 送出問題後再按一次（只計算本頁開啟後送進來的來電）</div></div>'; return; }
-  $('sumBody').innerHTML='<div class="sumload"><i></i><i></i><i></i><div style="margin-top:14px">公司 AI 平台分析中（最多 25 秒）…</div></div>';
+  $('sumBody').innerHTML='<div class="sumload"><i></i><i></i><i></i><div style="margin-top:14px">API分析中（最多 25 秒）…</div></div>';
   let why='AI 平台未連線';
   try{
     const ac=new AbortController(); const tm=setTimeout(()=>ac.abort(),25000);
