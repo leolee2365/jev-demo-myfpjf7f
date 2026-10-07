@@ -89,8 +89,8 @@ button{font:inherit;cursor:pointer}
 .custmini b{font-size:16.5px}
 .more{background:none;border:0;color:var(--accent);font-size:14px;padding:6px 4px}
 .bars{display:flex;flex-direction:column;gap:16px;margin-top:4px}
-.bar{display:grid;grid-template-columns:110px 1fr 64px;align-items:center;gap:16px}
-.bar .lab{font-size:19px;color:var(--ink-2)}
+.bar{display:grid;grid-template-columns:130px 1fr 64px;align-items:center;gap:16px}
+.bar .lab{font-size:19px;color:var(--ink-2);white-space:nowrap}
 .bar.top .lab{font-weight:800;color:var(--text)}
 .bar .tr{height:16px;background:var(--soft);border-radius:8px;position:relative;overflow:visible}
 .bar .fl{position:absolute;left:0;top:0;bottom:0;border-radius:8px;background:#c9d7ea;transition:width .55s cubic-bezier(.2,.7,.2,1)}
@@ -508,10 +508,10 @@ function pumpAI(){
 
 
 /* ---------- 分類模擬（Jev 輸出以本機規則模擬） ---------- */
-const CATS=['房貸','信貸','信用卡','開戶','存款','理財信託','其他/真人'];
-const EXT={'房貸':'分機 1','信貸':'分機 2','信用卡':'分機 3','開戶':'分機 4','存款':'分機 5','理財信託':'分機 6','其他/真人':'分機 0（總機）'};
-const EXT_NO={'房貸':'1','信貸':'2','信用卡':'3','開戶':'4','存款':'5','理財信託':'6','其他/真人':'0'};
-const EXT_DESK={'房貸':'房貸專員','信貸':'信貸專員','信用卡':'信用卡專員','開戶':'開戶專員','存款':'存款專員','理財信託':'理財專員','其他/真人':'總機專員'};
+const CATS=['房貸','信貸','信用卡','開戶','存款','理財信託','基本資料變更','其他/真人'];
+const EXT={'房貸':'分機 1','信貸':'分機 2','信用卡':'分機 3','開戶':'分機 4','存款':'分機 5','理財信託':'分機 6','基本資料變更':'分機 7','其他/真人':'分機 0（總機）'};
+const EXT_NO={'房貸':'1','信貸':'2','信用卡':'3','開戶':'4','存款':'5','理財信託':'6','基本資料變更':'7','其他/真人':'0'};
+const EXT_DESK={'房貸':'房貸專員','信貸':'信貸專員','信用卡':'信用卡專員','開戶':'開戶專員','存款':'存款專員','理財信託':'理財專員','基本資料變更':'客戶資料專員','其他/真人':'總機專員'};
 const HOTLINE='02-XXXX-XXXX（示意）';
 const KW={
   '房貸':[['房貸',3],['買房',3],['購屋',3],['房子',2.5],['房屋',2.5],['首購',2.5],['新青安',3],['青安',3],['轉貸',2],['增貸',2],['寬限期',2.5],['房',1]],
@@ -520,6 +520,7 @@ const KW={
   '開戶':[['開戶',3],['開帳戶',3],['數位帳戶',3.5],['大戶',2],['dawho',2],['存摺',1.2],['金融卡',1.5],['網銀',1.2],['網路銀行',1.2],['密碼',1],['帶什麼',0.8]],
   '存款':[['定存',3],['存款',2.5],['利息',2],['利率',1.2],['外幣',2],['美金',1.8],['日幣',2.5],['日圓',2.5],['換外幣',3],['換匯',2.5],['歐元',2],['去日本',1.5],['出國',2.5],['出國玩',1.5],['到期',1.5],['匯款',2.5],['轉帳',2.2],['餘額',2.2],['扣款',1.5],['扣了',1.5],['被扣',1.5],['提款',2],['存錢',2],['放銀行',1.5]],
   '理財信託':[['基金',3],['投資',2.5],['理財',3],['信託',3],['etf',3],['債券',3],['保險',2],['股票',2],['報酬',2],['定期定額',3],['穩一點',1.6],['穩',0.8],['配息',2.5],['理賠',2.5],['保單',2.5]],
+  '基本資料變更':[['地址',3],['通訊地址',3.5],['戶籍地址',3.5],['住址',3],['搬家',2.5],['電話號碼',3],['手機號碼',3],['聯絡電話',3],['換號碼',3],['email',3],['電子信箱',3],['信箱',2],['改名',3.5],['更名',3.5],['改姓名',3.5],['變更資料',3.5],['基本資料',3.5],['個人資料',3],['聯絡資料',3.5],['印鑑',3],['帳單地址',3],['寄送地址',3],['變更',1.2],['更換',0.8],['修改',0.8]],
   '其他/真人':[['真人',3],['專員',2.5],['客服人員',3],['分行',2.2],['幾點',1.5],['營業時間',2.5],['抱怨',2.5],['客訴',3],['不知道',0.8]],
 };
 const URGENT=['盜刷','被盜','詐騙','被騙','遺失','不見','掉了','掛失','冒用','異常交易'];
@@ -714,7 +715,7 @@ function renderP11(){
   else if(r.angry){tt=`情緒不佳：直接轉真人 → ${L.best}`;why=`不滿程度 ${(r.emo*100).toFixed(0)}%，直接接給專員並帶上情緒標記，專員接起來就知道要先安撫。`;col=css('--red');ic='☎';extra=hot(L.best);}
   else if(r.multi){const a=r.strong[0].c,b=r.strong[1].c;tt=`偵測到兩個需求：${a}＋${b}`;why=`先轉 ${EXT[a]}，處理完再轉 ${EXT[b]}，不會只回答其中一個。`;col=css('--accent');ic='2';extra=hot(a);}
   else if(known){tt=`判斷為「${L.top.c}」→ 請按分機 ${EXT_NO[L.top.c]}`;why=`信心 ${(L.top.p*100).toFixed(0)}% ≥ 門檻 ${(ta*100).toFixed(0)}%，客戶不用聽語音選單，直接接到${EXT_DESK[L.top.c]}。`;col=css('--green');ic='✓';extra=hot(L.top.c);}
-  else{tt='分不出類別 → 請按分機 0，由總機服務';why=L.top.c==='其他/真人'?'不屬於六大產品類別，或客戶主動要找真人，交給總機專員了解需求後再轉接。':`最高的「${L.nonOther[0].c}」信心只有 ${(L.nonOther[0].p*100).toFixed(0)}%，未達門檻 ${(ta*100).toFixed(0)}%，交給總機專員判斷比較保險。`;col=css('--p4');ic='0';extra=hot('其他/真人');}
+  else{tt='分不出類別 → 請按分機 0，由總機服務';why=L.top.c==='其他/真人'?'不屬於任何服務類別，或客戶主動要找真人，交給總機專員了解需求後再轉接。':`最高的「${L.nonOther[0].c}」信心只有 ${(L.nonOther[0].p*100).toFixed(0)}%，未達門檻 ${(ta*100).toFixed(0)}%，交給總機專員判斷比較保險。`;col=css('--p4');ic='0';extra=hot('其他/真人');}
   const aist=L.aiState==='pending'?`<div class="aist pend">⏳ API複核中…（先顯示規則初判）</div>`:L.aiState==='done'?`<div class="aist ok">✓ API複核完成（${esc(L.aiModel||'')}，${(L.aiTook/1000).toFixed(1)} 秒）：${esc(r.ai?r.ai.reason:'')}<span class="q">「${hlText(L.text,r.ai?r.ai.evidence:[])}」</span></div>`:L.aiState==='fail'?'<div class="aist off">API未回應，維持規則判斷</div>':'';
   $('out11').innerHTML=`<div class="bars">${bars}</div>${aist}<div class="decision" id="dec" style="--dc:${col}"><div class="tt"><span class="ic">${ic}</span>${tt}</div><div class="why">${why}</div>${extra}</div>`;
   if(!$('out11').classList.contains('wait')) requestAnimationFrame(()=>requestAnimationFrame(()=>document.querySelectorAll('#out11 .fl').forEach(el=>el.style.width=el.dataset.w+'%')));
@@ -761,7 +762,7 @@ function renderP13(){
 }
 
 /* ---------- 2-1 / 2-2 ---------- */
-const CAT_TIPS={'房貸':'確認需求是新申辦、轉貸還是利率調整，必要時轉房貸專員','信貸':'確認借款金額與用途，說明線上申辦與審核時間','信用卡':'完成身分驗證後，查詢帳單、額度或交易明細','開戶':'說明應備文件，並引導數位開戶流程','存款':'查詢帳戶交易紀錄、匯款狀態或定存資訊','理財信託':'確認商品名稱與風險屬性，必要時轉理專','其他/真人':'先釐清需求，再決定是否轉接'};
+const CAT_TIPS={'房貸':'確認需求是新申辦、轉貸還是利率調整，必要時轉房貸專員','信貸':'確認借款金額與用途，說明線上申辦與審核時間','信用卡':'完成身分驗證後，查詢帳單、額度或交易明細','開戶':'說明應備文件，並引導數位開戶流程','存款':'查詢帳戶交易紀錄、匯款狀態或定存資訊','理財信託':'確認商品名稱與風險屬性，必要時轉理專','基本資料變更':'完成身分驗證後，確認要變更的項目（地址、電話、Email、姓名），說明線上變更方式或應備文件','其他/真人':'先釐清需求，再決定是否轉接'};
 let DESK_T0=0;
 function renderDesk(){
   const L=LAST; if(!L) return; const r=L.r, c=L.c, cur=L.cur, vip=L.vip;
@@ -800,7 +801,7 @@ $('dkXfer').onclick=()=>$('dkMsg').textContent=`已轉接 ${EXT[LAST.best]}，�
 $('dkRef').onclick=()=>$('dkMsg').textContent=`已建立轉介單 → ${LAST.vip&&LAST.c.rm?'專屬理專 '+LAST.c.rm:LAST.r.opp.o.owner}（需客戶同意後送出）。`;
 
 /* ---------- 3 排隊看板 ---------- */
-const QPOOL_Q=MAIN_SAMPLES.map(s=>s.q).concat(MORE_SAMPLES,['信用卡帳單怎麼還沒寄來','房貸利率可以調降嗎','請問定存怎麼解約','我的金融卡不見了','外幣匯款要多久','網銀密碼忘記了']);
+const QPOOL_Q=MAIN_SAMPLES.map(s=>s.q).concat(MORE_SAMPLES,['信用卡帳單怎麼還沒寄來','房貸利率可以調降嗎','請問定存怎麼解約','我的金融卡不見了','外幣匯款要多久','網銀密碼忘記了','我搬家了要改通訊地址','手機號碼換了要怎麼改']);
 const QPOOL_ID=[[null,50],['B200000004',20],['E100000005',5],['H200000000',12],['F123456784',8],['A123456789',5]];
 let QS={t:0,q:[],agents:[],seq:0,paused:false,served:0,waitSum:0};
 function pickId(){let x=Math.random()*100;for(const [id,w] of QPOOL_ID){if((x-=w)<0) return id;}return null;}
@@ -911,14 +912,14 @@ function drawCurve(){
 
 /* 流量動畫 */
 const LANES=[{cv:$('cv0'),mode:'asis',dots:[],stat:{done:0,mis:0}},{cv:$('cv1'),mode:'tobe',dots:[],stat:{done:0,mis:0}}];
-const BOX=['房貸','信貸','信用卡','開戶','存款','理財'];
+const BOX=['房貸','信貸','信用卡','開戶','存款','理財','資料變更'];
 function laneGeom(cv){const dpr=(devicePixelRatio||1)*S;const w=cv.clientWidth,h=cv.clientHeight||300;
   if(cv.width!==Math.round(w*dpr)||cv.height!==Math.round(h*dpr)){cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);}
-  const ctx=cv.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);return {ctx,w,h,hubX:w*0.38,boxes:BOX.map((b,i)=>({x:w*0.80,y:24+i*(h-48)/5}))};}
+  const ctx=cv.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);return {ctx,w,h,hubX:w*0.38,boxes:BOX.map((b,i)=>({x:w*0.80,y:22+i*(h-44)/(BOX.length-1)}))};}
 let lastT=performance.now(), spawnAcc=[0,0];
-function spawn(L){const g=laneGeom(L.cv);const target=Math.floor(Math.random()*6);let wrong=-1,ask=false,hubDwell;
-  if(L.mode==='asis'){const m=SIM.A?SIM.A.mis:0.14;if(Math.random()<m) wrong=(target+1+Math.floor(Math.random()*5))%6;hubDwell=(P.ivr+P.fOp*(W_OP+P.tOp))/30;}
-  else{const r=SIM.B?SIM.B.r:{ask:0.2,human:0.05},m=SIM.B?SIM.B.mis:0.06;if(Math.random()<m) wrong=(target+1+Math.floor(Math.random()*5))%6;ask=Math.random()<r.ask;hubDwell=(10+(ask?15:0)+(Math.random()<r.human?(W_OP+P.tOp):0))/30;}
+function spawn(L){const g=laneGeom(L.cv);const NB=BOX.length, target=Math.floor(Math.random()*NB);let wrong=-1,ask=false,hubDwell;
+  if(L.mode==='asis'){const m=SIM.A?SIM.A.mis:0.14;if(Math.random()<m) wrong=(target+1+Math.floor(Math.random()*(NB-1)))%NB;hubDwell=(P.ivr+P.fOp*(W_OP+P.tOp))/30;}
+  else{const r=SIM.B?SIM.B.r:{ask:0.2,human:0.05},m=SIM.B?SIM.B.mis:0.06;if(Math.random()<m) wrong=(target+1+Math.floor(Math.random()*(NB-1)))%NB;ask=Math.random()<r.ask;hubDwell=(10+(ask?15:0)+(Math.random()<r.human?(W_OP+P.tOp):0))/30;}
   L.dots.push({x:10,y:g.h/2+(Math.random()-0.5)*60,phase:0,target,wrong,ask,hubDwell,dwell:0,col:'ink'});}
 function rr(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath();}
 function mv(d,tx,ty,dist){const dx=tx-d.x,dy=ty-d.y,L=Math.hypot(dx,dy);if(L<=dist){d.x=tx;d.y=ty;return true;}d.x+=dx/L*dist;d.y+=dy/L*dist;return false;}
