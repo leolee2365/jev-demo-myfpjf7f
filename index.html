@@ -497,7 +497,7 @@ function aiCall(path,body,{front=false,timeout=25000}={}){
   return new Promise(res=>{ const job={path,body,timeout,res}; front?aiQ.unshift(job):aiQ.push(job); pumpAI(); });
 }
 function pumpAI(){
-  while(aiBusy<2&&aiQ.length){ const job=aiQ.shift(); aiBusy++;
+  while(aiBusy<4&&aiQ.length){ const job=aiQ.shift(); aiBusy++;
     (async()=>{ let out=null;
       try{ const ac=new AbortController(); const tm=setTimeout(()=>ac.abort(),job.timeout);
         const r=await fetch(AI_BASE+job.path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(job.body),signal:ac.signal});
@@ -694,7 +694,7 @@ function playPipe(ms,anim){
   $('pipeNote').textContent=`慢動作播放；實際總耗時約 ${(ms.reduce((a,b)=>a+b,0)/1000).toFixed(2)} 秒`;
   if(!anim){ for(let i=0;i<4;i++) $('pn'+i).className='pnode done'; out.classList.remove('wait'); return; }
   out.classList.add('wait');
-  const st=340;
+  const st=220;
   for(let i=0;i<4;i++) PIPE_T.push(setTimeout(()=>{ if(i>0) $('pn'+(i-1)).className='pnode done'; $('pn'+i).className='pnode run'; },i*st));
   PIPE_T.push(setTimeout(()=>{ $('pn3').className='pnode done'; out.classList.remove('wait');
     requestAnimationFrame(()=>document.querySelectorAll('#out11 .fl').forEach(el=>el.style.width=el.dataset.w+'%')); },4*st));
