@@ -136,7 +136,7 @@ function waitReply(rid,since){
         return; }
     }catch(_){}
   };
-  setTimeout(tick,2500); waitTimer=setInterval(tick,4000);
+  setTimeout(tick,1500); waitTimer=setInterval(tick,2000);  // 每 2 秒查一次回覆
 }
 $('again').onclick=()=>{ clearInterval(waitTimer); cancelAuto(); $('micTx').textContent='點一下開始說話'; $('tx').value=''; upd(); $('ok').style.display='none'; $('form').style.display='block'; };
 

@@ -1070,22 +1070,37 @@ function onJudge(m){
 function sendReply(rid,payload){
   fetch(`https://ntfy.sh/${encodeURIComponent(TOPIC+'-r-'+rid)}/publish?message=${encodeURIComponent(JSON.stringify(payload))}`,{cache:'no-store'}).catch(()=>{});
 }
-let SINCE=Math.floor(Date.now()/1000), SEEN=new Set(), POLLING=false;
+let SINCE=Math.floor(Date.now()/1000), SEEN=new Set(), POLLING=false, LSEQ=-1, TICK=0;
+function takeMsg(id,message){
+  if(!id||SEEN.has(id)) return; SEEN.add(id);
+  let m; try{ m=JSON.parse(message); }catch(_){ m={text:message}; } onJudge(m||{});
+}
+// 本機服務在跑：問本機收件匣（本機服務對 ntfy 維持長連線，不受 ntfy 額度限制）
+async function pollLocal(){
+  const r=await fetch(`${AI_BASE}/api/demo/inbox?topic=${encodeURIComponent(TOPIC)}&after=${LSEQ}`,{cache:'no-store'});
+  const j=await r.json(); if(!j.ok) throw new Error('inbox');
+  if(LSEQ>=0) j.items.forEach(x=>takeMsg(x.id,x.message));
+  LSEQ=j.seq; setJ(!!j.connected);
+}
+// 本機服務沒開：直接查 ntfy（ntfy 每 5 秒補 1 次額度，所以只能每 6 秒查一次）
+async function pollNtfy(){
+  const r=await fetch(`https://ntfy.sh/${encodeURIComponent(TOPIC)}/json?poll=1&since=${SINCE}`,{cache:'no-store'});
+  if(!r.ok) throw new Error(r.status); setJ(true);
+  (await r.text()).split('\n').filter(Boolean).forEach(line=>{
+    let d; try{ d=JSON.parse(line); }catch(_){ return; }
+    if(d.event!=='message') return; SINCE=d.id; takeMsg(d.id,d.message);
+  });
+}
 async function pollJudges(){
-  if(POLLING) return; POLLING=true;
+  if(POLLING) return; POLLING=true; TICK++;
   try{
-    const r=await fetch(`https://ntfy.sh/${encodeURIComponent(TOPIC)}/json?poll=1&since=${SINCE}`,{cache:'no-store'});
-    if(!r.ok) throw new Error(r.status); setJ(true);
-    (await r.text()).split('\n').filter(Boolean).forEach(line=>{
-      let d; try{ d=JSON.parse(line); }catch(_){ return; }
-      if(d.event!=='message'||SEEN.has(d.id)) return; SEEN.add(d.id); SINCE=d.id;
-      let m; try{ m=JSON.parse(d.message); }catch(_){ m={text:d.message}; } onJudge(m||{});
-    });
+    if(AIOK) await pollLocal();
+    else if(TICK%3===1) await pollNtfy();
   }catch(_){ setJ(false); }
   POLLING=false;
 }
-// 公司代理會擋即時串流，改用輪詢；ntfy 每 5 秒補 1 次額度，每 6 秒輪詢才不會被擋
-function connectJudges(){ if(window.__NOJUDGE) return; pollJudges(); setInterval(pollJudges,6000); }
+// 每 2 秒查一次評審來電
+function connectJudges(){ if(window.__NOJUDGE) return; pollJudges(); setInterval(pollJudges,2000); }
 $('jBtn').addEventListener('click',()=>setTimeout(renderJudgePanel,0));
 connectJudges();
 
