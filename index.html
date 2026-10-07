@@ -508,21 +508,66 @@ function pumpAI(){
 
 
 /* ---------- 分類模擬（Jev 輸出以本機規則模擬） ---------- */
-const CATS=['房貸','信貸','信用卡','開戶','存款','理財信託','基本資料變更','其他/真人'];
-const EXT={'房貸':'分機 1','信貸':'分機 2','信用卡':'分機 3','開戶':'分機 4','存款':'分機 5','理財信託':'分機 6','基本資料變更':'分機 7','其他/真人':'分機 0（總機）'};
-const EXT_NO={'房貸':'1','信貸':'2','信用卡':'3','開戶':'4','存款':'5','理財信託':'6','基本資料變更':'7','其他/真人':'0'};
-const EXT_DESK={'房貸':'房貸專員','信貸':'信貸專員','信用卡':'信用卡專員','開戶':'開戶專員','存款':'存款專員','理財信託':'理財專員','基本資料變更':'客戶資料專員','其他/真人':'總機專員'};
-const HOTLINE='02-XXXX-XXXX（示意）';
-const KW={
-  '房貸':[['房貸',3],['買房',3],['購屋',3],['房子',2.5],['房屋',2.5],['首購',2.5],['新青安',3],['青安',3],['轉貸',2],['增貸',2],['寬限期',2.5],['房',1]],
-  '信貸':[['信貸',3],['信用貸款',3],['借錢',1.6],['週轉',2.4],['周轉',2.4],['缺錢',2],['借款',1.5],['貸款',1.2],['債務整合',2.5],['萬周轉',1],['萬週轉',1],['借',1]],
-  '信用卡':[['信用卡',3],['刷卡',2.5],['卡費',3],['帳單',2],['盜刷',3],['額度',1.2],['分期',1.8],['紅利',2],['年費',2.5],['apple pay',2],['行動支付',1.5],['掛失',1.5],['卡',0.8],['回饋',1.5],['繳款',1],['扣',0.8]],
-  '開戶':[['開戶',3],['開帳戶',3],['數位帳戶',3.5],['大戶',2],['dawho',2],['存摺',1.2],['金融卡',1.5],['網銀',1.2],['網路銀行',1.2],['密碼',1],['帶什麼',0.8]],
-  '存款':[['定存',3],['存款',2.5],['利息',2],['利率',1.2],['外幣',2],['美金',1.8],['日幣',2.5],['日圓',2.5],['換外幣',3],['換匯',2.5],['歐元',2],['去日本',1.5],['出國',2.5],['出國玩',1.5],['到期',1.5],['匯款',2.5],['轉帳',2.2],['餘額',2.2],['扣款',1.5],['扣了',1.5],['被扣',1.5],['提款',2],['存錢',2],['放銀行',1.5]],
-  '理財信託':[['基金',3],['投資',2.5],['理財',3],['信託',3],['etf',3],['債券',3],['保險',2],['股票',2],['報酬',2],['定期定額',3],['穩一點',1.6],['穩',0.8],['配息',2.5],['理賠',2.5],['保單',2.5]],
-  '基本資料變更':[['地址',3],['通訊地址',3.5],['戶籍地址',3.5],['住址',3],['搬家',2.5],['電話號碼',3],['手機號碼',3],['聯絡電話',3],['換號碼',3],['email',3],['電子信箱',3],['信箱',2],['改名',3.5],['更名',3.5],['改姓名',3.5],['變更資料',3.5],['基本資料',3.5],['個人資料',3],['聯絡資料',3.5],['印鑑',3],['帳單地址',3],['寄送地址',3],['變更',1.2],['更換',0.8],['修改',0.8]],
-  '其他/真人':[['真人',3],['專員',2.5],['客服人員',3],['分行',2.2],['幾點',1.5],['營業時間',2.5],['抱怨',2.5],['客訴',3],['不知道',0.8]],
+const CATS=['信用卡','存款外匯','貸款','財富信託','保險','數位服務','基本資料變更','其他/真人'];
+// 客服專線（真實號碼）；按鍵為提案示意，與實際語音選單不同
+const LINES={card:{name:'信用卡客服',tel:'02-2528-7776'},bank:{name:'銀行客服',tel:'02-2505-9999'}};
+const SVC={
+ '信用卡':{line:'card',key:'',desk:'信用卡專員',tip:'完成身分驗證後，查詢帳單、額度或交易明細',subs:[
+   {n:'申辦與權益',k:'1',kw:[['辦卡',3],['申辦',2.5],['年費',2.5],['權益',2.5],['回饋',2.5],['額度',2],['調額',2.5],['新卡',2],['停卡',2]],tip:'了解想申辦的卡別或要調整的權益、額度，說明申辦管道與審核時間'},
+   {n:'帳單繳款與分期',k:'2',kw:[['帳單',3],['卡費',3],['繳款',2.5],['繳費',2],['分期',3],['預借現金',3],['最低應繳',3],['扣款',1.5],['扣',0.8]],tip:'查詢帳單金額與繳款狀態，說明分期期數與手續費'},
+   {n:'紅利點數',k:'3',kw:[['紅利',3],['點數',3],['兌換',2.5],['豐點',3],['里程',2.5]],tip:'查詢點數餘額與到期日，說明兌換方式'},
+   {n:'掛失與盜刷',k:'4',kw:[['盜刷',3.5],['被盜',3],['掛失',3],['遺失',2.5],['不見',2.5],['冒用',3],['異常交易',3],['詐騙',2.5],['不是我刷的',3]],tip:'立即協助止付掛失，再說明爭議款與補發新卡流程'}]},
+ '存款外匯':{line:'bank',key:'1',desk:'存款外匯專員',tip:'查詢帳戶交易紀錄、匯款狀態或存款資訊',subs:[
+   {n:'台幣存款',k:'1',kw:[['定存',3],['活存',2.5],['存款',2],['利率',2],['利息',2],['到期',1.5],['解約',1.5],['餘額',2],['存錢',2],['放銀行',1.5]],tip:'確認存款種類，說明利率、到期與解約方式'},
+   {n:'外幣與換匯',k:'2',kw:[['外幣',3],['換匯',3],['換外幣',3],['美金',2.5],['日幣',3],['日圓',3],['歐元',2.5],['匯率',2.5],['出國',2],['去日本',2],['現鈔',2]],tip:'說明即時匯率、線上換匯與外幣提領方式'},
+   {n:'轉帳匯款查詢',k:'3',kw:[['轉帳',3],['匯款',3],['入帳',3],['沒到',2.5],['還沒到',2.5],['被扣',2],['扣了',2],['扣款',2],['跨行',2],['退匯',3]],tip:'取得交易時間與金額，查詢入帳或退匯狀態'},
+   {n:'薪轉與金融卡',k:'4',kw:[['薪轉',3],['薪資',2.5],['金融卡',3],['提款卡',3],['提款',2],['atm',2.5],['吃卡',3]],tip:'確認金融卡狀態，說明補發、提款或薪轉設定'},
+   {n:'保管箱',k:'5',kw:[['保管箱',4]],tip:'說明保管箱租用分行、費用與應備文件'}]},
+ '貸款':{line:'bank',key:'2',desk:'貸款專員',tip:'確認借款需求與用途，說明申辦流程',subs:[
+   {n:'房貸',k:'1',kw:[['房貸',3],['買房',3],['購屋',3],['房子',2.5],['房屋',2.5],['首購',2.5],['新青安',3],['青安',3],['轉貸',2.5],['增貸',2.5],['寬限期',2.5],['抵押',2.5]],tip:'確認是新申辦、轉貸、增貸或利率調整，必要時轉房貸專員'},
+   {n:'信貸',k:'2',kw:[['信貸',3],['信用貸款',3],['借錢',2],['週轉',2.5],['周轉',2.5],['缺錢',2],['借款',2]],tip:'確認借款金額與用途，說明線上申辦與審核時間'},
+   {n:'債務協商',k:'3',kw:[['協商',3],['債務',3],['還不出來',3],['繳不出',3],['債務整合',3],['前置協商',3.5]],tip:'了解還款困難情況，說明債務協商管道與應備文件'}]},
+ '財富信託':{line:'bank',key:'3',desk:'理財專員',tip:'確認商品名稱與風險屬性，必要時轉理專',subs:[
+   {n:'基金／ETF／海外股票',k:'1',kw:[['基金',3],['etf',3],['美股',3],['海外股票',3],['股票',2.5],['定期定額',3],['配息',2],['淨值',2.5],['贖回',2.5]],tip:'確認持有商品與交易需求，說明申購、贖回與配息'},
+   {n:'債券與結構型商品',k:'2',kw:[['債券',3],['結構型',3.5],['連動債',3.5]],tip:'確認商品條件與風險屬性，由理專說明'},
+   {n:'黃金存摺',k:'3',kw:[['黃金',3.5],['金價',3]],tip:'說明黃金存摺買賣方式與牌價'},
+   {n:'信託',k:'4',kw:[['信託',3.5],['退休',2],['安養',2.5],['傳承',2.5]],tip:'了解信託目的，轉介信託專員說明'}]},
+ '保險':{line:'bank',key:'4',desk:'保險專員',tip:'確認保單號碼與需求，說明理賠或保障內容',subs:[
+   {n:'保單與理賠',k:'1',kw:[['理賠',3.5],['保單',3],['保費',2.5],['住院',2]],tip:'確認保單號碼與事故日期，說明理賠應備文件'},
+   {n:'保障規劃',k:'2',kw:[['保險',2.5],['保障',3],['醫療險',3],['意外險',3],['壽險',3]],tip:'了解保障需求，轉介理專做保障健檢'}]},
+ '數位服務':{line:'bank',key:'5',desk:'數位服務專員',tip:'確認使用的數位管道，協助登入或開戶流程',subs:[
+   {n:'網銀與 APP 登入',k:'1',kw:[['網銀',3],['網路銀行',3],['app',3],['登入',3],['密碼',3],['鎖住',2.5],['驗證碼',2.5],['otp',2.5]],tip:'完成身分驗證後，協助密碼重設或解鎖'},
+   {n:'開戶',k:'2',kw:[['開戶',3.5],['開帳戶',3.5],['數位帳戶',3.5],['大戶',2],['dawho',2],['帶什麼',1.5],['存摺',1.5]],tip:'說明數位開戶或臨櫃開戶的應備文件與流程'}]},
+ '基本資料變更':{line:'bank',key:'6',desk:'客戶資料專員',tip:'完成身分驗證後，確認要變更的項目，說明線上變更方式或應備文件',subs:[
+   {n:'地址',k:'1',kw:[['地址',3],['住址',3],['搬家',2.5],['通訊地址',3.5],['戶籍',3],['帳單地址',3],['寄送地址',3]],tip:'確認新地址，說明線上或臨櫃變更方式'},
+   {n:'電話',k:'2',kw:[['電話',3],['手機號碼',3.5],['換號碼',3],['聯絡電話',3]],tip:'確認新電話號碼，完成驗證後更新'},
+   {n:'Email',k:'3',kw:[['email',3.5],['電子信箱',3.5],['信箱',2.5],['電子郵件',3.5]],tip:'確認新 Email，完成驗證後更新'},
+   {n:'姓名與印鑑',k:'4',kw:[['改名',3.5],['更名',3.5],['姓名',2.5],['印鑑',3.5]],tip:'說明須臨櫃辦理及應備文件'}]},
+ '其他/真人':{line:'bank',key:'0',desk:'總機專員',tip:'先釐清需求，再決定是否轉接',subs:[]},
 };
+// 主類別關鍵字＝各細項關鍵字＋少量通用詞
+const KW={};
+for(const c of CATS){ const m={}; SVC[c].subs.forEach(s=>s.kw.forEach(([k,w])=>{m[k]=Math.max(m[k]||0,w);})); KW[c]=Object.entries(m); }
+KW['信用卡'].push(['信用卡',3],['刷卡',2.5],['卡',0.8]);
+KW['存款外匯'].push(['帳戶',1]);
+KW['貸款'].push(['貸款',2.5],['借',1]);
+KW['財富信託'].push(['理財',3],['投資',2.5],['報酬',2],['穩一點',1.6],['穩',0.8]);
+KW['基本資料變更'].push(['基本資料',3.5],['個人資料',3],['聯絡資料',3.5],['變更資料',3.5],['變更',1.2],['更換',0.8],['修改',0.8]);
+KW['其他/真人']=[['真人',3],['專員',2.5],['客服人員',3],['分行',2.2],['幾點',1.5],['營業時間',2.5],['抱怨',2.5],['客訴',3],['不知道',0.8]];
+// 細項：API 有給就用 API 的，否則用關鍵字
+function subOf(r,cat){
+  const s=SVC[cat]; if(!s||!s.subs.length) return null;
+  if(r.aiSub&&r.aiSubCat===cat){ const x=s.subs.find(y=>y.n===r.aiSub); if(x) return x; }
+  const txt=(r.text||'').toLowerCase(); let best=null,bv=0;
+  s.subs.forEach(x=>{ let v=0; x.kw.forEach(([k,w])=>{ if(txt.includes(k)) v+=w; }); if(v>bv){bv=v;best=x;} });
+  return best;
+}
+function svcRoute(r,cat){
+  const s=SVC[cat], ln=LINES[s.line], sub=subOf(r,cat);
+  const key=cat==='其他/真人'?'0':s.line==='card'?(sub?sub.k:''):s.key+(sub?'-'+sub.k:'');
+  return {cat,sub:sub?sub.n:'',subObj:sub,line:ln.name,tel:ln.tel,key,desk:s.desk,label:cat==='其他/真人'?'總機':cat+(sub?' › '+sub.n:'')};
+}
+const keyTxt=x=>x.key?`按 ${x.key}（示意）`:'依語音選單選擇';
 const URGENT=['盜刷','被盜','詐騙','被騙','遺失','不見','掉了','掛失','冒用','異常交易'];
 const EMO_KW=[['生氣',2],['氣死',2.5],['很煩',1.8],['煩死',2.5],['不爽',2.2],['搞什麼',2.5],['到底',1.5],['都沒人',2],['沒人處理',2.2],['等很久',1.8],['等了',1.2],['第幾次',2],['三次',1.2],['好幾次',1.5],['一直',1],['投訴',2.5],['客訴',2.5],['差勁',2.5],['離譜',2.2],['太扯',2.2],['很扯',2],['受夠',2.5],['垃圾',2.8],['爛',1.8],['誇張',1.5],['浪費時間',2.2],['解約',1.8],['剪卡',2],['什麼鬼',2.5],['有病',2.8],['找人講',1.2],['拖了',2],['拖很久',2.2],['還沒下來',1.5],['要等多久',1.8],['等多久',1.2],['都不回',2],['！！',1.2],['!!',1.2],['？？',1],['??',1]];
 const EMO_TH=0.6, OPP_TH=0.6;
@@ -545,7 +590,7 @@ function classify(text){
   const strong=probs.filter(x=>x.c!=='其他/真人'&&x.raw>=2.5);
   const multi=strong.length>=2&&strong[1].raw>=strong[0].raw*0.5;
   const emo=emotionScore(s), opp=detectOpp(s), abuse=ABUSE_RE.test(s);
-  return {probs,urgent,multi,strong,emo,abuse,angry:emo>=EMO_TH,opp,hasOpp:opp.p>=OPP_TH,
+  return {text,probs,urgent,multi,strong,emo,abuse,angry:emo>=EMO_TH,opp,hasOpp:opp.p>=OPP_TH,
     pu:urgent?0.94:0.03+Math.random()*0.04, pm:multi?0.88:0.05+Math.random()*0.05};
 }
 
@@ -611,7 +656,7 @@ $('cid').addEventListener('keydown',e=>{if(e.key==='Enter'){pickCust(e.target.va
 
 const MAIN_SAMPLES=[
   {q:'我想買房子要跟你們借錢',t:'實測',c:'var(--orange)'},
-  {q:'錢放銀行利息太少 有沒有穩一點的可以放',t:'總機',c:'var(--muted)'},
+  {q:'錢放銀行利息太少 有沒有穩一點的可以放',t:'模糊',c:'var(--muted)'},
   {q:'我想開戶順便辦一張信用卡',t:'兩個需求',c:'var(--accent)'},
   {q:'我的卡好像被盜刷了怎麼辦',t:'急件',c:'var(--red)'},
   {q:'搞什麼 轉帳到現在還沒到！！',t:'情緒',c:'var(--red)'},
@@ -636,7 +681,7 @@ function applyAI(r,a){
   const emo0=Math.max(0,Math.min(1,+a.emotion||0)), abuse=!!a.abuse, emo=abuse?Math.max(emo0,0.8):emo0;
   const op=OPPS.find(o=>o.id===a.opportunity);
   return {...r,probs,urgent:!!a.urgent,multi,strong:multi?[{c:a.category},{c:a.second_category}]:[],emo,abuse,angry:abuse||emo>=EMO_TH,
-    opp:op?{o:op,p:0.9}:r.opp,hasOpp:!!op,
+    opp:op?{o:op,p:0.9}:r.opp,hasOpp:!!op,aiSub:typeof a.subcategory==='string'?a.subcategory:'',aiSubCat:a.category,
     ai:{evidence:(Array.isArray(a.evidence)?a.evidence:[]).filter(e=>typeof e==='string'&&e&&e.length<=20).slice(0,4),reason:String(a.reason||'').slice(0,40)}};
 }
 function buildLast(text,r,cur,extra){
@@ -649,11 +694,15 @@ function buildLast(text,r,cur,extra){
 function routeOf(r){
   const top=r.probs[0], nonOther=r.probs.filter(x=>x.c!=='其他/真人');
   const best=nonOther[0].p>=0.15?nonOther[0].c:top.c;
-  if(r.urgent) return {kind:'urgent',cat:best,ext:EXT_NO[best],desk:EXT_DESK[best],title:`急件：已為您轉 24 小時真人專線（分機 ${EXT_NO[best]}）`};
-  if(r.angry) return {kind:'angry',cat:best,ext:EXT_NO[best],desk:EXT_DESK[best],title:`已為您直接轉真人：${best}（分機 ${EXT_NO[best]}）`};
-  if(r.multi){const a=r.strong[0].c,b=r.strong[1].c; return {kind:'multi',cat:a,ext:EXT_NO[a],desk:EXT_DESK[a],title:`兩個需求：先轉${a}（分機 ${EXT_NO[a]}），再轉${b}（分機 ${EXT_NO[b]}）`};}
-  if(top.c!=='其他/真人'&&top.p>=P.thAuto) return {kind:'known',cat:top.c,ext:EXT_NO[top.c],desk:EXT_DESK[top.c],title:`${top.c} → 請按分機 ${EXT_NO[top.c]}`};
-  return {kind:'operator',cat:'其他/真人',ext:'0',desk:EXT_DESK['其他/真人'],title:'請按分機 0，由總機為您服務'};
+  const x=svcRoute(r,best);
+  if(r.urgent) return {kind:'urgent',...x,title:`急件：${x.label}，請立即撥${x.line} ${x.tel}，${keyTxt(x)}，優先轉真人`};
+  if(r.angry) return {kind:'angry',...x,title:`已為您優先轉真人：${x.label}，${x.line} ${x.tel}，${keyTxt(x)}`};
+  if(r.multi){const a=svcRoute(r,r.strong[0].c), b=svcRoute(r,r.strong[1].c);
+    const bt=b.tel===a.tel?keyTxt(b):`${b.line} ${b.tel}，${keyTxt(b)}`;
+    return {kind:'multi',...a,a,b,title:`兩個需求：先轉${a.label}（${a.line} ${a.tel}，${keyTxt(a)}），再轉${b.label}（${bt}）`};}
+  if(top.c!=='其他/真人'&&top.p>=P.thAuto) return {kind:'known',...x,title:`${x.label}：請撥${x.line} ${x.tel}，${keyTxt(x)}`};
+  const o=svcRoute(r,'其他/真人');
+  return {kind:'operator',...o,title:`請撥${o.line} ${o.tel}，按 0 由總機為您服務（示意）`};
 }
 function hlText(text,ev){
   const marks=new Array(text.length).fill(false);
@@ -709,19 +758,19 @@ function renderP11(){
   const bars=top3.map((x,i)=>`<div class="bar${i===0?' top':''}"><span class="lab">${x.c}</span><div class="tr"><div class="fl" style="width:0" data-w="${(x.p*100).toFixed(1)}"></div><div class="thr" style="left:${ta*100}%"></div></div><span class="pv">${(x.p*100).toFixed(0)}%</span></div>`).join('')
     +`<div class="bar"><span class="lab dim">其他</span><div class="tr"><div class="fl" style="width:0" data-w="${(rest*100).toFixed(1)}"></div></div><span class="pv dim">${(rest*100).toFixed(0)}%</span></div>`;
   let tt,why,col,ic,extra='';
-  const hot=(c,line)=>`<div class="hot"><div><div class="label">${line||'客服專線'}</div><div class="num">${HOTLINE}</div></div><div><div class="label">請按分機</div><div class="num" style="font-size:30px">${EXT_NO[c]}</div></div><div><div class="label">接聽窗口</div><div class="num">${EXT_DESK[c]}</div></div></div>`;
-  const known=L.top.c!=='其他/真人'&&L.top.p>=ta;
-  if(r.urgent){tt='急件：直接轉 24 小時真人專線';why='盜刷、遺失、詐騙類不走一般流程，優先接給真人，並帶上判斷結果。';col=css('--red');ic='!';extra=hot(L.best,'24 小時真人專線');}
-  else if(r.angry){tt=`情緒不佳：直接轉真人 → ${L.best}`;why=`不滿程度 ${(r.emo*100).toFixed(0)}%，直接接給專員並帶上情緒標記，專員接起來就知道要先安撫。`;col=css('--red');ic='☎';extra=hot(L.best);}
-  else if(r.multi){const a=r.strong[0].c,b=r.strong[1].c;tt=`偵測到兩個需求：${a}＋${b}`;why=`先轉 ${EXT[a]}，處理完再轉 ${EXT[b]}，不會只回答其中一個。`;col=css('--accent');ic='2';extra=hot(a);}
-  else if(known){tt=`判斷為「${L.top.c}」→ 請按分機 ${EXT_NO[L.top.c]}`;why=`信心 ${(L.top.p*100).toFixed(0)}% ≥ 門檻 ${(ta*100).toFixed(0)}%，客戶不用聽語音選單，直接接到${EXT_DESK[L.top.c]}。`;col=css('--green');ic='✓';extra=hot(L.top.c);}
-  else{tt='分不出類別 → 請按分機 0，由總機服務';why=L.top.c==='其他/真人'?'不屬於任何服務類別，或客戶主動要找真人，交給總機專員了解需求後再轉接。':`最高的「${L.nonOther[0].c}」信心只有 ${(L.nonOther[0].p*100).toFixed(0)}%，未達門檻 ${(ta*100).toFixed(0)}%，交給總機專員判斷比較保險。`;col=css('--p4');ic='0';extra=hot('其他/真人');}
+  const rt=routeOf(r);
+  const hot=(x,urg)=>`<div class="hot"><div><div class="label">${x.line}${urg?'（急件優先）':''}</div><div class="num">${x.tel}</div></div><div><div class="label">請按（示意）</div><div class="num" style="font-size:30px">${x.key||'—'}</div></div><div><div class="label">接聽窗口</div><div class="num">${x.desk}</div></div></div>`;
+  if(rt.kind==='urgent'){tt=`急件：${rt.label} → 優先轉真人`;why='盜刷、遺失、詐騙類不走一般流程，優先接給真人，並帶上判斷結果。';col=css('--red');ic='!';extra=hot(rt,true);}
+  else if(rt.kind==='angry'){tt=`情緒不佳：直接轉真人 → ${rt.label}`;why=`不滿程度 ${(r.emo*100).toFixed(0)}%，直接接給專員並帶上情緒標記，專員接起來就知道要先安撫。`;col=css('--red');ic='☎';extra=hot(rt);}
+  else if(rt.kind==='multi'){tt=`偵測到兩個需求：${rt.a.label}＋${rt.b.label}`;why=`先轉${rt.a.line}（${keyTxt(rt.a)}），處理完再轉${rt.b.line}（${keyTxt(rt.b)}），不會只回答其中一個。`;col=css('--accent');ic='2';extra=hot(rt.a);}
+  else if(rt.kind==='known'){tt=`判斷為「${rt.label}」→ ${rt.line} ${keyTxt(rt)}`;why=`信心 ${(L.top.p*100).toFixed(0)}% ≥ 門檻 ${(ta*100).toFixed(0)}%，客戶不用聽語音選單，直接接到${rt.desk}。`;col=css('--green');ic='✓';extra=hot(rt);}
+  else{tt='分不出類別 → 請按 0，由總機服務';why=L.top.c==='其他/真人'?'不屬於任何服務類別，或客戶主動要找真人，交給總機專員了解需求後再轉接。':`最高的「${L.nonOther[0].c}」信心只有 ${(L.nonOther[0].p*100).toFixed(0)}%，未達門檻 ${(ta*100).toFixed(0)}%，交給總機專員判斷比較保險。`;col=css('--p4');ic='0';extra=hot(rt);}
   const aist=L.aiState==='pending'?`<div class="aist pend">⏳ API複核中…（先顯示規則初判）</div>`:L.aiState==='done'?`<div class="aist ok">✓ API複核完成（${esc(L.aiModel||'')}，${(L.aiTook/1000).toFixed(1)} 秒）：${esc(r.ai?r.ai.reason:'')}<span class="q">「${hlText(L.text,r.ai?r.ai.evidence:[])}」</span></div>`:L.aiState==='fail'?'<div class="aist off">API未回應，維持規則判斷</div>':'';
   $('out11').innerHTML=`<div class="bars">${bars}</div>${aist}<div class="decision" id="dec" style="--dc:${col}"><div class="tt"><span class="ic">${ic}</span>${tt}</div><div class="why">${why}</div>${extra}</div>`;
   if(!$('out11').classList.contains('wait')) requestAnimationFrame(()=>requestAnimationFrame(()=>document.querySelectorAll('#out11 .fl').forEach(el=>el.style.width=el.dataset.w+'%')));
   document.querySelectorAll('#dec .clar button').forEach(b=>b.onclick=()=>{
     const c=b.dataset.c; $('dec').style.setProperty('--dc',css('--green'));
-    $('dec').innerHTML=`<div class="tt"><span class="ic">✓</span>客戶確認 → ${c}（${EXT[c]}）</div><div class="why">多花一輪確認，避免轉錯窗口後重新排隊。</div>`;
+    $('dec').innerHTML=`<div class="tt"><span class="ic">✓</span>客戶確認 → ${c}</div><div class="why">多花一輪確認，避免轉錯窗口後重新排隊。</div>`;
   });
 }
 
@@ -762,7 +811,8 @@ function renderP13(){
 }
 
 /* ---------- 2-1 / 2-2 ---------- */
-const CAT_TIPS={'房貸':'確認需求是新申辦、轉貸還是利率調整，必要時轉房貸專員','信貸':'確認借款金額與用途，說明線上申辦與審核時間','信用卡':'完成身分驗證後，查詢帳單、額度或交易明細','開戶':'說明應備文件，並引導數位開戶流程','存款':'查詢帳戶交易紀錄、匯款狀態或定存資訊','理財信託':'確認商品名稱與風險屬性，必要時轉理專','基本資料變更':'完成身分驗證後，確認要變更的項目（地址、電話、Email、姓名），說明線上變更方式或應備文件','其他/真人':'先釐清需求，再決定是否轉接'};
+function tipOf(L){ const x=svcRoute(L.r,L.best); return x.subObj?x.subObj.tip:SVC[L.best].tip; }
+const catLabel=L=>svcRoute(L.r,L.best).label;
 let DESK_T0=0;
 function renderDesk(){
   const L=LAST; if(!L) return; const r=L.r, c=L.c, cur=L.cur, vip=L.vip;
@@ -775,7 +825,7 @@ function renderDesk(){
   $('call21').innerHTML=`<div class="ring"><i></i>來電中</div><div class="pl">${PNAME[L.lvl]}</div><div class="muted">${L.reasons.join('；')}</div><div class="tm" id="dkTimer">00:00</div>`;
   $('crm21').innerHTML=c?`<div class="kv"><span class="k">客戶</span><span class="v">${esc(L.dname)}　${maskID(cur.id)}</span><span class="k">級距</span><span class="v">${c.tier}${vip?' <span class="tag blue">高資產高貢獻</span>':''}</span><span class="k">資產級距</span><span class="v">${c.aum}</span><span class="k">往來期間</span><span class="v">${tenure(c)}${isNew(c)?' <span class="tag green">新開戶</span>':''}</span><span class="k">持有產品</span><span class="v">${c.products.join('、')}</span><span class="k">專屬理專</span><span class="v">${c.rm||'—'}</span><span class="k">近 7 天進線</span><span class="v">${c.calls7d} 次${c.calls7d>=2?' <span class="tag red">重複來電</span>':''}</span><span class="k">上次進線</span><span class="v">${c.lastCall}</span></div>`
     :`${NAME_OVERRIDE?`<div class="kv" style="margin-bottom:14px"><span class="k">客戶</span><span class="v">${esc(NAME_OVERRIDE)}</span></div>`:''}<div class="muted" style="font-size:17px">${cur&&cur.unknown?'查無客戶資料（非本行客戶）':'客戶未提供身分，接聽後請先完成身分驗證'}</div>`;
-  $('call21b').innerHTML=`<div class="quote">「${esc(L.text)}」</div><div class="kv" style="margin-top:22px"><span class="k">問題類別</span><span class="v">${L.best}（${(bp.p*100).toFixed(0)}%）</span><span class="k">急迫度</span><span class="v">${r.urgent?'<span style="color:var(--red)">急件</span>':'一般'}</span><span class="k">客戶情緒</span><span class="v">${emoTxt}（不滿 ${(r.emo*100).toFixed(0)}%）</span></div><div class="emo"><i style="width:${(r.emo*100).toFixed(0)}%;background:${emoCol}"></i></div>
+  $('call21b').innerHTML=`<div class="quote">「${esc(L.text)}」</div><div class="kv" style="margin-top:22px"><span class="k">問題類別</span><span class="v">${catLabel(L)}（${(bp.p*100).toFixed(0)}%）</span><span class="k">急迫度</span><span class="v">${r.urgent?'<span style="color:var(--red)">急件</span>':'一般'}</span><span class="k">客戶情緒</span><span class="v">${emoTxt}（不滿 ${(r.emo*100).toFixed(0)}%）</span></div><div class="emo"><i style="width:${(r.emo*100).toFixed(0)}%;background:${emoCol}"></i></div>
     <div class="chips" style="margin-top:16px">${r.urgent?'<span class="tag red">急件</span>':''}${r.angry?'<span class="tag orange">情緒不佳</span>':''}${r.abuse?'<span class="tag red">辱罵用語</span>':''}${r.multi?'<span class="tag blue">兩個需求</span>':''}${r.hasOpp?`<span class="tag green">商機：${r.opp.o.id}</span>`:''}</div>`;
   const steps=[];
   if(r.abuse) steps.push('客戶使用辱罵用語：<b>先提醒並安撫</b>；持續辱罵可依客服人員保護規範結束通話');
@@ -783,7 +833,7 @@ function renderDesk(){
   if(c&&c.calls7d>=2) steps.push(`客戶 7 天內已進線 ${c.calls7d} 次（${c.lastCall}），先說明上次問題的處理進度`);
   if(r.urgent) steps.push('<b>立即協助掛失／凍結</b>，再說明後續爭議款處理流程');
   if(r.multi) steps.push(`客戶有兩個需求（${r.strong[0].c}、${r.strong[1].c}），逐一處理，結束前確認都已解決`);
-  steps.push(CAT_TIPS[L.best]);
+  steps.push(tipOf(L));
   if(vip) steps.push(`結束後通知專屬理專 ${c.rm}，由理專後續關懷`);
   if(r.hasOpp) steps.push((r.angry||r.urgent)?`偵測到商機（${r.opp.o.id}），<b>本次不推薦</b>，只記錄到 CRM`:`問題解決後，再提及：${r.opp.o.offer}`);
   const greet=r.angry?`${who}您好，很抱歉讓您久等了，我是專員○○，我現在就來協助您處理${L.best}的問題。`
@@ -792,12 +842,12 @@ function renderDesk(){
     :`您好，我是專員○○，了解您想詢問${L.best}的問題，我來為您說明。`;
   if(L.script){ $('script22').textContent=`「${L.script.greeting}」`; $('steps22').innerHTML=L.script.steps.map(s=>`<li>${esc(s)}</li>`).join(''); $('scriptSt').textContent=`API生成（${(L.script.took/1000).toFixed(1)} 秒）`; }
   else { $('script22').textContent=`「${greet}」`; $('steps22').innerHTML=steps.map(s=>`<li>${s}</li>`).join(''); $('scriptSt').textContent=L.scriptPending?'AI 生成中…（先顯示範本）':(AIOK?'':'範本話術'); }
-  $('ctx22').innerHTML=`<div class="kv"><span class="k">客戶</span><span class="v">${esc(c||NAME_OVERRIDE?L.dname:'未驗證客戶')}</span><span class="k">服務等級</span><span class="v" style="color:${pc}">${PNAME[L.lvl]}</span><span class="k">問題類別</span><span class="v">${L.best}</span><span class="k">客戶情緒</span><span class="v">${emoTxt}</span></div><div class="emo"><i style="width:${(r.emo*100).toFixed(0)}%;background:${emoCol}"></i></div>${c&&c.calls7d>=2?`<div style="margin-top:20px" class="tag red">7 天內第 ${c.calls7d+1} 次來電</div>`:''}`;
+  $('ctx22').innerHTML=`<div class="kv"><span class="k">客戶</span><span class="v">${esc(c||NAME_OVERRIDE?L.dname:'未驗證客戶')}</span><span class="k">服務等級</span><span class="v" style="color:${pc}">${PNAME[L.lvl]}</span><span class="k">問題類別</span><span class="v">${catLabel(L)}</span><span class="k">轉接</span><span class="v">${(x=>`${x.line} ${keyTxt(x)}`)(routeOf(r))}</span><span class="k">客戶情緒</span><span class="v">${emoTxt}</span></div><div class="emo"><i style="width:${(r.emo*100).toFixed(0)}%;background:${emoCol}"></i></div>${c&&c.calls7d>=2?`<div style="margin-top:20px" class="tag red">7 天內第 ${c.calls7d+1} 次來電</div>`:''}`;
   $('dkRef').style.display=r.hasOpp&&!(r.angry||r.urgent)?'':'none';
   $('dkMsg').textContent='';
 }
 $('dkAnswer').onclick=()=>$('dkMsg').textContent='已接聽，通話紀錄與系統判斷已自動帶入工單。';
-$('dkXfer').onclick=()=>$('dkMsg').textContent=`已轉接 ${EXT[LAST.best]}，客戶資料一併帶過去，客戶不用重講一次。`;
+$('dkXfer').onclick=()=>$('dkMsg').textContent=`已轉接${routeOf(LAST.r).desk}，客戶資料一併帶過去，客戶不用重講一次。`;
 $('dkRef').onclick=()=>$('dkMsg').textContent=`已建立轉介單 → ${LAST.vip&&LAST.c.rm?'專屬理專 '+LAST.c.rm:LAST.r.opp.o.owner}（需客戶同意後送出）。`;
 
 /* ---------- 3 排隊看板 ---------- */
@@ -912,7 +962,7 @@ function drawCurve(){
 
 /* 流量動畫 */
 const LANES=[{cv:$('cv0'),mode:'asis',dots:[],stat:{done:0,mis:0}},{cv:$('cv1'),mode:'tobe',dots:[],stat:{done:0,mis:0}}];
-const BOX=['房貸','信貸','信用卡','開戶','存款','理財','資料變更'];
+const BOX=['信用卡','存款外匯','貸款','財富信託','保險','數位服務','資料變更'];
 function laneGeom(cv){const dpr=(devicePixelRatio||1)*S;const w=cv.clientWidth,h=cv.clientHeight||300;
   if(cv.width!==Math.round(w*dpr)||cv.height!==Math.round(h*dpr)){cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);}
   const ctx=cv.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);return {ctx,w,h,hubX:w*0.38,boxes:BOX.map((b,i)=>({x:w*0.80,y:22+i*(h-44)/(BOX.length-1)}))};}
@@ -957,7 +1007,7 @@ let SC=0;
 function capText(i){
   const L=LAST, who=L?L.dname:'客戶';
   switch(i){
-    case 0: return L?`${who}說：「${L.text}」→ 系統判斷為「${L.best}」，${L.r.urgent?'急件直轉 24 小時真人專線':L.r.angry?'情緒不佳直接轉真人':(L.top.c!=='其他/真人'&&L.top.p>=P.thAuto)?`直接轉分機 ${EXT_NO[L.top.c]}`:'分不出類別，轉分機 0 由總機服務'}。`:'客戶遇到問題，只要說一句話；系統判斷產品類別並給對應分機，分不出類別就轉分機 0 由總機服務。';
+    case 0: return L?`${who}說：「${L.text}」→ ${routeOf(L.r).title}。`:'客戶遇到問題，只要說一句話；系統判斷服務類別，告訴他該撥哪支專線、按哪個鍵，分不出來就轉總機。';
     case 1: return '同一次判斷，系統還讀出情緒、急件、多個需求和潛在商機；情緒不佳或急件時只記錄商機、不推銷。';
     case 2: return L?`結合行內 CRM 的資產級距與貢獻度，${who}被排入 ${PNAME[L.lvl]}；急件不論等級永遠排第一。`:'結合行內 CRM 的資產級距與貢獻度，決定服務順序。';
     case 3: return `電話接通，專員畫面已經備好${who}的資料和這通電話的判斷，客戶不用重講一次。`;
@@ -973,7 +1023,7 @@ function ensureScript(){
   const r=L.r, c=L.c, rt=routeOf(r);
   L.scriptPending=true; renderDesk(); const t0=performance.now();
   aiCall('/api/demo/script',{name:L.dname==='客戶'?'':L.dname,tier:c?c.tier:'未驗證',tenure:c?tenure(c):'',is_new:isNew(c),vip:L.vip,rm:c&&c.rm||'',
-    calls7d:c?c.calls7d:0,last_call:c?c.lastCall:'',text:L.text,category:L.best,extension:rt.ext,priority:PNAME[L.lvl],
+    calls7d:c?c.calls7d:0,last_call:c?c.lastCall:'',text:L.text,category:catLabel(L),extension:`${rt.line} ${rt.tel} ${keyTxt(rt)}`,priority:PNAME[L.lvl],
     urgent:r.urgent,angry:r.angry,abuse:!!r.abuse,emotion:+r.emo.toFixed(2),multi:r.multi,second_category:r.multi?r.strong[1].c:'',
     opportunity:r.hasOpp?r.opp.o.offer:''},{front:true}).then(res=>{
     L.scriptPending=false;
@@ -1057,7 +1107,7 @@ function onJudge(m,pre){
   const finish=(ai)=>{
     const rt=routeOf(c.r);
     const rs=el.querySelector('.rs'); if(rs) rs.textContent=`${ai?'API 判斷':'規則判斷'}：${rt.title} · ${PNAME[c.lvl]}`;
-    if(rid) sendReply(rid,{title:rt.title,cat:rt.cat,ext:rt.ext,desk:rt.desk,kind:rt.kind,pname:PNAME[c.lvl],ai:!!ai,name});
+    if(rid) sendReply(rid,{title:rt.title,cat:rt.label,ext:rt.key,tel:rt.tel,line:rt.line,desk:rt.desk,kind:rt.kind,pname:PNAME[c.lvl],ai:!!ai,name});
     if(SC===5) renderQueue(); if($('ovlJudge').classList.contains('on')) renderJudgePanel();
   };
   if(!AIOK&&!pre) return finish(false);
