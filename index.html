@@ -480,18 +480,38 @@ const fmt=(x,d=0)=>Number(x).toLocaleString('zh-TW',{minimumFractionDigits:d,max
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let S=1;
-/* ---------- 本機 Demo AI 服務（→ API）；連不到就用規則 ---------- */
+/* ---------- API：先找本機 Demo AI 服務；沒有就用密語解開的 Gemini key；都沒有就用規則 ---------- */
 const AI_BASE='http://localhost:8787';
-let AIOK=false, AIMODEL='';
+// Gemini key 以密語加密（PBKDF2-SHA256 + AES-GCM）；解開後只存在這台電腦的瀏覽器
+const GENC='300000.L6Qkkf02zTrs4eRAyHmcUg==.BnINTSCurI7/S3iM.yhlTXOmon37nspFuSUbDlIL4TaS9NWvCaefaxu7drA1AMDL3a5jK+2ueD8GpsT6L9pa9nVomoQTo17wwWqbOcO+Z9jBp';
+const GMODEL='gemini-3.5-flash-lite';
+let GKEY=''; try{ GKEY=localStorage.getItem('jevGKey')||''; }catch(_){}
+async function unlockGemini(pw){
+  const [it,salt,iv,ct]=GENC.split('.'), b=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+  const base=await crypto.subtle.importKey('raw',new TextEncoder().encode(pw),'PBKDF2',false,['deriveKey']);
+  const k=await crypto.subtle.deriveKey({name:'PBKDF2',hash:'SHA-256',salt:b(salt),iterations:+it},base,{name:'AES-GCM',length:256},false,['decrypt']);
+  return new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:b(iv)},k,b(ct)));
+}
+let AIOK=false, AIMODEL='', AIMODE='';
 async function aiHealth(){
   if(window.__NOJUDGE){ AIOK=false; return renderAIBadge(); }
+  let local=false;
   try{ const ac=new AbortController(); const tm=setTimeout(()=>ac.abort(),4000);
     const r=await fetch(AI_BASE+'/health',{cache:'no-store',signal:ac.signal}); clearTimeout(tm);
-    const j=await r.json(); AIOK=!!j.ok; AIMODEL=j.model||''; }catch(_){ AIOK=false; }
+    const j=await r.json(); local=!!j.ok; if(local) AIMODEL=j.model||''; }catch(_){}
+  AIMODE=local?'local':(GKEY?'gemini':''); AIOK=!!AIMODE; if(AIMODE==='gemini') AIMODEL=GMODEL;
   renderAIBadge();
 }
 function renderAIBadge(){ const b=document.getElementById('aiBadge'); if(!b) return;
-  b.classList.toggle('on',AIOK); b.innerHTML=`<i></i>${AIOK?'API 已連線':'規則模式'}`; }
+  b.classList.toggle('on',AIOK); b.style.cursor=AIOK?'':'pointer';
+  b.title=AIOK?`API：${AIMODEL}`:'點一下輸入密語，改用 API 判斷';
+  b.innerHTML=`<i></i>${AIOK?'API 已連線':'規則模式'}`; }
+document.getElementById('aiBadge').addEventListener('click',async()=>{
+  if(AIOK) return;
+  const pw=prompt('輸入密語以啟用 API 判斷'); if(!pw) return;
+  try{ GKEY=await unlockGemini(pw.trim()); try{ localStorage.setItem('jevGKey',GKEY); }catch(_){} aiHealth(); }
+  catch(_){ alert('密語不正確'); }
+});
 const aiQ=[]; let aiBusy=0;
 function aiCall(path,body,{front=false,timeout=25000}={}){
   if(!AIOK) return Promise.resolve(null);
@@ -501,10 +521,77 @@ function pumpAI(){
   while(aiBusy<4&&aiQ.length){ const job=aiQ.shift(); aiBusy++;
     (async()=>{ let out=null;
       try{ const ac=new AbortController(); const tm=setTimeout(()=>ac.abort(),job.timeout);
-        const r=await fetch(AI_BASE+job.path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(job.body),signal:ac.signal});
-        clearTimeout(tm); const j=await r.json(); out=(r.ok&&j.ok)?j:null; }catch(_){ out=null; }
+        if(AIMODE==='gemini') out=await geminiCall(job.path,job.body,ac.signal);
+        else{ const r=await fetch(AI_BASE+job.path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(job.body),signal:ac.signal});
+          const j=await r.json(); out=(r.ok&&j.ok)?j:null; }
+        clearTimeout(tm); }catch(_){ out=null; }
       aiBusy--; job.res(out); pumpAI(); })();
   }
+}
+/* 與本機服務 demo_api_server.py 相同的提示詞與輸入整理 */
+const GP={
+ summary:`你是銀行客服中心的營運主管助理。以下是剛才一批客戶進線的問題(JSON 陣列),
+每筆含:客戶稱呼、客戶身分、問題原文、規則系統預判的類別(僅供參考,可能判錯)、優先等級(P1 最優先)、是否情緒不佳、是否急件。
+**主題請以「問題原文」為準自行歸納**,不要照抄預判類別;同一個原文只能歸入一個主題。
+
+請用繁體中文,輸出**只有一個 JSON 物件**(不要 markdown、不要其他文字),格式:
+{
+  "headline": "一句話總結這批進線(25 字內)",
+  "themes": [
+    {"title": "主題名稱(10 字內)", "count": 整數, "examples": ["原文摘錄,最多 2 則"], "insight": "這個主題代表什麼(30 字內)"}
+  ],
+  "alerts": ["主管現在就要注意的事(每則 30 字內,最多 3 則;例如急件、情緒不佳集中在某類)"],
+  "actions": ["建議行動(每則 35 字內,最多 4 則;例如該補哪則 FAQ、哪個窗口要加人、哪類客戶要主動回撥)"]
+}
+規則:themes 依 count 由多到少,最多 5 個,count 加總等於進線數;同義問題歸在一起;
+examples 必須逐字摘自原文;只根據提供的資料推論,不要編造數字或不存在的問題;語氣務實精簡。`,
+ classify:`你是銀行客服中心的進線分流系統。客戶會用一句話描述需求,請判斷主類別與細項,以便轉到正確的專線與按鍵。
+主類別與細項(category 只能選一個主類別;subcategory 只能從該主類別的細項中選一個,完全看不出細項才填 null):
+- 信用卡:申辦與權益(辦卡、年費、回饋、額度)|帳單繳款與分期(帳單、卡費、繳款、分期、預借現金)|紅利點數|掛失與盜刷
+- 存款外匯:台幣存款(活存、定存、利率、到期、解約)|外幣與換匯(外幣存款、換匯、匯率、現鈔)|轉帳匯款查詢(轉帳、匯款、入帳、扣款查詢)|薪轉與金融卡(薪轉、金融卡、提款、ATM)|保管箱
+- 貸款:房貸(購屋、新青安、轉貸、增貸、房屋抵押、寬限期)|信貸(信用貸款、週轉、無擔保借款)|債務協商(還款困難、前置協商、債務整合)
+- 財富信託:基金／ETF／海外股票|債券與結構型商品|黃金存摺|信託(退休、安養、傳承)
+- 保險:保單與理賠|保障規劃
+- 數位服務:網銀與 APP 登入(登入、密碼、驗證碼、帳號鎖住)|開戶(數位帳戶、臨櫃開戶、應備文件)
+- 基本資料變更:地址|電話|Email|姓名與印鑑
+- 其他/真人:不屬於上述類別(例如營業時間、分行位置、抱怨服務本身),或客戶指名要真人;subcategory 填 null
+
+輸出**只有一個 JSON 物件**,不要其他文字:
+{"category": "上述主類別之一", "subcategory": "該主類別的細項名稱(照上面寫法,例如「帳單繳款與分期」)或 null",
+ "confidence": 0到1(對主類別的把握;句意含糊或可能兩類時要低於0.7),
+ "second_category": "第二可能主類別或 null", "multi": true/false(一句話明確提出兩個不同主類別的需求),
+ "urgent": true/false(盜刷、卡片或存摺遺失、詐騙、被冒用等需立即處理),
+ "emotion": 0到1(客戶不滿程度;平靜0.1、不耐0.4、生氣0.7以上), "abuse": true/false(含髒話或辱罵),
+ "opportunity": "無|保障需求|外幣需求|財富管理需求|子女教育金"(只在句中有明確線索時才填),
+ "evidence": ["原文中逐字出現、影響判斷的詞,1到4個"], "reason": "判斷理由,20字內"}`,
+ script:`你是銀行客服專員的即時助理。電話接通前,依客戶資料與這通電話的系統判斷,幫專員準備開場話術與處理步驟。
+輸出**只有一個 JSON 物件**,不要其他文字:
+{"greeting": "開場話術,60字內,用客戶稱呼開頭(沒有稱呼就用您好),語氣自然口語",
+ "steps": ["處理步驟,3到5條,每條30字內,具體可執行,依先後排列"]}
+規則:
+- 情緒不佳時,話術先致歉安撫;含辱罵時,第一步是溫和提醒並安撫,持續辱罵可依客服人員保護規範結束通話。
+- 急件(盜刷、遺失、詐騙)第一步一定是立即協助止付或凍結。
+- 近 7 天重複來電且上次未解決,要先說明上次問題的處理進度。
+- 有商機時,只能在情緒平穩且非急件時,放在最後一步「問題解決後再提及」;否則寫「只記錄、不推銷」。
+- 高資產客戶結束後通知專屬理專;新開戶客戶要多說明一句服務管道。
+- 不得承諾利率、金額、核准結果或時程。`};
+const GPREP={
+ summary:b=>(Array.isArray(b.calls)?b.calls:[]).slice(0,120).map(c=>({name:String(c.name||'').slice(0,12),tier:String(c.tier||'').slice(0,12),
+   text:String(c.text||'').trim().slice(0,80),category:String(c.cat||'').slice(0,10),priority:['1','2','3','4'].includes(String(c.lvl))?`P${c.lvl}`:'P4',
+   angry:!!c.angry,urgent:!!c.urgent})).filter(c=>c.text),
+ classify:b=>{ const t=String(b.text||'').trim().slice(0,80); return t?{text:t}:null; },
+ script:b=>{ const o={}; Object.entries(b||{}).forEach(([k,v])=>{ o[k]=typeof v==='string'?v.slice(0,80):v; }); return o.text?o:null; }};
+async function geminiCall(path,body,signal){
+  const name=path.split('/').pop(), payload=GPREP[name]&&GPREP[name](body||{});
+  if(!payload||(Array.isArray(payload)&&!payload.length)) return null;
+  const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GMODEL}:generateContent`,{method:'POST',signal,
+    headers:{'Content-Type':'application/json','x-goog-api-key':GKEY},
+    body:JSON.stringify({systemInstruction:{parts:[{text:GP[name]}]},contents:[{role:'user',parts:[{text:JSON.stringify(payload)}]}],
+      generationConfig:{temperature:0,responseMimeType:'application/json'}})});
+  if(!r.ok) return null;  // 429 額度用完等狀況 → 這一則改用規則
+  const j=await r.json(), txt=((((j.candidates||[])[0]||{}).content||{}).parts||[]).map(p=>p.text||'').join('').trim();
+  let res; try{ res=JSON.parse(txt); }catch(_){ const m=txt.match(/\{[\s\S]*\}/); if(!m) return null; res=JSON.parse(m[0]); }
+  return name==='summary'?{ok:true,model:GMODEL,summary:res,n:payload.length}:{ok:true,model:GMODEL,result:res};
 }
 
 
@@ -1144,11 +1231,21 @@ async function pollNtfy(){
     if(d.event!=='message') return; SINCE=d.id; takeMsg(d.id,d.message);
   });
 }
+// 本機服務沒開：先試 ntfy 長連線（評審訊息即時到；公司代理會擋，擋住就退回每 6 秒查一次）
+let ES=null, ESOK=false;
+function openSSE(){
+  if(ES||typeof EventSource==='undefined') return;
+  ES=new EventSource(`https://ntfy.sh/${encodeURIComponent(TOPIC)}/sse?since=${SINCE}`);
+  ES.onopen=()=>{ ESOK=true; setJ(true); };
+  ES.onmessage=e=>{ let d; try{ d=JSON.parse(e.data); }catch(_){ return; } if(d.event!=='message') return; SINCE=d.id; takeMsg(d.id,d.message); };
+  ES.onerror=()=>{ ESOK=false; };
+}
+function closeSSE(){ if(ES){ ES.close(); ES=null; ESOK=false; } }
 async function pollJudges(){
   if(POLLING) return; POLLING=true; TICK++;
   try{
-    if(AIOK) await pollLocal();
-    else if(TICK%6===1) await pollNtfy();
+    if(AIMODE==='local'){ closeSSE(); await pollLocal(); }
+    else{ openSSE(); if(!ESOK&&TICK%6===1) await pollNtfy(); }
   }catch(_){ setJ(false); }
   POLLING=false;
 }
@@ -1158,7 +1255,6 @@ $('jBtn').addEventListener('click',()=>setTimeout(renderJudgePanel,0));
 connectJudges();
 
 /* ---------- AI 總結全場（呼叫本機法遵系統 → API；失敗改用本機統計） ---------- */
-const DEMO_API='http://localhost:8787/api/demo/summary';  // 本機 Demo AI 服務（jev-demo-api），與法遵系統獨立
 function sumCalls(){
   const calls=JUDGES.map(j=>({name:j.name,tier:j.tier,text:j.text,cat:j.cat,lvl:j.lvl,angry:j.angry,urgent:j.urgent}));
   return {calls,src:`評審來電 ${calls.length} 通`};
@@ -1186,15 +1282,9 @@ async function runSummary(){
   const {calls,src}=sumCalls();
   if(!calls.length){ $('sumBody').innerHTML='<div class="sumload">還沒有評審來電<div class="small dim" style="margin-top:10px">請評審掃描右上角「評審參與」的 QR code 送出問題後再按一次（只計算本頁開啟後送進來的來電）</div></div>'; return; }
   $('sumBody').innerHTML='<div class="sumload"><i></i><i></i><i></i><div style="margin-top:14px">API分析中（最多 25 秒）…</div></div>';
-  let why='AI 平台未連線';
-  try{
-    const ac=new AbortController(); const tm=setTimeout(()=>ac.abort(),25000);
-    const r=await fetch(DEMO_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({calls}),signal:ac.signal});
-    clearTimeout(tm);
-    const j=await r.json();
-    if(r.ok&&j.ok&&j.summary){ renderSummary(j.summary,{src,ai:true,model:j.model}); return; }
-    why='AI 平台回應異常';
-  }catch(e){ why=e.name==='AbortError'?'AI 平台逾時':'AI 平台未連線'; }
+  const why=AIOK?'API 逾時或回應異常':'API 未連線';
+  const j=await aiCall('/api/demo/summary',{calls},{front:true,timeout:25000});
+  if(j&&j.summary){ renderSummary(j.summary,{src,ai:true,model:j.model}); return; }
   renderSummary(localSummary(calls),{src,ai:false,why});
 }
 $('aiSumBtn').onclick=runSummary;
