@@ -322,11 +322,22 @@ button{font:inherit;cursor:pointer}
 .card,.sig,.qcol,.kpi,.cap{border:1px solid rgba(255,255,255,.7)}
 .waves path{vector-effect:non-scaling-stroke;shape-rendering:geometricPrecision}
 .waves>g{display:none}
+.aurora{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0;display:none}
+#app.bg-glowdots .aurora,#app.bg-glow .aurora{display:block}
+#app.bg-glow{background-image:none}
+.aurora i{position:absolute;display:block;border-radius:50%;filter:blur(50px);will-change:transform}
+.aurora .a1{left:62%;top:-12%;width:560px;height:180px;background:linear-gradient(100deg,rgba(3,192,175,0),rgba(3,192,175,.10) 35%,rgba(30,39,97,.05) 70%,rgba(30,39,97,0));animation:au1 16s ease-in-out infinite alternate}
+.aurora .a2{left:-6%;top:80%;width:520px;height:170px;background:linear-gradient(80deg,rgba(30,39,97,0),rgba(3,192,175,.09) 45%,rgba(3,192,175,0));animation:au2 20s ease-in-out infinite alternate}
+.aurora .a3{left:40%;top:42%;width:420px;height:140px;background:linear-gradient(120deg,rgba(3,192,175,0),rgba(3,192,175,.05) 50%,rgba(30,39,97,0));animation:au3 24s ease-in-out infinite alternate}
+@keyframes au1{0%{transform:translate(0,0) rotate(-8deg) scale(1,1)}50%{transform:translate(-90px,40px) rotate(4deg) scale(1.15,.85)}100%{transform:translate(-160px,15px) rotate(-14deg) scale(.95,1.2)}}
+@keyframes au2{0%{transform:translate(0,0) rotate(10deg) scale(1)}50%{transform:translate(120px,-45px) rotate(-2deg) scale(1.2,.9)}100%{transform:translate(200px,-15px) rotate(14deg) scale(1,1.15)}}
+@keyframes au3{0%{transform:translate(0,0) rotate(-20deg);opacity:.6}50%{transform:translate(100px,-60px) rotate(-6deg);opacity:1}100%{transform:translate(-80px,40px) rotate(-26deg);opacity:.5}}
+@media (prefers-reduced-motion:reduce){.aurora i{animation:none}}
 #app.bg-marble .waves .m-marble,#app.bg-topo .waves .m-topo,#app.bg-net .waves .m-net{display:inline}
 #app.bg-dots{background-image:radial-gradient(rgba(30,39,97,.10) 1px,transparent 1.3px);background-size:24px 24px}
 #app.bg-grid{background-image:linear-gradient(rgba(30,39,97,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(30,39,97,.045) 1px,transparent 1px);background-size:40px 40px}
 #app.bg-glow{background-image:radial-gradient(760px 520px at 92% -8%,rgba(30,39,97,.11),transparent 70%),radial-gradient(640px 480px at -4% 108%,rgba(245,159,0,.10),transparent 70%)}
-#app.bg-glowdots{background-image:radial-gradient(760px 520px at 92% -8%,rgba(30,39,97,.10),transparent 70%),radial-gradient(640px 480px at -4% 108%,rgba(3,192,175,.12),transparent 70%),radial-gradient(rgba(30,39,97,.09) 1px,transparent 1.3px);background-size:auto,auto,24px 24px}
+#app.bg-glowdots{background-image:radial-gradient(rgba(30,39,97,.09) 1px,transparent 1.3px);background-size:24px 24px}
 #app.bg-diag{background-image:repeating-linear-gradient(135deg,rgba(30,39,97,.04) 0 1px,transparent 1px 16px)}
 .bgbtn{height:36px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink-2);font-size:13.5px;font-weight:700;white-space:nowrap}
 .bgbtn:hover{border-color:var(--navy);color:var(--navy)}
@@ -400,10 +411,59 @@ body{font-family:var(--font)}
 .verify .sk{display:grid;grid-template-columns:110px 1fr;gap:12px 14px;font-size:16px;color:var(--dim);margin-top:4px}
 .verify .sk em{font-style:normal;height:14px;margin-top:5px;border-radius:7px;background:var(--soft)}
 .verify .note{margin-top:auto;font-size:14px;color:var(--muted)}
+
+/* ===== 過場：換章節時的全螢幕章節頁＋每頁標題依序浮現 ===== */
+#chap{position:absolute;inset:0;z-index:40;pointer-events:none;visibility:hidden;color:#fff;overflow:hidden;
+  background:radial-gradient(900px 500px at 85% 15%,rgba(3,192,175,.28),transparent 70%),linear-gradient(125deg,#1E2761 0%,#24306B 55%,#1A4B6E 100%);clip-path:inset(0 0 0 100%)}
+#chap.in{visibility:visible;animation:chIn .55s cubic-bezier(.75,0,.2,1) forwards}
+#chap.out{visibility:visible;animation:chOut .6s cubic-bezier(.75,0,.2,1) forwards}
+@keyframes chIn{from{clip-path:inset(0 0 0 100%)}to{clip-path:inset(0 0 0 0)}}
+@keyframes chOut{from{clip-path:inset(0 0 0 0)}to{clip-path:inset(0 100% 0 0)}}
+#chap .cn{position:absolute;right:90px;bottom:-60px;font-size:420px;font-weight:900;line-height:1;color:rgba(255,255,255,.07);letter-spacing:-.04em}
+#chap .ct{position:absolute;left:160px;top:50%;transform:translateY(-50%)}
+#chap .ck{font-size:20px;font-weight:700;letter-spacing:.4em;color:#03C0AF}
+#chap h1{margin:14px 0 0;font-size:104px;font-weight:900;line-height:1.1;letter-spacing:.02em}
+#chap p{margin:18px 0 0;font-size:32px;color:rgba(255,255,255,.78)}
+#chap .ln{margin-top:34px;width:140px;height:5px;border-radius:5px;background:#03C0AF;transform-origin:left}
+#chap .mt{margin-top:26px;font-size:20px;font-weight:700;letter-spacing:.3em;color:rgba(255,255,255,.55)}
+#chap.in .ck,#chap.in h1,#chap.in p,#chap.in .mt{animation:chRv .6s cubic-bezier(.2,.7,.2,1) both}
+#chap.in h1{animation-delay:.12s}#chap.in p{animation-delay:.22s}#chap.in .mt{animation-delay:.36s}
+#chap.in .ln{animation:chLn .7s .3s cubic-bezier(.2,.7,.2,1) both}
+@keyframes chRv{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+@keyframes chLn{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.page.on .phk{animation:phIn .5s .05s cubic-bezier(.2,.7,.2,1) both}
+.page.on .ph h2{animation:phIn .6s .12s cubic-bezier(.2,.7,.2,1) both}
+.page.on .vtags{animation:phPop .5s .45s cubic-bezier(.3,1.5,.5,1) both}
+@keyframes phIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes phPop{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){#chap.in,#chap.out{animation-duration:.01s}}
+
+/* ===== 小窗格過場：進頁時依序浮現（只在進頁那一刻播，之後資料刷新不重播，避免閃爍）===== */
+.page.enter :is(.sig,.kpi,.qcol,.lrow,.pnode,.hero>div,.lane,.idle11 .ib,.verify .vs3 span,.steps li,.ctl,.qstat>div,.kv>span,.chips .chip){animation:tileIn .55s cubic-bezier(.2,.7,.2,1) both}
+.page.enter :is(.sig,.kpi,.qcol,.lrow,.pnode,.hero>div,.lane,.idle11 .ib,.verify .vs3 span,.steps li,.ctl,.qstat>div,.kv>span,.chips .chip):nth-child(1){animation-delay:0.18s}
+.page.enter :is(.sig,.kpi,.qcol,.lrow,.pnode,.hero>div,.lane,.idle11 .ib,.verify .vs3 span,.steps li,.ctl,.qstat>div,.kv>span,.chips .chip):nth-child(2){animation-delay:0.25s}
+.page.enter :is(.sig,.kpi,.qcol,.lrow,.pnode,.hero>div,.lane,.idle11 .ib,.verify .vs3 span,.steps li,.ctl,.qstat>div,.kv>span,.chips .chip):nth-child(3){animation-delay:0.32s}
+.page.enter :is(.sig,.kpi,.qcol,.lrow,.pnode,.hero>div,.lane,.idle11 .ib,.verify .vs3 span,.steps li,.ctl,.qstat>div,.kv>span,.chips .chip):nth-child(4){animation-delay:0.39s}
+.page.enter :is(.sig,.kpi,.qcol,.lrow,.pnode,.hero>div,.lane,.idle11 .ib,.verify .vs3 span,.steps li,.ctl,.qstat>div,.kv>span,.chips .chip):nth-child(5){animation-delay:0.46s}
+.page.enter :is(.sig,.kpi,.qcol,.lrow,.pnode,.hero>div,.lane,.idle11 .ib,.verify .vs3 span,.steps li,.ctl,.qstat>div,.kv>span,.chips .chip):nth-child(6){animation-delay:0.53s}
+.page.enter :is(.sig,.kpi,.qcol,.lrow,.pnode,.hero>div,.lane,.idle11 .ib,.verify .vs3 span,.steps li,.ctl,.qstat>div,.kv>span,.chips .chip):nth-child(7){animation-delay:0.60s}
+.page.enter :is(.sig,.kpi,.qcol,.lrow,.pnode,.hero>div,.lane,.idle11 .ib,.verify .vs3 span,.steps li,.ctl,.qstat>div,.kv>span,.chips .chip):nth-child(8){animation-delay:0.67s}
+.page.enter :is(.sig,.kpi,.qcol,.lrow,.pnode,.hero>div,.lane,.idle11 .ib,.verify .vs3 span,.steps li,.ctl,.qstat>div,.kv>span,.chips .chip):nth-child(9){animation-delay:0.74s}
+.page.enter :is(.sig,.kpi,.qcol,.lrow,.pnode,.hero>div,.lane,.idle11 .ib,.verify .vs3 span,.steps li,.ctl,.qstat>div,.kv>span,.chips .chip):nth-child(10){animation-delay:0.81s}
+.page.enter :is(.sig,.kpi,.qcol,.lrow,.pnode,.hero>div,.lane,.idle11 .ib,.verify .vs3 span,.steps li,.ctl,.qstat>div,.kv>span,.chips .chip):nth-child(11){animation-delay:0.88s}
+.page.enter :is(.sig,.kpi,.qcol,.lrow,.pnode,.hero>div,.lane,.idle11 .ib,.verify .vs3 span,.steps li,.ctl,.qstat>div,.kv>span,.chips .chip):nth-child(12){animation-delay:0.95s}
+.page.enter :is(.sig,.kpi,.qcol,.lrow,.pnode,.hero>div,.lane,.idle11 .ib,.verify .vs3 span,.steps li,.ctl,.qstat>div,.kv>span,.chips .chip):nth-child(13){animation-delay:1.02s}
+.page.enter :is(.sig,.kpi,.qcol,.lrow,.pnode,.hero>div,.lane,.idle11 .ib,.verify .vs3 span,.steps li,.ctl,.qstat>div,.kv>span,.chips .chip):nth-child(14){animation-delay:1.09s}
+.page.enter :is(.sig,.kpi,.qcol,.lrow,.pnode,.hero>div,.lane,.idle11 .ib,.verify .vs3 span,.steps li,.ctl,.qstat>div,.kv>span,.chips .chip):nth-child(15){animation-delay:1.16s}
+.page.enter :is(.sig,.kpi,.qcol,.lrow,.pnode,.hero>div,.lane,.idle11 .ib,.verify .vs3 span,.steps li,.ctl,.qstat>div,.kv>span,.chips .chip):nth-child(16){animation-delay:1.23s}
+@keyframes tileIn{from{opacity:0;transform:translateY(14px) scale(.97)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.page.enter :is(.sig,.kpi,.qcol,.lrow,.pnode,.hero>div,.lane,.idle11 .ib,.verify .vs3 span,.steps li,.ctl,.qstat>div,.kv>span,.chips .chip){animation:none}}
+
 </style>
 </head>
 <body>
 <div id="app">
+<div class="aurora" aria-hidden="true"><i class="a1"></i><i class="a2"></i><i class="a3"></i></div>
 <svg class="waves" id="waves" viewBox="0 0 1600 900" preserveAspectRatio="none" aria-hidden="true">
   <g class="m-marble"><g class="halo"></g><g class="vein"></g></g><g class="m-topo"></g><g class="m-net"></g>
 </svg>
@@ -568,6 +628,7 @@ body{font-family:var(--font)}
 <div class="ovl" id="ovlSum"><div class="card" style="width:1180px"><button type="button" class="icon x" data-close>✕</button><div class="ch sys">AI 總結全場來電（主管視角）</div><div id="sumBody"></div></div></div>
 </main>
 <div class="toasts" id="toasts"></div>
+<div id="chap" aria-hidden="true"><div class="cn" id="chapN"></div><div class="ct"><div class="ck" id="chapK"></div><h1 id="chapT"></h1><p id="chapS"></p><div class="ln"></div><div class="mt">留住客戶 ・ 創造營收</div></div></div>
 
 <footer class="cap"><span class="no" id="capNo">1-1</span><p id="capTxt"></p><span class="vs" id="capVal"></span>
   <button type="button" class="icon" id="prevBtn" title="上一頁">‹</button><button type="button" class="icon" id="nextBtn" title="下一頁">›</button></footer>
@@ -1238,13 +1299,28 @@ function renderNav(){
 // 每頁頁尾的價值標語（不放數字，只反覆點出價值）
 const CAPVAL=['不用等、不轉錯 → 留住客戶','急件不漏、商機不漏 → 留住客戶・創造營收','高價值客戶優先 → 留住客戶','客戶不用重講 → 留住客戶','問題解決後順勢轉介 → 創造營收','急件與貴賓永遠先接 → 留住客戶','等待變短 → 留住客戶・創造營收','少轉錯、少流失 → 留住客戶'];
 function updateChrome(){ renderNav(); $('capNo').textContent=NOS[SC]; $('capTxt').textContent=capText(SC); $('capVal').textContent=CAPVAL[SC]; $('progBar').style.width=((SC+1)/PAGES.length*100)+'%'; }
+// 換章節時先播全螢幕章節頁（約 1.3 秒），同章節內直接換頁
+const CH_SUB=['客戶說一句話，系統在背後判斷','電話接通的那一刻，專員看見什麼','主管看見全中心的即時排隊','上線前，先在電腦裡推演一遍'];
+let CH_BUSY=false;
 function go(i){
-  i=Math.max(0,Math.min(PAGES.length-1,i)); if(i===SC) return;
+  i=Math.max(0,Math.min(PAGES.length-1,i)); if(i===SC||CH_BUSY) return;
+  const from=STEPS.findIndex(s=>s.pages.includes(SC)), to=STEPS.findIndex(s=>s.pages.includes(i));
+  if(from===to||document.body.classList.contains('nochap')) return goNow(i);
+  const st=STEPS[to], ch=$('chap'); CH_BUSY=true;
+  $('chapN').textContent='0'+st.n; $('chapK').textContent='CHAPTER 0'+st.n; $('chapT').textContent=st.b; $('chapS').textContent=CH_SUB[to];
+  ch.className=''; void ch.offsetWidth; ch.className='in';
+  setTimeout(()=>goNow(i),650);
+  setTimeout(()=>{ ch.className='out'; },1500);
+  setTimeout(()=>{ ch.className=''; CH_BUSY=false; },2150);
+}
+function playEnter(id){ const el=$(id); el.classList.remove('enter'); void el.offsetWidth; el.classList.add('enter'); clearTimeout(el._et); el._et=setTimeout(()=>el.classList.remove('enter'),1800); }
+function goNow(i){
   if(i>=1&&i<=5) ensureDemo();
   document.querySelectorAll('.ovl.on').forEach(o=>o.classList.remove('on'));
   PAGES.forEach((id,k)=>{const el=$(id); el.classList.toggle('on',k===i); el.classList.toggle('left',k<i);});
   SC=i; updateChrome();
   if(i===5) renderQueue();
+  playEnter(PAGES[i]);
   if(i===3||i===4) ensureScript();
 }
 $('nav').onclick=e=>{const b=e.target.closest('.step'); if(b) go(+b.dataset.p);};
@@ -1462,6 +1538,7 @@ $('aiSumBtn').onclick=runSummary;
   apply();
 })();
 aiHealth(); setInterval(aiHealth,20000);
+playEnter('p11');
 fit(); renderCidChips(); updateChrome(); qReset();
 setInterval(()=>{if(!QS.paused){qTick(5); if(SC===5) renderQueue();}},500);
 recompute(); requestAnimationFrame(step);
