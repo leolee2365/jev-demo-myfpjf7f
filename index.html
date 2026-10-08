@@ -52,6 +52,13 @@ button{font:inherit;cursor:pointer}
 .ph{display:flex;align-items:center;gap:16px;margin-bottom:20px;flex:none}
 .ph .no{background:var(--navy);color:#fff;border-radius:999px;padding:3px 14px;font-weight:800;font-size:15px}
 .ph h2{margin:0;font-size:30px;font-weight:800;letter-spacing:.01em}
+/* 價值標語：每頁反覆出現「留住客戶・創造營收」 */
+.brand span.motto{color:var(--accent);font-weight:800;letter-spacing:.18em}
+.vtags{display:flex;gap:8px}
+.vtag{font-size:15px;font-weight:800;padding:5px 14px;border-radius:999px;white-space:nowrap;background:#fff;border:1px solid var(--line);color:var(--ink-2)}
+.vline{margin-top:12px;font-size:16px;font-weight:800;color:var(--accent)}
+.cap .vs{font-size:16px;font-weight:800;color:var(--accent);white-space:nowrap}
+.sumfoot{margin-top:18px;text-align:center;font-size:20px;font-weight:800;color:var(--accent);letter-spacing:.12em}
 .pb{flex:1;min-height:0}
 .card{background:var(--card);border-radius:16px;padding:22px 26px;box-shadow:0 1px 2px rgba(30,45,70,.05),0 8px 24px rgba(30,45,70,.06);display:flex;flex-direction:column;min-height:0}
 .page.on .card{animation:up .5s cubic-bezier(.2,.7,.2,1) both;animation-delay:var(--d,0s)}
@@ -297,9 +304,33 @@ button{font:inherit;cursor:pointer}
 .aibadge{display:flex;align-items:center;gap:7px;height:36px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:var(--card);font-size:13.5px;font-weight:700;color:var(--muted);white-space:nowrap}
 .aibadge i{width:9px;height:9px;border-radius:50%;background:var(--gray)}
 .aibadge.on{color:#3d7a35}.aibadge.on i{background:var(--green)}
+
+/* ===== 不用綠色：「好／解決／商機」一律改用藍色系；背景灰色半透明絲帶 ===== */
+:root{--green:#4e79a7}
+.tag.green{background:#e8f0fa;color:#255a96}
+.refbox{background:#f2f6fb;border-color:#a9c0de}
+.refbox .acts button{border-color:var(--accent);color:var(--accent)}
+.aibadge.on{color:var(--accent)}
+.vline.earn{color:var(--accent)}
+.waves{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+@keyframes drift{from{transform:translateX(-40px)}to{transform:translateX(40px)}}
+.topbar,.stage,.cap,.toasts,.prog{z-index:1}
+/* 框框半透明：隱約透出背後的大理石紋 */
+:root{--card:rgba(255,255,255,.62); --soft:rgba(238,242,247,.55)}
+.card,.sig,.qcol,.kpi,.cap{border:1px solid rgba(255,255,255,.7)}
+.waves path{vector-effect:non-scaling-stroke;shape-rendering:geometricPrecision}
+#app.nobg .waves{display:none}
+#bgBtn{font-size:14px;font-weight:700}
+.tools{width:360px}.brand{width:240px}
+.jbtn,.aibadge{white-space:nowrap}
+#bgBtn.off{color:var(--dim);text-decoration:line-through}
+.inrow input{background:rgba(255,255,255,.45)}
+.inrow input:focus{background:rgba(255,255,255,.85)}
+.ovl .card{background:rgba(255,255,255,.92)}
+.toast{background:rgba(255,255,255,.9)}
 .aist{margin-top:14px;font-size:15px;padding:10px 14px;border-radius:10px;background:var(--soft);color:var(--muted);line-height:1.6}
 .aist.pend{background:#e8f0fa;color:#255a96}
-.aist.ok{background:#eaf4e8;color:#2f6a2a}
+.aist.ok{background:#e8f0fa;color:#255a96}
 .aist.off{background:#fef1e4;color:#a85a10}
 .aist .q{display:block;margin-top:4px;font-size:16.5px;color:var(--text)}
 mark.ev{background:#ffe28a;color:inherit;border-radius:4px;padding:0 2px}
@@ -307,18 +338,21 @@ mark.ev{background:#ffe28a;color:inherit;border-radius:4px;padding:0 2px}
 </head>
 <body>
 <div id="app">
+<svg class="waves" id="waves" viewBox="0 0 1600 900" preserveAspectRatio="none" aria-hidden="true">
+  <g class="halo"></g><g class="vein"></g>
+</svg>
 
 <header class="topbar">
-  <div class="brand"><span>JEV × DIGITAL TWIN</span>客服營運數位孿生平台</div>
+  <div class="brand"><span class="motto">留住客戶 ・ 創造營收</span>客服營運數位孿生平台</div>
   <nav class="nav" id="nav"></nav>
-  <div class="tools"><span class="aibadge" id="aiBadge" title="本機 Demo AI 服務 → API"><i></i>規則模式</span><button type="button" class="jbtn" id="jBtn" data-ovl="ovlJudge"><i id="jDot"></i>評審參與<span id="jCount"></span></button><button type="button" class="icon" id="fsBtn" title="全螢幕（F）">⛶</button></div>
+  <div class="tools"><span class="aibadge" id="aiBadge" title="本機 Demo AI 服務 → API"><i></i>規則模式</span><button type="button" class="jbtn" id="jBtn" data-ovl="ovlJudge"><i id="jDot"></i>評審參與<span id="jCount"></span></button><button type="button" class="icon" id="bgBtn" title="背景紋路：開／關">紋</button><button type="button" class="icon" id="fsBtn" title="全螢幕（F）">⛶</button></div>
 </header>
 
 <main class="stage">
 
 <!-- 1-1 -->
 <section class="page on" id="p11">
-  <div class="ph"><span class="no">1-1</span><h2>客戶說一句話，系統就知道他要問什麼</h2></div>
+  <div class="ph"><span class="no">1-1</span><h2>客戶說一句話，系統就知道他要問什麼</h2><div class="vtags"><span class="vtag keep">🛡 留住客戶</span></div></div>
   <div class="pb grid2 p11">
     <div class="card" style="--d:.05s">
       <div class="ch">客戶</div>
@@ -342,13 +376,13 @@ mark.ev{background:#ffe28a;color:inherit;border-radius:4px;padding:0 2px}
 
 <!-- 1-2 -->
 <section class="page" id="p12">
-  <div class="ph"><span class="no">1-2</span><h2>同一句話，系統還讀出情緒、急件和商機</h2></div>
+  <div class="ph"><span class="no">1-2</span><h2>同一句話，系統還讀出情緒、急件和商機</h2><div class="vtags"><span class="vtag keep">🛡 留住客戶</span><span class="vtag earn">＄ 創造營收</span></div></div>
   <div class="pb" id="out12" style="display:flex;flex-direction:column"></div>
 </section>
 
 <!-- 1-3 -->
 <section class="page" id="p13">
-  <div class="ph"><span class="no">1-3</span><h2>結合行內 CRM，決定誰先被服務</h2></div>
+  <div class="ph"><span class="no">1-3</span><h2>結合行內 CRM，決定誰先被服務</h2><div class="vtags"><span class="vtag keep">🛡 留住客戶</span></div></div>
   <div class="pb grid2 p13">
     <div class="card" style="--d:.05s">
       <div class="ch">客戶（行內 CRM）</div>
@@ -368,7 +402,7 @@ mark.ev{background:#ffe28a;color:inherit;border-radius:4px;padding:0 2px}
 
 <!-- 2-1 -->
 <section class="page" id="p21">
-  <div class="ph"><span class="no">2-1</span><h2>電話接通，專員已經知道他是誰、要什麼</h2></div>
+  <div class="ph"><span class="no">2-1</span><h2>電話接通，專員已經知道他是誰、要什麼</h2><div class="vtags"><span class="vtag keep">🛡 留住客戶</span></div></div>
   <div class="pb" style="display:flex;flex-direction:column">
     <div class="card callbar" id="call21" style="--d:.05s"></div>
     <div class="grid2 p21" style="flex:1;min-height:0">
@@ -380,7 +414,7 @@ mark.ev{background:#ffe28a;color:inherit;border-radius:4px;padding:0 2px}
 
 <!-- 2-2 -->
 <section class="page" id="p22">
-  <div class="ph"><span class="no">2-2</span><h2>專員不用想，系統給出處理步驟和開場話術</h2></div>
+  <div class="ph"><span class="no">2-2</span><h2>專員不用想，系統給出處理步驟和開場話術</h2><div class="vtags"><span class="vtag keep">🛡 留住客戶</span><span class="vtag earn">＄ 創造營收</span></div></div>
   <div class="pb grid2 p22">
     <div class="card" style="--d:.05s"><div class="ch">這通電話</div><div id="ctx22"></div></div>
     <div class="card" style="--d:.12s">
@@ -395,7 +429,7 @@ mark.ev{background:#ffe28a;color:inherit;border-radius:4px;padding:0 2px}
 
 <!-- 3 -->
 <section class="page" id="p3">
-  <div class="ph"><span class="no">3</span><h2>主管看見全中心，急件永遠排第一</h2></div>
+  <div class="ph"><span class="no">3</span><h2>主管看見全中心，急件永遠排第一</h2><div class="vtags"><span class="vtag keep">🛡 留住客戶</span></div></div>
   <div class="pb" style="display:flex;flex-direction:column">
     <div class="qtop">
       <button type="button" class="btn" id="qInject" style="padding:10px 22px">把剛才的客戶加入排隊</button>
@@ -412,7 +446,7 @@ mark.ev{background:#ffe28a;color:inherit;border-radius:4px;padding:0 2px}
 
 <!-- 4-1 -->
 <section class="page" id="p41">
-  <div class="ph"><span class="no">4-1</span><h2>上線前先推演：導入後一年省下多少</h2></div>
+  <div class="ph"><span class="no">4-1</span><h2>上線前先推演：等待變短，客戶就留得住</h2><div class="vtags"><span class="vtag keep">🛡 留住客戶</span><span class="vtag earn">＄ 創造營收</span></div></div>
   <div class="pb grid2 p41">
     <div class="card" style="--d:.05s">
       <div class="ch">推演參數（拉動即時重算）</div>
@@ -432,11 +466,11 @@ mark.ev{background:#ffe28a;color:inherit;border-radius:4px;padding:0 2px}
 
 <!-- 4-2 -->
 <section class="page" id="p42">
-  <div class="ph"><span class="no">4-2</span><h2>同樣的進線量，現況和導入後差在哪裡</h2>
+  <div class="ph"><span class="no">4-2</span><h2>同樣的進線量，導入後少轉錯、少流失</h2><div class="vtags"><span class="vtag keep">🛡 留住客戶</span></div>
     <div class="legend"><span><i style="background:#6b7787"></i>處理中</span><span><i style="background:var(--orange)"></i>反問確認</span><span><i style="background:var(--red)"></i>轉錯窗口</span><span><i style="background:var(--green)"></i>解決</span>
     <button type="button" class="btn ghost" data-ovl="ovlCurve" style="padding:6px 14px;font-size:14px">門檻分析</button></div></div>
   <div class="lanes">
-    <div class="card lane" style="--d:.05s"><div class="lh"><b style="color:var(--orange)">現況：語音選單／總機</b><span class="muted small" id="c0"></span></div><canvas id="cv0"></canvas>
+    <div class="card lane" style="--d:.05s"><div class="lh"><b style="color:var(--red)">現況：語音選單／總機</b><span class="muted small" id="c0"></span></div><canvas id="cv0"></canvas>
       <div class="cnt" id="cnt0"></div></div>
     <div class="card lane" style="--d:.12s"><div class="lh"><b style="color:var(--accent)">導入 Jev：一句話直接分流</b><span class="muted small" id="c1"></span></div><canvas id="cv1"></canvas>
       <div class="cnt" id="cnt1"></div></div>
@@ -469,7 +503,7 @@ mark.ev{background:#ffe28a;color:inherit;border-radius:4px;padding:0 2px}
 </main>
 <div class="toasts" id="toasts"></div>
 
-<footer class="cap"><span class="no" id="capNo">1-1</span><p id="capTxt"></p>
+<footer class="cap"><span class="no" id="capNo">1-1</span><p id="capTxt"></p><span class="vs" id="capVal"></span>
   <button type="button" class="icon" id="prevBtn" title="上一頁">‹</button><button type="button" class="icon" id="nextBtn" title="下一頁">›</button></footer>
 <div class="prog"><i id="progBar"></i></div>
 </div>
@@ -870,7 +904,7 @@ function renderP12(){
   let ref='';
   const owner=r.hasOpp?((L.c&&L.c.rm&&r.opp.o.owner==='理財專員')?`專屬理專 ${L.c.rm}`:r.opp.o.owner):'';
   if(r.hasOpp&&(r.angry||r.urgent)) ref=`<div class="refbox mute"><div class="tt">⏸ 偵測到商機：${r.opp.o.id}，本次不推薦</div><div class="muted" style="margin-top:8px">客戶${r.urgent?'遇到急件':'情緒不佳'}，這時候推銷只會更反感。系統只把「${r.opp.o.id} → ${r.opp.o.action}」記錄到 CRM，問題解決後由${owner}擇期跟進。</div></div>`;
-  else if(r.hasOpp) ref=`<div class="refbox" id="refbox"><div class="tt">＄ 商機轉介：${r.opp.o.id} → ${r.opp.o.action}</div><div class="pitch">「${r.opp.o.pitch}」</div><div class="acts"><button type="button" class="yes">${r.opp.o.yes}</button><button type="button" class="no">不用了，謝謝</button></div></div>`;
+  else if(r.hasOpp) ref=`<div class="refbox" id="refbox"><div class="tt">＄ 商機轉介：${r.opp.o.id} → ${r.opp.o.action}</div><div class="pitch">「${r.opp.o.pitch}」</div><div class="vline earn" style="margin:0 0 10px">＄ 先解決問題，再順勢轉介 → 創造營收</div><div class="acts"><button type="button" class="yes">${r.opp.o.yes}</button><button type="button" class="no">不用了，謝謝</button></div></div>`;
   else ref=`<div class="refbox mute"><div class="tt">這句話沒有偵測到商機</div><div class="muted" style="margin-top:8px">可以回到 1-1 點「商機」範例，例如「下個月要去日本 想換日幣」。</div></div>`;
   $('out12').innerHTML=`<div class="quote">「${esc(L.text)}」</div>
     <div class="sig4">
@@ -881,11 +915,20 @@ function renderP12(){
     </div>
     <div class="ref">${ref}<div class="rules"><b>商機轉介的底線（公平待客）</b><ul><li>先解決客戶的問題，最後才推薦</li><li>客戶同意才建立轉介單</li><li>情緒不佳或急件：只記錄、不推銷</li><li>婉拒後 30 天內不重複推薦</li></ul></div></div>`;
   const rb=$('refbox');
-  if(rb){ rb.querySelector('.yes').onclick=()=>{const id='RF'+new Date().toISOString().slice(2,10).replace(/-/g,'')+String(Math.floor(Math.random()*9000+1000)); rb.innerHTML=`<div class="tt">✓ 已建立轉介單 ${id}</div><div class="muted" style="margin-top:8px">轉給：${owner}　·　客戶已同意聯繫，預計 1 個工作天內回電</div>`;};
+  if(rb){ rb.querySelector('.yes').onclick=()=>{const id='RF'+new Date().toISOString().slice(2,10).replace(/-/g,'')+String(Math.floor(Math.random()*9000+1000)); rb.innerHTML=`<div class="tt">✓ 已建立轉介單 ${id}</div><div class="muted" style="margin-top:8px">轉給：${owner}　·　客戶已同意聯繫，預計 1 個工作天內回電</div><div class="vline earn">＄ 商機沒有漏接 → 創造營收</div>`;};
     rb.querySelector('.no').onclick=()=>{rb.classList.add('mute'); rb.innerHTML='<div class="tt">客戶婉拒，已記錄</div><div class="muted" style="margin-top:8px">30 天內不再重複推薦同一項商品。</div>';}; }
 }
 
 /* ---------- 1-3 ---------- */
+// 關鍵時刻的一句價值標語
+function valText(r,lvl,c){
+  if(r.urgent) return '🛡 急件第一時間處理 → 留住客戶';
+  if(lvl<=2) return '🛡 高價值客戶優先接通 → 留住客戶';
+  if(c&&isNew(c)) return '🛡 新客戶第一次求助就接住 → 留住客戶';
+  if(r.hasOpp&&!r.angry) return '＄ 先解決問題，再順勢轉介 → 創造營收';
+  return '🛡 一句話接到對的人 → 留住客戶';
+}
+function valLine(r,lvl,c){ const t=valText(r,lvl,c); return `<div class="vline${t.startsWith('＄')?' earn':''}">${t}</div>`; }
 function renderP13(){
   const L=LAST, r=L.r, c=L.c, cur=L.cur;
   $('crm13').innerHTML=(c?`<div class="kv"><span class="k">客戶</span><span class="v">${esc(L.dname)}　${maskID(cur.id)}</span><span class="k">級距</span><span class="v">${c.tier}${isVIP(c)?' <span class="tag blue">高資產高貢獻</span>':''}</span><span class="k">資產級距</span><span class="v">${c.aum}</span><span class="k">貢獻度</span><span class="v">${c.contrib}（${c.contribNote}）</span><span class="k">往來期間</span><span class="v">${tenure(c)}${isNew(c)?' <span class="tag green">新開戶</span>':''}</span><span class="k">專屬理專</span><span class="v">${c.rm||'—'}</span></div>`
@@ -893,7 +936,7 @@ function renderP13(){
     +`<div style="margin-top:26px;padding-top:20px;border-top:1px solid var(--line)"><div class="label">系統判斷（來自 1-2）</div><div class="chips">${r.urgent?'<span class="tag red">急件</span>':'<span class="tag">非急件</span>'}${r.angry?'<span class="tag orange">情緒不佳</span>':'<span class="tag">情緒平穩</span>'}<span class="tag">「${esc(L.text.length>16?L.text.slice(0,16)+'…':L.text)}」</span></div></div>`;
   const pc=`var(${PCOL[L.lvl]})`;
   const res=$('res13'); res.style.setProperty('--pc',pc);
-  res.innerHTML=`<div class="badge">${PNAME[L.lvl]}</div><div><div class="tgt">${PTGT[L.lvl]}${L.vip&&c.rm?`　·　指派專屬理專 ${c.rm}`:''}</div><div class="rs">依據：${L.reasons.join('；')}</div></div>`;
+  res.innerHTML=`<div class="badge">${PNAME[L.lvl]}</div><div><div class="tgt">${PTGT[L.lvl]}${L.vip&&c.rm?`　·　指派專屬理專 ${c.rm}`:''}</div><div class="rs">依據：${L.reasons.join('；')}</div>${valLine(r,L.lvl,c)}</div>`;
   const rows=[[1,'急件（盜刷、遺失、詐騙），不論客戶等級','立即接通'],[2,'私人銀行，或貴賓理財且貢獻度高（情緒不佳也維持優先）','10 秒內'],[3,'一般貢獻的貴賓理財；或新開戶 12 個月內且情緒不佳','30 秒內'],[4,'其他客戶；往來已久的一般客戶情緒不佳，也依序處理、先安撫','依序排隊']];
   $('ladder').innerHTML=rows.map(([l,cond,t])=>`<div class="lrow${l===L.lvl?' on':''}" style="--pc:var(${PCOL[l]})"><b style="color:var(${PCOL[l]})">${PNAME[l]}</b><span>${cond}</span><span class="tg">${t}</span></div>`).join('');
 }
@@ -1061,7 +1104,7 @@ function spawn(L){const g=laneGeom(L.cv);const NB=BOX.length, target=Math.floor(
   L.dots.push({x:10,y:g.h/2+(Math.random()-0.5)*60,phase:0,target,wrong,ask,hubDwell,dwell:0,col:'ink'});}
 function rr(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath();}
 function mv(d,tx,ty,dist){const dx=tx-d.x,dy=ty-d.y,L=Math.hypot(dx,dy);if(L<=dist){d.x=tx;d.y=ty;return true;}d.x+=dx/L*dist;d.y+=dy/L*dist;return false;}
-const DOT={ink:'#6b7787',warn:'#f28e2b',crit:'#e15759',good:'#59a14f'};
+const DOT={ink:'#6b7787',warn:'#f28e2b',crit:'#e15759',good:'#1f9bff'};
 function step(now){
   const dt=Math.min(0.05,(now-lastT)/1000); lastT=now; const vis=SC===7;
   LANES.forEach((L,li)=>{
@@ -1126,7 +1169,9 @@ function renderNav(){
     const dots=st.pages.length>1?`<span class="dots">${st.pages.map(p=>`<i class="${p===SC?'on':p<SC?'done':''}"></i>`).join('')}</span>`:'';
     return (k?'<span class="arrow">→</span>':'')+`<button type="button" class="step${on?' on':''}${done?' done':''}" data-p="${st.pages[0]}"><span class="n">${st.n}</span><span class="t"><b>${st.b}</b><small>${st.s}</small>${dots}</span></button>`;}).join('');
 }
-function updateChrome(){ renderNav(); $('capNo').textContent=NOS[SC]; $('capTxt').textContent=capText(SC); $('progBar').style.width=((SC+1)/PAGES.length*100)+'%'; }
+// 每頁頁尾的價值標語（不放數字，只反覆點出價值）
+const CAPVAL=['不用等、不轉錯 → 留住客戶','急件不漏、商機不漏 → 留住客戶・創造營收','高價值客戶優先 → 留住客戶','客戶不用重講 → 留住客戶','問題解決後順勢轉介 → 創造營收','急件與貴賓永遠先接 → 留住客戶','等待變短 → 留住客戶・創造營收','少轉錯、少流失 → 留住客戶'];
+function updateChrome(){ renderNav(); $('capNo').textContent=NOS[SC]; $('capTxt').textContent=capText(SC); $('capVal').textContent=CAPVAL[SC]; $('progBar').style.width=((SC+1)/PAGES.length*100)+'%'; }
 function go(i){
   i=Math.max(0,Math.min(PAGES.length-1,i)); if(i===SC) return;
   if(i>=1&&i<=5) ensureDemo();
@@ -1194,7 +1239,7 @@ function onJudge(m,pre){
   setTimeout(()=>el.remove(),20000);
   const finish=(ai)=>{
     const rt=routeOf(c.r);
-    const rs=el.querySelector('.rs'); if(rs) rs.textContent=`${ai?'API 判斷':'規則判斷'}：${rt.title} · ${PNAME[c.lvl]}`;
+    const rs=el.querySelector('.rs'); if(rs){ rs.textContent=`${ai?'API 判斷':'規則判斷'}：${rt.title} · ${PNAME[c.lvl]}`; rs.insertAdjacentHTML('afterend',valLine(c.r,c.lvl,null)); }
     if(rid) sendReply(rid,{title:rt.title,cat:rt.label,ext:rt.key,tel:rt.tel,line:rt.line,desk:rt.desk,kind:rt.kind,pname:PNAME[c.lvl],ai:!!ai,name});
     if(SC===5) renderQueue(); if($('ovlJudge').classList.contains('on')) renderJudgePanel();
   };
@@ -1275,7 +1320,8 @@ function renderSummary(d,meta){
     <div class="sumsrc">資料：${esc(meta.src)}　·　分析：${meta.ai?`<b>API（${esc(meta.model)}）</b>`:`<b class="off">本機統計</b>（${esc(meta.why)}）`}</div>
     <div class="sumgrid"><div><div class="sumlbl">進線主題</div>${(d.themes||[]).map(x=>`<div class="theme"><div class="tl">${esc(x.title)}<span>${x.count||0} 通</span></div><div class="bar2"><i style="width:${(x.count||0)/max*100}%"></i></div><div class="ins">${esc(x.insight||'')}</div>${(x.examples||[]).length?`<div class="ex">例：「${(x.examples||[]).map(esc).join('」「')}」</div>`:''}</div>`).join('')}</div>
     <div><div class="sumlbl" style="color:var(--red)">主管現在要注意</div><ul class="sumlist">${(d.alerts||[]).map(a=>`<li>${esc(a)}</li>`).join('')||'<li class="dim">沒有需要立即處理的狀況</li>'}</ul>
-    <div class="sumlbl" style="color:var(--accent)">建議行動</div><ul class="sumlist">${(d.actions||[]).map(a=>`<li>${esc(a)}</li>`).join('')}</ul></div></div>`;
+    <div class="sumlbl" style="color:var(--accent)">建議行動</div><ul class="sumlist">${(d.actions||[]).map(a=>`<li>${esc(a)}</li>`).join('')}</ul></div></div>
+    <div class="sumfoot">每一通都接住 → 留住客戶 ・ 創造營收</div>`;
 }
 async function runSummary(){
   $('ovlSum').classList.add('on');
@@ -1289,6 +1335,42 @@ async function runSummary(){
 }
 $('aiSumBtn').onclick=runSummary;
 
+// 背景大理石紋：斜向不規則主紋＋細分支＋淡淡暈染（固定亂數種子，每次畫面一樣）
+(function drawMarble(){
+  const ns='http://www.w3.org/2000/svg', svg=$('waves'); if(!svg) return;
+  const vein=svg.querySelector('g.vein'), halo=svg.querySelector('g.halo');
+  let seed=20261104; const rnd=()=>((seed=(seed*1664525+1013904223)>>>0)/4294967296);
+  const path=(pts,g,w,op)=>{ let d=`M${pts[0][0].toFixed(1)} ${pts[0][1].toFixed(1)}`;
+    for(let k=1;k<pts.length-1;k++){ const mx=(pts[k][0]+pts[k+1][0])/2, my=(pts[k][1]+pts[k+1][1])/2; d+=` Q${pts[k][0].toFixed(1)} ${pts[k][1].toFixed(1)} ${mx.toFixed(1)} ${my.toFixed(1)}`; }
+    const el=document.createElementNS(ns,'path'); el.setAttribute('d',d); el.setAttribute('fill','none');
+    el.setAttribute('stroke','#7d8693'); el.setAttribute('stroke-opacity',op); el.setAttribute('stroke-width',w);
+    el.setAttribute('stroke-linecap','round'); g.appendChild(el); };
+  const walk=(x,y,ang,steps,len,wobble)=>{ const pts=[[x,y]], base=ang; let turn=0;
+    for(let i=0;i<steps;i++){ turn=turn*.7+(rnd()-.5)*wobble; ang+=turn+(base-ang)*.12;   // 拉回主方向，不打圈
+      x+=Math.cos(ang)*len; y+=Math.sin(ang)*len; pts.push([x,y]); }
+    return pts; };
+  const main=(x,y,ang,steps,w)=>{
+    const pts=walk(x,y,ang,steps,16,.22);
+    path(pts,halo,w*5,.025); path(pts,halo,w*2.5,.035); path(pts,vein,w,.09);   // 兩層寬淡線代替模糊濾鏡，縮放時仍清晰
+    for(let i=6;i<pts.length-6;i+=1){ if(rnd()<.08){              // 分支：細、短、往兩側岔開
+      const b=walk(pts[i][0],pts[i][1],ang+(rnd()<.5?-1:1)*(.5+rnd()*.6),8+Math.floor(rnd()*16),12,.35);
+      path(b,vein,w*.45,.06); } }
+  };
+  // 主紋平均分布：起點沿著左邊與上緣等距排開，同一斜向貫穿全畫面
+  const N=9;
+  for(let k=0;k<N;k++){
+    const t=k/(N-1);
+    const x0=t<=.5?-120:-120+(t-.5)*2*1500, y0=t<=.5?(.5-t)*2*900:-80;
+    main(x0+ (rnd()-.5)*60, y0+(rnd()-.5)*60, .42+(rnd()-.5)*.16, 115, .7+rnd()*.5);
+  }
+})();
+// 背景紋路開關（記在這台電腦的瀏覽器）
+(function(){
+  const app=$('app'), b=$('bgBtn'); let off=false; try{ off=localStorage.getItem('jevNoBg')==='1'; }catch(_){}
+  const apply=()=>{ app.classList.toggle('nobg',off); b.classList.toggle('off',off); b.title=off?'背景紋路：關（點一下開啟）':'背景紋路：開（點一下關閉）'; };
+  b.onclick=()=>{ off=!off; try{ localStorage.setItem('jevNoBg',off?'1':'0'); }catch(_){} apply(); };
+  apply();
+})();
 aiHealth(); setInterval(aiHealth,20000);
 fit(); renderCidChips(); updateChrome(); qReset();
 setInterval(()=>{if(!QS.paused){qTick(5); if(SC===5) renderQueue();}},500);

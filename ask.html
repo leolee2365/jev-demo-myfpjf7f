@@ -51,11 +51,14 @@ button.send:disabled{opacity:.5}
 .or{display:flex;align-items:center;gap:10px;color:var(--dim);font-size:13px;margin:4px 0 12px}
 .or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
 textarea.live{border-color:var(--red);background:#fff}
+.motto{margin-top:12px;font-size:14px;font-weight:800;color:var(--accent);letter-spacing:.06em}
+.motto.top{margin:2px 0 6px;font-size:11px;letter-spacing:.32em}
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="brand">客服營運數位孿生平台 · 評審參與</div>
+  <div class="motto top">留住客戶 ・ 創造營收</div>
   <h1>換你當客戶，<br>打給客服說一句話</h1>
   <p class="sub">用講的或打字都可以。說完確認文字後按「撥出」，會即時出現在大螢幕，系統判斷完，你的手機會收到要轉哪個分機。</p>
 
@@ -132,7 +135,7 @@ function waitReply(rid,since){
   const show=p=>{
     if(done) return; done=true; stopWait();
     box.className='res'+(p.kind==='urgent'?' urgent':p.kind==='operator'?' op':'');
-    box.innerHTML=`<div class="k">${p.ai?'API 判斷':'系統判斷'}</div><div class="big">${esc(p.title)}</div><div class="sub">接聽窗口：${esc(p.desk)}　·　服務等級：${esc(p.pname)}</div>`;
+    box.innerHTML=`<div class="k">${p.ai?'API 判斷':'系統判斷'}</div><div class="big">${esc(p.title)}</div><div class="sub">接聽窗口：${esc(p.desk)}　·　服務等級：${esc(p.pname)}</div><div class="motto">一句話接到對的人 → 留住客戶 ・ 創造營收</div>`;
   };
   // 長連線：回覆一送出就收到
   try{
