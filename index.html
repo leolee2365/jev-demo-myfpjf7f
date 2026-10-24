@@ -590,7 +590,7 @@ body{font-family:var(--font)}
     </div>
     <div style="display:flex;flex-direction:column;min-height:0">
       <div class="card" style="--d:.12s">
-        <div class="ch sys">導入後，每年可省下（假設值）</div>
+        <div class="ch sys">導入後，客戶感受到的改變（假設值）</div>
         <div class="hero" id="hero"></div>
         <div class="heronote" id="heroNote"></div>
       </div>
@@ -620,7 +620,8 @@ body{font-family:var(--font)}
     <li><b>校準</b>：Jev 的信心度經過校準，信心 0.9 的案件約有 90% 會分對，模型直接用信心度當分對的機率。</li>
     <li><b>排隊</b>：以尖峰小時（占全日 12%）的進線量，用 Erlang C 計算平均等待時間和 20 秒內接聽率。</li>
     <li><b>文字客服</b>：答非所問的客戶平均多來回 2 輪，其中 40% 最後轉真人。導入後答錯率 = 分錯窗口比例 + 5%（知識庫本身沒有答案）。</li>
-    <li><b>人力換算</b>：每位客服每天有效工時 7.5 小時、占用率 85%；一年以 250 個工作天計算。</li>
+    <li><b>年度換算</b>：一年以 250 個工作天計算。</li>
+    <li><b>校正方式</b>：上線後用通話結束的案件分類紀錄（案件量、處理時長、轉接、重複來電、複雜度）校正模型參數。</li>
   </ul></div></div>
 <div class="ovl" id="ovlCurve"><div class="card"><button type="button" class="icon x" data-close>✕</button><div class="ch">門檻怎麼設最省時間？</div>
   <div class="muted small">門檻太低，分錯變多；太高，反問和轉人工變多。曲線最低點就是最佳門檻。</div>
@@ -1181,7 +1182,6 @@ const CTRL_ADV=[
   {k:'tOp',l:'總機人工分類時間',min:20,max:180,step:5,v:60,f:v=>v+' 秒'},
   {k:'tRe',l:'轉錯後重新說明時間',min:30,max:240,step:10,v:90,f:v=>v+' 秒'},
   {k:'ivr',l:'語音選單聆聽時間',min:20,max:120,step:5,v:60,f:v=>v+' 秒'},
-  {k:'salary',l:'每位客服年人事成本',min:40,max:150,step:1,v:72,f:v=>v+' 萬'},
   {k:'eOp',l:'總機人工分錯比例',min:0,max:0.3,step:0.01,v:0.05,f:v=>(v*100).toFixed(0)+'%'},
 ];
 function buildCtl(list,el){
@@ -1213,12 +1213,10 @@ const fmtSec=s=>!isFinite(s)?'爆線':s>=60?`${Math.floor(s/60)} 分 ${Math.roun
 let SIM={};
 function recompute(){
   const A=phoneModel('asis'),B=phoneModel('tobe',P.thAuto,P.thAsk),TA=textModel('asis'),TB=textModel('tobe');
-  const shift=7.5*3600*0.85;
-  const fte=((P.vPhone*A.svc+TA.agentSec)-(P.vPhone*B.svc+TB.agentSec))/shift;
-  const jevCost=(P.vPhone+P.vText)*500*365/1e6*0.042*32/1e4;
+  const lessMis=Math.max(0,(A.mis-B.mis)*P.vPhone);
   const custHrs=((isFinite(A.cust)&&isFinite(B.cust)?(A.cust-B.cust)*P.vPhone:0)+(TA.cust-TB.cust)*P.vText)*250/3600;
-  $('hero').innerHTML=`<div><div class="big">${fmt(Math.max(0,fte),1)}</div><div class="u">位客服人力</div></div><div><div class="big">${fmt(Math.max(0,fte*P.salary-jevCost),0)}</div><div class="u">萬元人事成本</div></div><div><div class="big">${fmt(Math.max(0,custHrs),0)}</div><div class="u">小時客戶等待與溝通時間</div></div>`;
-  $('heroNote').textContent=`已扣除 Jev 模型費用（每則約 500 token、每百萬 token US$0.042，一年約 ${fmt(jevCost*1e4,0)} 元）。所有數字為假設值，待以行內資料與 Jev 實測校正。`;
+  $('hero').innerHTML=`<div><div class="big">${(B.q.sl*100).toFixed(0)}%</div><div class="u">尖峰 20 秒內接通<br>（現況 ${(A.q.sl*100).toFixed(0)}%）</div></div><div><div class="big">${fmt(lessMis,0)}</div><div class="u">通電話每天少轉錯窗口<br>（不用重新排隊）</div></div><div><div class="big">${fmt(Math.max(0,custHrs),0)}</div><div class="u">小時客戶等待與溝通時間<br>（每年少花）</div></div>`;
+  $('heroNote').textContent='所有數字為假設值；上線後用通話結束的案件紀錄（案件量、處理時長、轉接、重複來電）校正模型。';
   const kp=(k,va,vb,better,f)=>{const d=vb-va;const good=better==='low'?d<0:d>0;const pct=va&&isFinite(va)&&isFinite(vb)?Math.abs(d/va*100):null;
     return `<div class="kpi"><div class="k">${k}</div><div class="v"${good?'':' style="color:var(--red)"'}>${f(vb)}</div><div class="c">現況 ${f(va)}</div><div class="d${good?'':' bad'}">${pct===null?'':(good?'改善 ':'惡化 ')+pct.toFixed(0)+'%'}</div></div>`;};
   $('kpis').innerHTML=kp('電話：客戶平均總耗時',A.cust,B.cust,'low',fmtSec)+kp('電話：尖峰平均等待',A.q.asa,B.q.asa,'low',fmtSec)+kp('電話：轉錯窗口比例',A.mis,B.mis,'low',v=>(v*100).toFixed(1)+'%')+kp('文字：每日轉真人',TA.escN,TB.escN,'low',v=>fmt(v)+' 則');
@@ -1299,7 +1297,7 @@ function capText(i){
     case 4: return '系統依急件、重複來電、客戶是否已婉拒自助和商機，給出處理步驟與開場話術，新進專員也能一次到位。';
     case 5: {const q=[...QS.q].sort((x,y)=>x.lvl-y.lvl||x.arr-y.arr);const pos=q.findIndex(c=>c.mine);const ag=QS.agents.find(a=>a.busy&&a.busy.mine);
       return pos>=0?`主管看見全中心：${who}目前排在第 ${pos+1} 位（${PNAME[q[pos].lvl]}）；專員空下來，一律先接等級最高的客戶。`:ag?`${who}已由專員 ${ag.id} 接起。`:'主管看見全中心：誰最急、誰等最久、哪位專員空著；按「把剛才的客戶加入排隊」看他排在哪裡。';}
-    case 6: return '上線前先推演：用同樣的進線量，比較導入前後需要的人力、成本與客戶等待時間；數字皆為假設值。';
+    case 6: return '上線前先推演：用同樣的進線量，比較導入前後客戶的等待時間、接通率和轉錯窗口；數字皆為假設值。';
     case 7: return '左邊是現況的語音選單與總機，右邊是一句話分流；紅點代表轉錯窗口、要重新排隊。';
   }
 }

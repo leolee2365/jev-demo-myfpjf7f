@@ -166,19 +166,16 @@ function waitReply(rid,since){
   const loop=()=>{ if(done) return; tick(); waitTimer=setTimeout(loop,Date.now()-t0<40000?1000:3000); };
   waitTimer=setTimeout(loop,1000);
 }
-// 常見業務：先問要不要智慧小豐連結，拒絕才給分機
+// 常見業務：直接給智慧小豐連結，再問要不要真人；要才給電話
 const XF_LINK='https://chatservice.sinopac.com/Webhook/';
 function showSelf(box,p,esc){
   const s=p.self, head=`<div class="k">${p.ai?'API 判斷':'系統判斷'}</div><div class="big">常見業務「${esc(s.id)}」</div>`;
+  const sms=`<div class="sms"><div class="from">簡訊／LINE（示意）</div>【永豐銀行】您來電詢問的「${esc(s.id)}」，可點連結由智慧小豐線上辦理（${esc(s.menu)}，${esc(s.time)}）：<br><a href="${XF_LINK}" target="_blank" rel="noopener">${XF_LINK.replace('https://','')}</a></div>`;
   box.className='res self';
-  box.innerHTML=`${head}<div class="ask">Jev：「${esc(s.id)}可以用<b>智慧小豐</b>線上辦理，${esc(s.time)}就好，要傳連結給您嗎？」</div>
-    <div class="yn"><button type="button" class="y">好，傳連結給我</button><button type="button" class="n">不用，我要找真人</button></div>`;
-  box.querySelector('.y').onclick=()=>{
-    box.innerHTML=`${head}<div class="sms"><div class="from">簡訊／LINE（示意）</div>【永豐銀行】您來電詢問的「${esc(s.id)}」，可點連結由智慧小豐線上辦理（${esc(s.menu)}）：<br><a href="${XF_LINK}" target="_blank" rel="noopener">${XF_LINK.replace('https://','')}</a></div>
-      <div class="sub">不用排隊等專員；想改找真人，<button type="button" class="lk">看分機</button></div><div class="motto">能自己辦的不用等 → 留住客戶</div>`;
-    box.querySelector('.lk').onclick=()=>showExt(box,p,esc,head);
-  };
-  box.querySelector('.n').onclick=()=>showExt(box,p,esc,head);
+  box.innerHTML=`${head}${sms}<div class="ask">Jev：「已經把辦理連結傳給您，請問需要真人幫您辦理嗎？」</div>
+    <div class="yn"><button type="button" class="y">需要，我要找真人</button><button type="button" class="n">不用，我自己線上辦</button></div>`;
+  box.querySelector('.y').onclick=()=>showExt(box,p,esc,head);
+  box.querySelector('.n').onclick=()=>{ box.innerHTML=`${head}${sms}<div class="sub">好的，點上方連結就能辦理，不用排隊等專員。</div><div class="motto">能自己辦的不用等 → 留住客戶</div>`; };
 }
 function showExt(box,p,esc,head){
   box.innerHTML=`${head}<div class="big" style="font-size:19px">${esc(p.self.ext)}</div><div class="sub">接聽窗口：${esc(p.desk)}　·　服務等級：${esc(p.pname)}</div><div class="motto">一句話接到對的人 → 留住客戶 ・ 創造營收</div>`;
