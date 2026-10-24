@@ -1409,7 +1409,8 @@ function onJudge(m,pre){
   const finish=(ai)=>{
     const rt=routeOf(c.r,c.cur);
     const rs=el.querySelector('.rs'); if(rs){ rs.textContent=`${ai?'API 判斷':'規則判斷'}：${rt.title} · ${PNAME[c.lvl]}`; rs.insertAdjacentHTML('afterend',valLine(c.r,c.lvl,null)); }
-    if(rid) sendReply(rid,{title:rt.title,cat:rt.label,ext:rt.key,tel:rt.tel,line:rt.line,desk:rt.desk,kind:rt.kind,pname:PNAME[c.lvl],ai:!!ai,name});
+    if(rid) sendReply(rid,{title:rt.title,cat:rt.label,ext:rt.key,tel:rt.tel,line:rt.line,desk:rt.desk,kind:rt.kind,pname:PNAME[c.lvl],ai:!!ai,name,
+      self:rt.kind==='self'?{id:rt.s.id,menu:rt.s.menu,time:rt.s.time,ext:`${rt.label}：請撥${rt.line} ${rt.tel}，${keyTxt(rt)}`}:null});
     if(SC===5) renderQueue(); if($('ovlJudge').classList.contains('on')) renderJudgePanel();
   };
   if(!AIOK&&!pre) return finish(false);

@@ -39,6 +39,16 @@ button.send:disabled{opacity:.5}
 .res .big{font-size:22px;font-weight:800;line-height:1.4;margin:4px 0}
 .res .sub{font-size:14.5px;color:var(--muted)}
 .res.urgent{background:#fdecec}.res.op{background:#f7f9fb}
+.res.self{background:#E3F7F5}
+.res .ask{margin:10px 0 12px;padding:12px 14px;border-radius:12px;background:#fff;border:1.5px solid #03C0AF;font-size:15.5px;line-height:1.55}
+.res .ask b{color:#029E91}
+.res .yn{display:flex;flex-direction:column;gap:8px}
+.res .yn button{border:0;border-radius:12px;font:inherit;font-size:16px;font-weight:800;padding:12px}
+.res .yn .y{background:#029E91;color:#fff}.res .yn .n{background:#fff;color:var(--muted);border:1.5px solid var(--line)}
+.res .sms{margin:10px 0;padding:12px 14px;border-radius:14px;background:#fff;font-size:15px;line-height:1.6}
+.res .sms .from{font-size:12px;color:var(--dim);margin-bottom:4px}
+.res .sms a{color:#029E91;font-weight:700;word-break:break-all}
+.res .lk{border:0;background:none;padding:0;font:inherit;color:var(--accent);text-decoration:underline}
 .wait{color:var(--muted);font-size:15px;margin:6px 0 18px}
 .wait i{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--accent);margin:0 3px;animation:bl 1s infinite}
 .wait i:nth-child(2){animation-delay:.2s}.wait i:nth-child(3){animation-delay:.4s}
@@ -60,7 +70,7 @@ textarea.live{border-color:var(--red);background:#fff}
   <div class="brand">客服營運數位孿生平台 · 評審參與</div>
   <div class="motto top">留住客戶 ・ 創造營收</div>
   <h1>換你當客戶，<br>打給客服說一句話</h1>
-  <p class="sub">用講的或打字都可以。說完確認文字後按「撥出」，會即時出現在大螢幕，系統判斷完，你的手機會收到要轉哪個分機。</p>
+  <p class="sub">用講的或打字都可以。說完確認文字後按「撥出」，會即時出現在大螢幕，系統判斷完，你的手機會收到要轉哪個分機；分期、調額這類常見業務，還可以直接拿到智慧小豐的辦理連結。</p>
 
   <div class="card" id="form">
     <div class="f"><label for="nm">你的稱呼（選填）</label><input id="nm" maxlength="12" placeholder="例：王經理"></div>
@@ -80,7 +90,7 @@ textarea.live{border-color:var(--red);background:#fff}
       <div class="chips ex" style="margin-top:8px" id="ex">
         <button type="button" class="chip">信用卡好像被盜刷了</button>
         <button type="button" class="chip">定存下個月到期不知道怎麼放</button>
-        <button type="button" class="chip">搞什麼 轉帳到現在還沒到</button>
+        <button type="button" class="chip">卡費可以分期嗎</button>
         <button type="button" class="chip">想開戶順便辦信用卡</button>
         <button type="button" class="chip">我搬家了要改通訊地址</button>
       </div></div>
@@ -134,6 +144,7 @@ function waitReply(rid,since){
   let done=false;
   const show=p=>{
     if(done) return; done=true; stopWait();
+    if(p.self) return showSelf(box,p,esc);
     box.className='res'+(p.kind==='urgent'?' urgent':p.kind==='operator'?' op':'');
     box.innerHTML=`<div class="k">${p.ai?'API 判斷':'系統判斷'}</div><div class="big">${esc(p.title)}</div><div class="sub">接聽窗口：${esc(p.desk)}　·　服務等級：${esc(p.pname)}</div><div class="motto">一句話接到對的人 → 留住客戶 ・ 創造營收</div>`;
   };
@@ -154,6 +165,23 @@ function waitReply(rid,since){
   // 備援每 1 秒查一次；40 秒後仍沒收到就放慢到 3 秒，避免用完手機的 ntfy 額度
   const loop=()=>{ if(done) return; tick(); waitTimer=setTimeout(loop,Date.now()-t0<40000?1000:3000); };
   waitTimer=setTimeout(loop,1000);
+}
+// 常見業務：先問要不要智慧小豐連結，拒絕才給分機
+const XF_LINK='https://chatservice.sinopac.com/Webhook/';
+function showSelf(box,p,esc){
+  const s=p.self, head=`<div class="k">${p.ai?'API 判斷':'系統判斷'}</div><div class="big">常見業務「${esc(s.id)}」</div>`;
+  box.className='res self';
+  box.innerHTML=`${head}<div class="ask">Jev：「${esc(s.id)}可以用<b>智慧小豐</b>線上辦理，${esc(s.time)}就好，要傳連結給您嗎？」</div>
+    <div class="yn"><button type="button" class="y">好，傳連結給我</button><button type="button" class="n">不用，我要找真人</button></div>`;
+  box.querySelector('.y').onclick=()=>{
+    box.innerHTML=`${head}<div class="sms"><div class="from">簡訊／LINE（示意）</div>【永豐銀行】您來電詢問的「${esc(s.id)}」，可點連結由智慧小豐線上辦理（${esc(s.menu)}）：<br><a href="${XF_LINK}" target="_blank" rel="noopener">${XF_LINK.replace('https://','')}</a></div>
+      <div class="sub">不用排隊等專員；想改找真人，<button type="button" class="lk">看分機</button></div><div class="motto">能自己辦的不用等 → 留住客戶</div>`;
+    box.querySelector('.lk').onclick=()=>showExt(box,p,esc,head);
+  };
+  box.querySelector('.n').onclick=()=>showExt(box,p,esc,head);
+}
+function showExt(box,p,esc,head){
+  box.innerHTML=`${head}<div class="big" style="font-size:19px">${esc(p.self.ext)}</div><div class="sub">接聽窗口：${esc(p.desk)}　·　服務等級：${esc(p.pname)}</div><div class="motto">一句話接到對的人 → 留住客戶 ・ 創造營收</div>`;
 }
 $('again').onclick=()=>{ stopWait(); cancelAuto(); $('micTx').textContent='點一下開始說話'; $('tx').value=''; upd(); $('ok').style.display='none'; $('form').style.display='block'; };
 
