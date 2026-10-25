@@ -823,20 +823,22 @@ KW['存款外匯'].push(['帳戶',1]);
 KW['貸款'].push(['貸款',2.5],['借',1]);
 KW['財富信託'].push(['理財',3],['投資',2.5],['報酬',2],['穩一點',1.6],['穩',0.8]);
 KW['基本資料變更'].push(['基本資料',3.5],['個人資料',3],['聯絡資料',3.5],['變更資料',3.5],['變更',1.2],['更換',0.8],['修改',0.8]);
-// 常見業務：高頻、流程固定，智慧小豐可線上自助（選單名稱取自智慧小豐；連結為公開入口，示意）
+// 常見業務：高頻、流程固定，智慧小豐可線上自助（選單名稱取自智慧小豐）
+// 連結帶 q 參數，智慧小豐打開就直接回答這項業務；dep 2＝信用卡、1＝銀行。q 只放固定說法，不放客戶原句（避免個資進網址）
 const XF_URL='chatservice.sinopac.com/Webhook/';
+const xfLink=s=>`https://${XF_URL}#department/${s.dep}?q=${encodeURIComponent(s.q)}`;
 // kw 可放字串或正規式；順序有意義（額度查詢要排在臨時調額前面）
 const SELF=[
-  {id:'消費分期',kw:['分期',/分\d+期/],menu:'信用卡帳務 › 消費分期',time:'約 1 分鐘'},
-  {id:'額度查詢',kw:['可用額度','剩多少額度','額度還有多少','額度剩多少'],menu:'信用卡帳務 › 額度查詢',time:'約 30 秒'},
-  {id:'臨時調額',kw:['調額','臨調','臨時額度','額度不夠',/(調高|提高|調整|加).{0,4}額度/,/額度調高/,/(刷卡|卡片|信用卡)額度/],menu:'信用卡帳務 › 額度查詢',time:'約 2 分鐘'},
-  {id:'帳單查詢與補發',kw:['要繳多少','繳多少','帳單金額','應繳','繳款期限','繳款截止','截止日','有沒有繳到','繳了沒','繳款紀錄',/沒收到.{0,5}帳單/,/帳單.{0,4}(沒收到|沒寄|還沒|補寄|補發)/,/補[寄發].{0,3}帳單/],menu:'信用卡帳務 › 帳務查詢及補發',time:'約 1 分鐘'},
-  {id:'消費明細查詢',kw:['交易明細','消費明細','刷卡明細','刷卡紀錄','消費紀錄'],menu:'信用卡帳務 › 帳務查詢及補發',time:'約 1 分鐘'},
-  {id:'開卡',kw:['開卡'],menu:'信用卡帳務 › 開卡',time:'約 1 分鐘'},
-  {id:'紅利兌換',kw:['紅利','點數換','兌換'],menu:'信用卡帳務 › 紅利兌換',time:'約 2 分鐘'},
-  {id:'年費減免',kw:['年費'],menu:'信用卡帳務 › 年費減免',time:'約 1 分鐘'},
-  {id:'帳戶餘額查詢',kw:['餘額'],menu:'銀行帳務 › 臺外幣餘額',time:'約 30 秒'},
-  {id:'網銀密碼重設',kw:['忘記密碼','密碼忘記','密碼忘了'],menu:'熱門問答 › 忘記網路銀行登入密碼',time:'約 2 分鐘'},
+  {id:'消費分期',dep:2,q:'我想辦消費分期',kw:['分期',/分\d+期/],menu:'信用卡帳務 › 消費分期',time:'約 1 分鐘'},
+  {id:'額度查詢',dep:2,q:'信用卡可用額度查詢',kw:['可用額度','剩多少額度','額度還有多少','額度剩多少'],menu:'信用卡帳務 › 額度查詢',time:'約 30 秒'},
+  {id:'臨時調額',dep:2,q:'我想臨時調高信用卡額度',kw:['調額','臨調','臨時額度','額度不夠',/(調高|提高|調整|加).{0,4}額度/,/額度調高/,/(刷卡|卡片|信用卡)額度/],menu:'信用卡帳務 › 額度查詢',time:'約 2 分鐘'},
+  {id:'帳單查詢與補發',dep:2,q:'帳單金額查詢',kw:['要繳多少','繳多少','帳單金額','應繳','繳款期限','繳款截止','截止日','有沒有繳到','繳了沒','繳款紀錄',/沒收到.{0,5}帳單/,/帳單.{0,4}(沒收到|沒寄|還沒|補寄|補發)/,/補[寄發].{0,3}帳單/],menu:'信用卡帳務 › 帳務查詢及補發',time:'約 1 分鐘'},
+  {id:'消費明細查詢',dep:2,q:'刷卡紀錄查詢',kw:['交易明細','消費明細','刷卡明細','刷卡紀錄','消費紀錄'],menu:'信用卡帳務 › 帳務查詢及補發',time:'約 1 分鐘'},
+  {id:'開卡',dep:2,q:'線上開卡',kw:['開卡'],menu:'信用卡帳務 › 開卡',time:'約 1 分鐘'},
+  {id:'紅利兌換',dep:2,q:'紅利點數兌換',kw:['紅利','點數換','兌換'],menu:'信用卡帳務 › 紅利兌換',time:'約 2 分鐘'},
+  {id:'年費減免',dep:2,q:'年費減免',kw:['年費'],menu:'信用卡帳務 › 年費減免',time:'約 1 分鐘'},
+  {id:'帳戶餘額查詢',dep:1,q:'帳戶餘額查詢',kw:['餘額'],menu:'銀行帳務 › 臺外幣餘額',time:'約 30 秒'},
+  {id:'網銀密碼重設',dep:1,q:'網銀密碼忘記了',kw:['忘記密碼','密碼忘記','密碼忘了'],menu:'熱門問答 › 忘記網路銀行登入密碼',time:'約 2 分鐘'},
 ];
 // 讓這些說法也能分到信用卡類別
 [['分3期',3],['分6期',3],['分12期',3],['分24期',3],['分幾期',2.5],['臨時調額',3.5],['調高額度',3],['提高額度',3],['額度調高',3],['額度不夠',3],['臨調',3],
@@ -1065,7 +1067,7 @@ function renderP11(){
     tt=`常見業務「${s.id}」→ 可線上自助`;
     why=L.selfChoice?'':`高頻、流程固定，智慧小豐就能辦（${s.menu}）；客戶說不用就照常轉專員。`;
     const ask=`<div class="jask">Jev：「${s.id}可以用<b>智慧小豐</b>線上辦理，${s.time}就好，要傳連結給您嗎？」</div>`;
-    if(L.selfChoice==='link') extra=ask+`<div class="selfsms"><div class="ph5"><div class="bar5"><span>簡訊／LINE（示意）</span><span>剛剛</span></div><div class="bub">【永豐銀行】您來電詢問的「${s.id}」，可點連結由智慧小豐線上辦理：<span class="lnk">${XF_URL}</span></div></div><div class="note5">✓ 客戶選擇線上辦理<br><b>不進排隊</b><br><button type="button" class="more" id="selfNo">改找真人 ›</button></div></div>`;
+    if(L.selfChoice==='link') extra=ask+`<div class="selfsms"><div class="ph5"><div class="bar5"><span>簡訊／LINE（示意）</span><span>剛剛</span></div><div class="bub">【永豐銀行】您來電詢問的「${s.id}」，可點連結由智慧小豐線上辦理：<a class="lnk" href="${xfLink(s)}" target="_blank" rel="noopener">${XF_URL}…（已帶入「${s.q}」）</a></div></div><div class="note5">✓ 客戶選擇線上辦理<br><b>不進排隊</b><br><button type="button" class="more" id="selfNo">改找真人 ›</button></div></div>`;
     else if(L.selfChoice==='human') extra=ask+`<div class="why" style="margin-top:12px">客戶選擇真人 → 照問題類別轉到對的專員（已記錄「已提供自助，客戶選擇真人」，專員不會重複推薦）</div>`+hot(rt);
     else extra=ask+`<div class="clar" id="selfAsk"><button type="button" data-v="link">好，傳連結給我</button><button type="button" data-v="human">不用，我要找真人</button></div>`;
   }
@@ -1480,7 +1482,7 @@ function onJudge(m,pre){
     jrec.auto=au; if(au){ const i=QS.q.indexOf(c); if(i>=0){ QS.q.splice(i,1); QS.auto++; } }
     const rs=el.querySelector('.rs'); if(rs){ rs.textContent=`${ai?'API 判斷':'規則判斷'}：${rt.title} · ${pn}`; rs.insertAdjacentHTML('afterend',valLine(c.r,c.lvl,null)); }
     if(rid) sendReply(rid,{title:rt.title,cat:rt.label,ext:rt.key,tel:rt.tel,line:rt.line,desk:rt.desk,kind:rt.kind,pname:PNAME[c.lvl],ai:!!ai,name,
-      self:au?{id:rt.s.id,menu:rt.s.menu,time:rt.s.time,ext:`${rt.label}：請撥${rt.line} ${rt.tel}，${keyTxt(rt)}`}:null});
+      self:au?{id:rt.s.id,menu:rt.s.menu,time:rt.s.time,link:xfLink(rt.s),q:rt.s.q,ext:`${rt.label}：請撥${rt.line} ${rt.tel}，${keyTxt(rt)}`}:null});
     if(SC===5) renderQueue(); if($('ovlJudge').classList.contains('on')) renderJudgePanel();
   };
   if(!AIOK&&!pre) return finish(false);
