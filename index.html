@@ -116,17 +116,6 @@ button{font:inherit;cursor:pointer}
 .clar button{border:1.5px solid var(--accent);background:#fff;color:var(--accent);border-radius:999px;padding:6px 18px;font-size:15.5px;font-weight:700}
 .clar button:hover{background:#e8f0fa}
 .hot{display:flex;gap:36px;margin-top:14px}
-/* 1-1 常見業務：Jev 詢問＋簡訊/LINE 示意 */
-.jask{margin-top:10px;padding:10px 16px;border-radius:12px;background:#fff;border:1.5px solid var(--gold);font-size:17px;font-weight:600;color:var(--ink-2)}
-.jask b{color:var(--goldT)}
-.selfsms{display:flex;gap:18px;align-items:center;margin-top:10px}
-.selfsms .ph5{flex:1;max-width:420px;border-radius:14px;border:2px solid var(--navy);background:#fff;padding:8px 12px 10px;box-shadow:0 6px 18px rgba(30,39,97,.12)}
-.selfsms .ph5 .bar5{font-size:12px;color:var(--dim);display:flex;justify-content:space-between;margin-bottom:5px}
-.selfsms .ph5 .bub{background:var(--soft);border-radius:12px;padding:9px 11px;font-size:13.5px;line-height:1.55;color:var(--text)}
-.selfsms .ph5 .lnk{color:var(--goldT);font-weight:700;word-break:break-all}
-.selfsms .note5{flex:none;font-size:15.5px;color:var(--muted);line-height:1.65}
-.selfsms .note5 b{color:var(--goldT)}
-.tag.self{background:#E3F7F5;color:var(--goldT)}
 .hot .num{font-size:22px;font-weight:800}
 
 /* 1-2 */
@@ -175,6 +164,15 @@ button{font:inherit;cursor:pointer}
 .callbar .pl{font-size:20px;font-weight:800;color:var(--pc)}
 .callbar .tm{margin-left:auto;font-size:22px;font-weight:700;color:var(--muted)}
 .p21{grid-template-columns:1fr 1fr;align-items:start}
+.fixrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-top:20px;font-size:15px;color:var(--muted)}
+.fixrow select{font:inherit;font-size:15px;padding:5px 8px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--text)}
+.menunote{margin:0 0 12px;padding:10px 14px;border-left:4px solid var(--p3);background:var(--soft);border-radius:6px;font-weight:700;font-size:16px}
+.menunote small{display:block;font-weight:400;color:var(--muted);font-size:14px;margin-top:4px}
+.lsep{font-size:14px;color:var(--muted);margin:10px 0 6px;padding-top:8px;border-top:1px dashed var(--line)}
+/* 1-3 多了標準化一列，壓緊一點才放得下 */
+#p13 .ladder{gap:6px}
+#p13 .lrow{padding:8px 18px;grid-template-columns:140px 1fr 100px}
+.agst{margin-left:6px;font-size:12px;color:var(--muted)}
 .p22{grid-template-columns:420px 1fr;align-items:start}
 .script{font-size:26px;font-weight:700;line-height:1.6;padding:22px 26px;border-radius:14px;background:#e8f0fa;color:#1d3f6b}
 .steps{margin:20px 0 0;padding-left:26px;font-size:18px}
@@ -218,7 +216,7 @@ button{font:inherit;cursor:pointer}
 .hero .big{font-size:58px;font-weight:800;color:var(--accent);line-height:1.1}
 .hero .u{font-size:17px;color:var(--muted);margin-top:4px}
 .heronote{font-size:13px;color:var(--dim);margin-top:14px}
-.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:24px}
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:24px}
 .kpi{background:var(--card);border-radius:16px;padding:18px 22px;box-shadow:0 1px 2px rgba(30,45,70,.05),0 8px 24px rgba(30,45,70,.06)}
 .kpi .k{font-size:15px;color:var(--muted)}
 .kpi .v{font-size:32px;font-weight:800;line-height:1.25}
@@ -411,6 +409,15 @@ body{font-family:var(--font)}
 .idle11 .hint{margin-top:18px;padding:16px 20px;border-radius:14px;border:1.5px dashed #C8CDE0;color:var(--muted);font-size:17px;text-align:center}
 /* 2-1：未驗證身分時的待驗證畫面 */
 .p21{align-items:stretch}
+.jask{margin-top:10px;padding:10px 16px;border-radius:12px;background:#fff;border:1.5px solid var(--gold);font-size:17px;font-weight:600;color:var(--ink-2)}
+.selfsms{display:flex;gap:18px;align-items:center;margin-top:10px}
+.selfsms .ph5{flex:1;max-width:420px;border-radius:14px;border:2px solid var(--navy);background:#fff;padding:8px 12px 10px;box-shadow:0 6px 18px rgba(30,39,97,.12)}
+.selfsms .ph5 .bar5{font-size:12px;color:var(--dim);display:flex;justify-content:space-between;margin-bottom:5px}
+.selfsms .ph5 .bub{background:var(--soft);border-radius:12px;padding:9px 11px;font-size:13.5px;line-height:1.55;color:var(--text)}
+.selfsms .ph5 .lnk{color:var(--goldT);font-weight:700;word-break:break-all}
+.selfsms .note5{flex:none;font-size:15.5px;color:var(--muted);line-height:1.65}
+.selfsms .note5 b{color:var(--goldT)}
+.tag.self{background:#E3F7F5;color:var(--goldT)}
 .verify{display:flex;flex-direction:column;gap:14px;height:100%}
 .verify .vh{display:flex;align-items:center;gap:14px;font-size:20px;font-weight:700;color:var(--navy)}
 .verify .vh i{width:44px;height:44px;border-radius:50%;background:#EEF0F7;display:grid;place-items:center;font-style:normal;font-size:22px}
@@ -503,7 +510,7 @@ body{font-family:var(--font)}
     </div>
     <div class="card" style="--d:.12s">
       <div class="ch sys">系統在背後判斷<span class="r" id="lat"></span></div>
-      <div class="pipe" id="pipe"></div><div class="pipe-note" id="pipeNote">客戶一開口，系統依序完成這四步</div>
+      <div class="pipe" id="pipe"></div><div class="pipe-note" id="pipeNote">客戶一開口，系統依序完成這四步（補強現有分類，擴及信用卡以外）</div>
       <div id="out11" style="display:flex;flex-direction:column;flex:1;min-height:0"><div class="idle11" id="idle11"></div></div>
     </div>
   </div>
@@ -511,13 +518,13 @@ body{font-family:var(--font)}
 
 <!-- 1-2 -->
 <section class="page" id="p12">
-  <div class="ph"><div class="phk"><span class="no">1-2</span>01｜客戶開口</div><h2>同一句話，還讀出<em>急件、自助和商機</em></h2><div class="vtags"><span class="vtag keep">🛡 留住客戶</span><span class="vtag earn">＄ 創造營收</span></div></div>
+  <div class="ph"><div class="phk"><span class="no">1-2</span>01｜客戶開口</div><h2>同一句話，還讀出<em>急件、可否自助和商機</em></h2><div class="vtags"><span class="vtag keep">🛡 留住客戶</span><span class="vtag earn">＄ 創造營收</span></div></div>
   <div class="pb" id="out12" style="display:flex;flex-direction:column"></div>
 </section>
 
 <!-- 1-3 -->
 <section class="page" id="p13">
-  <div class="ph"><div class="phk"><span class="no">1-3</span>01｜客戶開口</div><h2>結合行內 CRM，決定<em>誰先被服務</em></h2><div class="vtags"><span class="vtag keep">🛡 留住客戶</span></div></div>
+  <div class="ph"><div class="phk"><span class="no">1-3</span>01｜客戶開口</div><h2>標準化問題自助辦好，複雜問題<em>依客觀條件排給專員</em></h2><div class="vtags"><span class="vtag keep">🛡 留住客戶</span></div></div>
   <div class="pb grid2 p13">
     <div class="card" style="--d:.05s">
       <div class="ch">客戶（行內 CRM）</div>
@@ -527,9 +534,9 @@ body{font-family:var(--font)}
     <div class="rcol">
       <div class="card result" id="res13" style="--d:.12s"></div>
       <div class="card" style="--d:.2s;flex:1">
-        <div class="ch sys">服務等級規則</div>
+        <div class="ch sys">分流與服務等級規則</div>
         <div class="ladder" id="ladder"></div>
-        <div class="rulebar">排隊順序只看客觀事實：急件、客戶等級與貢獻度，不因客戶語氣插隊。身分證字號只在行內 CRM 查詢，不送外部模型；級距、往來期間門檻與目標接聽時間為示意。</div>
+        <div class="rulebar">標準化問題（分期、調額、帳單查詢）傳智慧小豐連結自助，客戶要真人照樣轉專員；複雜問題才分流給專員。專員排隊只看客觀條件，不因語氣插隊。身分證字號只在行內 CRM 查詢，不送外部模型；門檻與接聽時間為示意。</div>
       </div>
     </div>
   </div>
@@ -590,7 +597,7 @@ body{font-family:var(--font)}
     </div>
     <div style="display:flex;flex-direction:column;min-height:0">
       <div class="card" style="--d:.12s">
-        <div class="ch sys">導入後，客戶感受到的改變（假設值）</div>
+        <div class="ch sys">導入後，服務品質的改善（假設值）</div>
         <div class="hero" id="hero"></div>
         <div class="heronote" id="heroNote"></div>
       </div>
@@ -602,7 +609,7 @@ body{font-family:var(--font)}
 <!-- 4-2 -->
 <section class="page" id="p42">
   <div class="ph"><div class="phk"><span class="no">4-2</span>04｜數位孿生推演</div><h2>同樣的進線量，導入後<em>少轉錯、少流失</em></h2><div class="vtags"><span class="vtag keep">🛡 留住客戶</span></div>
-    <div class="legend"><span><i style="background:#6b7787"></i>處理中</span><span><i style="background:var(--orange)"></i>反問確認</span><span><i style="background:var(--red)"></i>轉錯窗口</span><span><i style="background:var(--green)"></i>解決</span>
+    <div class="legend"><span><i style="background:#6b7787"></i>處理中</span><span><i style="background:var(--orange)"></i>反問確認</span><span><i style="background:var(--red)"></i>轉錯窗口</span><span><i style="background:var(--green)"></i>解決</span><span><i style="background:#03C0AF"></i>線上自助</span>
     <button type="button" class="btn ghost" data-ovl="ovlCurve" style="padding:6px 14px;font-size:14px">門檻分析</button></div></div>
   <div class="lanes">
     <div class="card lane" style="--d:.05s"><div class="lh"><b style="color:var(--red)">現況：語音選單／總機</b><span class="muted small" id="c0"></span></div><canvas id="cv0"></canvas>
@@ -618,10 +625,11 @@ body{font-family:var(--font)}
     <li><b>電話現況</b>：所有來電先聽語音選單；一部分撥總機由人工分類，其餘自己選分機，選錯就轉接並重新排隊。</li>
     <li><b>電話導入 Jev</b>：客戶說一句話，信心 ≥ 分流門檻就直接轉分機；介於兩個門檻之間先反問一句（約 15 秒，確認後準確率 97%）；低於反問門檻轉人工分類。</li>
     <li><b>校準</b>：Jev 的信心度經過校準，信心 0.9 的案件約有 90% 會分對，模型直接用信心度當分對的機率。</li>
+    <li><b>智慧小豐自助</b>：分期、臨時調額、帳單與額度查詢等常見業務，Jev 傳智慧小豐連結（簡訊／LINE）讓客戶線上辦理，不進專員排隊；客戶要真人（預設 20%）多花約 30 秒後照類別轉專員。</li>
     <li><b>排隊</b>：以尖峰小時（占全日 12%）的進線量，用 Erlang C 計算平均等待時間和 20 秒內接聽率。</li>
     <li><b>文字客服</b>：答非所問的客戶平均多來回 2 輪，其中 40% 最後轉真人。導入後答錯率 = 分錯窗口比例 + 5%（知識庫本身沒有答案）。</li>
-    <li><b>年度換算</b>：一年以 250 個工作天計算。</li>
-    <li><b>校正方式</b>：上線後用通話結束的案件分類紀錄（案件量、處理時長、轉接、重複來電、複雜度）校正模型參數。</li>
+    <li><b>時間換算</b>：一年以 250 個工作天計算。省下的專員時間用在複雜問題與新人輔導，不換算成人力或成本。</li>
+    <li><b>資料基礎</b>：客服中心通話結束後已有案件分類紀錄；上線後用這些紀錄（案件量、處理時長、轉接、重複來電、複雜度）校正以上參數，並驗證實際成效。</li>
   </ul></div></div>
 <div class="ovl" id="ovlCurve"><div class="card"><button type="button" class="icon x" data-close>✕</button><div class="ch">門檻怎麼設最省時間？</div>
   <div class="muted small">門檻太低，分錯變多；太高，反問和轉人工變多。曲線最低點就是最佳門檻。</div>
@@ -711,7 +719,7 @@ const GP={
   "themes": [
     {"title": "主題名稱(10 字內)", "count": 整數, "examples": ["原文摘錄,最多 2 則"], "insight": "這個主題代表什麼(30 字內)"}
   ],
-  "alerts": ["主管現在就要注意的事(每則 30 字內,最多 3 則;例如急件、某類問題突然增加)"],
+  "alerts": ["主管現在就要注意的事(每則 30 字內,最多 3 則;例如急件、同一類問題突然集中)"],
   "actions": ["建議行動(每則 35 字內,最多 4 則;例如該補哪則 FAQ、哪個窗口要加人、哪類客戶要主動回撥)"]
 }
 規則:themes 依 count 由多到少,最多 5 個,count 加總等於進線數;同義問題歸在一起;
@@ -732,7 +740,8 @@ examples 必須逐字摘自原文;只根據提供的資料推論,不要編造數
  "confidence": 0到1(對主類別的把握;句意含糊或可能兩類時要低於0.7),
  "second_category": "第二可能主類別或 null", "multi": true/false(一句話明確提出兩個不同主類別的需求),
  "urgent": true/false(盜刷、卡片或存摺遺失、詐騙、被冒用等需立即處理),
- "self_service": "消費分期|臨時調額|帳單查詢與補發|開卡|紅利兌換|年費減免|帳戶餘額查詢|網銀密碼重設" 或 null(客戶要辦的正是這些可在智慧小豐線上自助的常見業務才填;急件一律填 null),
+ "abuse": true/false(含髒話或辱罵),
+ "self_service": "消費分期|額度查詢|臨時調額|帳單查詢與補發|消費明細查詢|開卡|紅利兌換|年費減免|帳戶餘額查詢|網銀密碼重設" 或 null(客戶要辦的正是這些可在智慧小豐線上自助的常見業務才填;急件一律填 null),
  "opportunity": "無|保障需求|外幣需求|財富管理需求|子女教育金"(只在句中有明確線索時才填),
  "evidence": ["原文中逐字出現、影響判斷的詞,1到4個"], "reason": "判斷理由,20字內"}`,
  script:`你是銀行客服專員的即時助理。電話接通前,依客戶資料與這通電話的系統判斷,幫專員準備開場話術與處理步驟。
@@ -740,10 +749,12 @@ examples 必須逐字摘自原文;只根據提供的資料推論,不要編造數
 {"greeting": "開場話術,60字內,用客戶稱呼開頭(沒有稱呼就用您好),語氣自然口語",
  "steps": ["處理步驟,3到5條,每條30字內,具體可執行,依先後排列"]}
 規則:
+- 不要對客戶下情緒或態度的標籤;話術先確認客戶最在意的事,並說明處理時程。含辱罵時,依客服人員保護規範處理(先溫和提醒,持續辱罵可結束通話)。
+- 客戶這次已被轉錯(misrouted)時,直接處理、不再轉接;有追加需求(extra_needs)時,處理完原需求再轉對應專員。
 - 客戶已婉拒線上自助(self_service_declined 為 true)時,直接協助辦理,不再推薦自助管道。
 - 急件(盜刷、遺失、詐騙)第一步一定是立即協助止付或凍結。
 - 近 7 天重複來電且上次未解決,要先說明上次問題的處理進度。
-- 有商機時,只能在非急件時,放在最後一步「問題解決後再提及」;急件寫「只記錄、不推銷」。
+- 有商機時,只能在非急件時,放在最後一步「問題解決後再提及」;否則寫「只記錄、不推銷」。
 - 高資產客戶結束後通知專屬理專;新開戶客戶要多說明一句服務管道。
 - 不得承諾利率、金額、核准結果或時程。`};
 const GPREP={
@@ -775,7 +786,7 @@ const SVC={
    {n:'申辦與權益',k:'1',kw:[['辦卡',3],['申辦',2.5],['年費',2.5],['權益',2.5],['回饋',2.5],['額度',2],['調額',2.5],['新卡',2],['停卡',2]],tip:'了解想申辦的卡別或要調整的權益、額度，說明申辦管道與審核時間'},
    {n:'帳單繳款與分期',k:'2',kw:[['帳單',3],['卡費',3],['繳款',2.5],['繳費',2],['分期',3],['預借現金',3],['最低應繳',3],['扣款',1.5],['扣',0.8]],tip:'查詢帳單金額與繳款狀態，說明分期期數與手續費'},
    {n:'紅利點數',k:'3',kw:[['紅利',3],['點數',3],['兌換',2.5],['豐點',3],['里程',2.5]],tip:'查詢點數餘額與到期日，說明兌換方式'},
-   {n:'掛失與盜刷',k:'4',kw:[['盜刷',3.5],['被盜',3],['掛失',3],['遺失',2.5],['不見',2.5],['冒用',3],['異常交易',3],['詐騙',2.5],['不是我刷的',3]],tip:'立即協助止付掛失，再說明爭議款與補發新卡流程'}]},
+   {n:'掛失與盜刷',k:'4',kw:[['盜刷',3.5],['被盜',3],['掛失',3],['遺失',2.5],['不見',2.5],['冒用',3],['異常交易',3],['詐騙',2.5],['不是我刷的',3],['不認得',3.5],['爭議',3]],tip:'立即協助止付掛失，再說明爭議款與補發新卡流程'}]},
  '存款外匯':{line:'bank',key:'1',desk:'存款外匯專員',tip:'查詢帳戶交易紀錄、匯款狀態或存款資訊',subs:[
    {n:'台幣存款',k:'1',kw:[['定存',3],['活存',2.5],['存款',2],['利率',2],['利息',2],['到期',1.5],['解約',1.5],['餘額',2],['存錢',2],['放銀行',1.5]],tip:'確認存款種類，說明利率、到期與解約方式'},
    {n:'外幣與換匯',k:'2',kw:[['外幣',3],['換匯',3],['換外幣',3],['美金',2.5],['日幣',3],['日圓',3],['歐元',2.5],['匯率',2.5],['出國',2],['去日本',2],['現鈔',2]],tip:'說明即時匯率、線上換匯與外幣提領方式'},
@@ -812,6 +823,29 @@ KW['存款外匯'].push(['帳戶',1]);
 KW['貸款'].push(['貸款',2.5],['借',1]);
 KW['財富信託'].push(['理財',3],['投資',2.5],['報酬',2],['穩一點',1.6],['穩',0.8]);
 KW['基本資料變更'].push(['基本資料',3.5],['個人資料',3],['聯絡資料',3.5],['變更資料',3.5],['變更',1.2],['更換',0.8],['修改',0.8]);
+// 常見業務：高頻、流程固定，智慧小豐可線上自助（選單名稱取自智慧小豐；連結為公開入口，示意）
+const XF_URL='chatservice.sinopac.com/Webhook/';
+// kw 可放字串或正規式；順序有意義（額度查詢要排在臨時調額前面）
+const SELF=[
+  {id:'消費分期',kw:['分期',/分\d+期/],menu:'信用卡帳務 › 消費分期',time:'約 1 分鐘'},
+  {id:'額度查詢',kw:['可用額度','剩多少額度','額度還有多少','額度剩多少'],menu:'信用卡帳務 › 額度查詢',time:'約 30 秒'},
+  {id:'臨時調額',kw:['調額','臨調','臨時額度','額度不夠',/(調高|提高|調整|加).{0,4}額度/,/額度調高/,/(刷卡|卡片|信用卡)額度/],menu:'信用卡帳務 › 額度查詢',time:'約 2 分鐘'},
+  {id:'帳單查詢與補發',kw:['要繳多少','繳多少','帳單金額','應繳','繳款期限','繳款截止','截止日','有沒有繳到','繳了沒','繳款紀錄',/沒收到.{0,5}帳單/,/帳單.{0,4}(沒收到|沒寄|還沒|補寄|補發)/,/補[寄發].{0,3}帳單/],menu:'信用卡帳務 › 帳務查詢及補發',time:'約 1 分鐘'},
+  {id:'消費明細查詢',kw:['交易明細','消費明細','刷卡明細','刷卡紀錄','消費紀錄'],menu:'信用卡帳務 › 帳務查詢及補發',time:'約 1 分鐘'},
+  {id:'開卡',kw:['開卡'],menu:'信用卡帳務 › 開卡',time:'約 1 分鐘'},
+  {id:'紅利兌換',kw:['紅利','點數換','兌換'],menu:'信用卡帳務 › 紅利兌換',time:'約 2 分鐘'},
+  {id:'年費減免',kw:['年費'],menu:'信用卡帳務 › 年費減免',time:'約 1 分鐘'},
+  {id:'帳戶餘額查詢',kw:['餘額'],menu:'銀行帳務 › 臺外幣餘額',time:'約 30 秒'},
+  {id:'網銀密碼重設',kw:['忘記密碼','密碼忘記','密碼忘了'],menu:'熱門問答 › 忘記網路銀行登入密碼',time:'約 2 分鐘'},
+];
+// 讓這些說法也能分到信用卡類別
+[['分3期',3],['分6期',3],['分12期',3],['分24期',3],['分幾期',2.5],['臨時調額',3.5],['調高額度',3],['提高額度',3],['額度調高',3],['額度不夠',3],['臨調',3],
+ ['要繳多少',3],['繳多少',3],['帳單金額',3],['應繳',2.5],['繳款期限',3],['繳款截止',3],['截止日',2.5],['可用額度',3],['剩多少額度',3],['額度還有多少',3],['有沒有繳到',3],['繳了沒',3],['繳款紀錄',3],
+ ['交易明細',3],['消費明細',3],['刷卡明細',3],['刷卡紀錄',3],['消費紀錄',3]].forEach(k=>KW['信用卡'].push(k));
+// 客戶自己說「打過、第幾次」：上次沒解決，不再推自助
+const REPEAT_RE=/打過|打了好幾次|好幾次|第[二三四五幾]次|[兩三四]次了|又打來|上次.*沒/;
+function selfOf(s,urgent){ if(urgent) return null; return SELF.find(x=>x.kw.some(k=>k instanceof RegExp?k.test(s):s.includes(k)))||null; }
+const isRepeat=(r,cur)=>!!r.repeat||!!(cur&&cur.rec&&cur.rec.calls7d>=1&&/未解決/.test(cur.rec.lastCall));
 KW['其他/真人']=[['真人',3],['專員',2.5],['客服人員',3],['分行',2.2],['幾點',1.5],['營業時間',2.5],['抱怨',2.5],['客訴',3],['不知道',0.8]];
 // 細項：API 有給就用 API 的，否則用關鍵字
 function subOf(r,cat){
@@ -828,24 +862,13 @@ function svcRoute(r,cat){
 }
 const keyTxt=x=>x.key?`按 ${x.key}（示意）`:'依語音選單選擇';
 const URGENT=['盜刷','被盜','詐騙','被騙','遺失','不見','掉了','掛失','冒用','異常交易'];
-// 常見業務：高頻、流程固定，智慧小豐可線上自助（選單名稱取自智慧小豐；連結為公開入口，示意）
-const XF_URL='chatservice.sinopac.com/Webhook/';
-// kw 可放字串或正規式
-const SELF=[
-  {id:'消費分期',kw:['分期'],menu:'信用卡帳務 › 消費分期',time:'約 1 分鐘'},
-  {id:'臨時調額',kw:['調額','臨調','臨時額度',/(調高|提高|調整|加).{0,4}額度/,/(刷卡|卡片|信用卡)額度/],menu:'信用卡帳務 › 額度查詢',time:'約 2 分鐘'},
-  {id:'帳單查詢與補發',kw:[/沒收到.{0,5}帳單/,/帳單.{0,4}(沒收到|沒寄|還沒|補寄|補發)/,/補[寄發].{0,3}帳單/],menu:'信用卡帳務 › 帳務查詢及補發',time:'約 1 分鐘'},
-  {id:'開卡',kw:['開卡'],menu:'信用卡帳務 › 開卡',time:'約 1 分鐘'},
-  {id:'紅利兌換',kw:['紅利','點數換','兌換'],menu:'信用卡帳務 › 紅利兌換',time:'約 2 分鐘'},
-  {id:'年費減免',kw:['年費'],menu:'信用卡帳務 › 年費減免',time:'約 1 分鐘'},
-  {id:'帳戶餘額查詢',kw:['餘額'],menu:'銀行帳務 › 臺外幣餘額',time:'約 30 秒'},
-  {id:'網銀密碼重設',kw:['忘記密碼','密碼忘記','密碼忘了'],menu:'熱門問答 › 忘記網路銀行登入密碼',time:'約 2 分鐘'},
-];
 const OPP_TH=0.6;
-// 客戶自己說「打過、第幾次」：上次沒解決，不再推自助
-const REPEAT_RE=/打過|打了好幾次|好幾次|第[二三四五幾]次|[兩三四]次了|又打來|上次.*沒/;
-function selfOf(s,urgent){ if(urgent) return null; return SELF.find(x=>x.kw.some(k=>k instanceof RegExp?k.test(s):s.includes(k)))||null; }
-const isRepeat=(r,cur)=>!!r.repeat||!!(cur&&cur.rec&&cur.rec.calls7d>=1&&/未解決/.test(cur.rec.lastCall));
+// 語音選單已選路徑：用來呈現「選單路徑 ≠ 真正需求」
+const MENU_RE=/(?:按了|選了|點了)(帳單|額度|分期|紅利|存款|貸款|理財)/;
+// 這次已被轉錯：客觀事實，排隊時提高等級
+const MISROUTE_RE=/轉錯|轉來轉去|又被轉|轉了好幾/;
+// 辱罵用語：只用來提示專員可依客服人員保護規範處理，不計分、不影響排隊（排除幹部、樹幹、能幹等正常用詞）
+const ABUSE_RE=/幹你|幹恁|幹拎|幹林|操你|他媽|他馬|媽的|馬的|靠北|靠腰|靠杯|靠夭|靠么|機掰|雞掰|白癡|白痴|智障|腦殘|低能|王八|混蛋|廢物|去死|三小|北七|垃圾銀行|爛銀行|(?<![能樹主骨才])幹(?![部線事員練勁活])|fuck|f\*ck|shit|wtf|bitch|idiot|stupid/i;
 const OPPS=[
   {id:'保障需求',kw:[['理賠',3],['保單',2.5],['保險',2],['保費',1.5],['住院',2],['意外險',2.5],['醫療險',2.5]],action:'轉介理專',owner:'理財專員',offer:'免費保障健檢',pitch:'理賠的問題已經幫您處理。另外，要不要請理專幫您免費檢視一下，目前的保障夠不夠？',yes:'請理專聯繫我'},
   {id:'外幣需求',kw:[['出國',3],['旅遊',2],['換外幣',3],['外幣現鈔',2.5],['日圓',2.5],['日幣',2.5],['歐元',2],['留學',2.5],['機票',1.5],['換匯',2.5],['去日本',2],['去美國',2]],action:'推薦外幣定存專案',owner:'外幣定存專案（示意）',offer:'外幣定存優惠利率＋線上換匯、機場領鈔',pitch:'出國前可以先把預計要用的外幣存成外幣定存，匯率好的時候分批換，出發前再領現鈔。要看看目前的外幣定存優惠嗎？',yes:'查看專案'},
@@ -861,8 +884,8 @@ function classify(text){
   const urgent=URGENT.some(k=>s.includes(k));
   const strong=probs.filter(x=>x.c!=='其他/真人'&&x.raw>=2.5);
   const multi=strong.length>=2&&strong[1].raw>=strong[0].raw*0.5;
-  const opp=detectOpp(s);
-  return {text,probs,urgent,multi,strong,self:selfOf(s,urgent),repeat:REPEAT_RE.test(s),opp,hasOpp:opp.p>=OPP_TH,
+  const opp=detectOpp(s), abuse=ABUSE_RE.test(s), misrouted=MISROUTE_RE.test(s);
+  return {text,probs,urgent,multi,strong,abuse,misrouted,self:selfOf(s,urgent),repeat:REPEAT_RE.test(s),opp,hasOpp:opp.p>=OPP_TH,
     pu:urgent?0.94:0.03+Math.random()*0.04, pm:multi?0.88:0.05+Math.random()*0.05};
 }
 
@@ -886,10 +909,14 @@ const PCOL={1:'--p1',2:'--p2',3:'--p3',4:'--p4'};
 const PTGT={1:'立即接通',2:'10 秒內接聽',3:'30 秒內接聽',4:'依序排隊'};
 function computePrio(r,cur){
   const c=cur&&cur.rec, vip=isVIP(c), nw=isNew(c); let lvl=4; const reasons=[];
+  const up3=t=>{ if(lvl>3) lvl=3; reasons.push(t); };
   if(r.urgent){lvl=1;reasons.push('急件（盜刷、遺失、詐騙類）不論客戶等級一律最優先');}
   if(vip){if(lvl>2) lvl=2;reasons.push(`${c.tier}・資產 ${c.aum}・貢獻度${c.contrib}`);}
-  if(c&&c.tier==='貴賓理財'&&!vip){if(lvl>3) lvl=3;reasons.push('貴賓理財客戶');}
-  if(!reasons.length) reasons.push(cur&&cur.unknown?'查無客戶資料，一般排隊':cur?(nw?`新開戶 ${c.months} 個月，一般排隊`:'一般客戶，一般排隊'):'未提供身分，一般排隊');
+  if(c&&c.tier==='貴賓理財'&&!vip) up3('貴賓理財客戶');
+  if(nw) up3(`新開戶 ${c.months} 個月，第一次求助要接住`);
+  if(c&&c.calls7d>=2&&/未解決/.test(c.lastCall)) up3(`7 天內第 ${c.calls7d+1} 次來電，上次問題未解決`);
+  if(r.misrouted) up3('這次已被轉錯窗口，不再重新排隊');
+  if(!reasons.length) reasons.push(cur&&cur.unknown?'查無客戶資料，一般排隊':cur?'一般客戶，一般排隊':'未提供身分，一般排隊');
   return {lvl,reasons,c,vip};
 }
 
@@ -923,12 +950,14 @@ $('cid').addEventListener('keydown',e=>{if(e.key==='Enter'){pickCust(e.target.va
 const MAIN_SAMPLES=[
   {q:'我想買房子要跟你們借錢',t:'實測',c:'var(--orange)'},
   {q:'錢放銀行利息太少 有沒有穩一點的可以放',t:'模糊',c:'var(--muted)'},
+  {q:'這期卡費想分6期',t:'可自助',c:'var(--goldT)'},
   {q:'我想開戶順便辦一張信用卡',t:'兩個需求',c:'var(--accent)'},
   {q:'我的卡好像被盜刷了怎麼辦',t:'急件',c:'var(--red)'},
-  {q:'卡費可以分期嗎',t:'可自助',c:'var(--goldT)'},
+  {q:'轉帳到現在還沒到 上次說會幫我查',t:'重複來電',c:'var(--purple)'},
+  {q:'我按了帳單 但其實是有一筆刷卡不認得',t:'需求延伸',c:'var(--p3)'},
   {q:'下個月要去日本 想換日幣',t:'商機',c:'var(--green)'},
 ];
-const MORE_SAMPLES=['下週出國 想先調高刷卡額度','我的金融卡掉了','分期的事我上週打過兩次了還沒好','這個月沒收到信用卡帳單','新卡要怎麼開卡','紅利點數可以換什麼','網銀密碼忘記了','上個月帳戶被扣了一筆錢不知道是什麼','新青安現在還能申請嗎','我想借30萬周轉','想開數位帳戶要帶什麼','美金定存利率多少','我要找真人','保險理賠要準備什麼文件','定存下個月到期 不知道要怎麼放','保險理賠申請兩個月了 想問進度'];
+const MORE_SAMPLES=['下個月要買家電 想臨時調高額度','我這期信用卡帳單要繳多少','分期的事我上週打過兩次了還沒好','新卡要怎麼開卡','網銀密碼忘記了','剛剛被轉錯了 我要問的是房貸寬限期','我想看這個月的刷卡明細','上個月帳戶被扣了一筆錢不知道是什麼','新青安現在還能申請嗎','我想借30萬周轉','卡費可以分期嗎','想開數位帳戶要帶什麼','美金定存利率多少','我要找真人','我已經打三次了都沒人處理信用卡的問題 到底要怎樣','你們房貸利率也太扯了吧 我要找人講','保險理賠要準備什麼文件','定存下個月到期 不知道要怎麼放','保險理賠拖了兩個月還沒下來 到底要等多久'];
 $('qChips').innerHTML=MAIN_SAMPLES.map((s,i)=>`<button type="button" class="chip" data-q="${s.q}"><i style="color:${s.c}">${s.t}</i>${s.q}</button>`).join('');
 $('qMore').innerHTML=MORE_SAMPLES.map(q=>`<button type="button" class="chip" data-q="${q}">${q}</button>`).join('');
 const onChip=e=>{const b=e.target.closest('.chip'); if(!b) return; $('q').value=b.dataset.q; runJev(b.dataset.q);};
@@ -944,9 +973,10 @@ function applyAI(r,a){
   const rest=r.probs.filter(x=>x.c!==a.category), rs=rest.reduce((s,x)=>s+x.p,0)||1;
   const probs=[{c:a.category,p:conf,raw:0},...rest.map(x=>({c:x.c,p:(1-conf)*x.p/rs,raw:x.raw}))].sort((x,y)=>y.p-x.p);
   const multi=!!a.multi&&CATS.includes(a.second_category)&&a.second_category!==a.category;
-  const op=OPPS.find(o=>o.id===a.opportunity), urgent=!!a.urgent;
+  const abuse=!!a.abuse||r.abuse, urgent=!!a.urgent;
   const self=urgent?null:(SELF.find(x=>x.id===a.self_service)||r.self);
-  return {...r,probs,urgent,multi,strong:multi?[{c:a.category},{c:a.second_category}]:[],self,
+  const op=OPPS.find(o=>o.id===a.opportunity);
+  return {...r,probs,urgent,multi,strong:multi?[{c:a.category},{c:a.second_category}]:[],abuse,self,
     opp:op?{o:op,p:0.9}:r.opp,hasOpp:!!op,aiSub:typeof a.subcategory==='string'?a.subcategory:'',aiSubCat:a.category,
     ai:{evidence:(Array.isArray(a.evidence)?a.evidence:[]).filter(e=>typeof e==='string'&&e&&e.length<=20).slice(0,4),reason:String(a.reason||'').slice(0,40)}};
 }
@@ -957,7 +987,6 @@ function buildLast(text,r,cur,extra){
   return {text,r,best,top,nonOther,...pr,cur,dname:dispName(pr.c),...extra};
 }
 // 分流結果（1-1 與評審手機回覆共用同一套規則）
-// cur 有給才檢查 CRM 的重複來電
 function routeOf(r,cur){
   const top=r.probs[0], nonOther=r.probs.filter(x=>x.c!=='其他/真人');
   const best=nonOther[0].p>=0.15?nonOther[0].c:top.c;
@@ -1002,7 +1031,7 @@ function runJev(text,opt={}){
 }
 
 /* ---------- 1-1 背後流程 ---------- */
-const PIPE=[['遮蔽個資','身分證、卡號、帳號'],['Jev 判斷','類別・急件・可否自助・商機'],['查詢行內 CRM','資產級距、近期來電'],['決定分流','自助連結或專員窗口']];
+const PIPE=[['遮蔽個資','身分證、卡號、帳號'],['Jev 判斷','類別・急件・可否自助・商機'],['查詢行內 CRM','資產級距、貢獻度'],['決定分流','窗口與優先等級']];
 $('pipe').innerHTML=PIPE.map((p,i)=>`<div class="pnode" id="pn${i}"><span class="ms" id="pm${i}"></span><b>${i+1}. ${p[0]}</b><small>${p[1]}</small></div>`).join('');
 let PIPE_T=[];
 function playPipe(ms,anim){
@@ -1029,6 +1058,7 @@ function renderP11(){
   const rt=routeOf(r,L.cur);
   const hot=(x,urg)=>`<div class="hot"><div><div class="label">${x.line}${urg?'（急件優先）':''}</div><div class="num">${x.tel}</div></div><div><div class="label">請按（示意）</div><div class="num" style="font-size:30px">${x.key||'—'}</div></div><div><div class="label">接聽窗口</div><div class="num">${x.desk}</div></div></div>`;
   if(rt.kind==='urgent'){tt=`急件：${rt.label} → 優先轉真人`;why='盜刷、遺失、詐騙類不走一般流程，也不推線上自助；優先接給真人先止付，並帶上判斷結果。';col=css('--red');ic='!';extra=hot(rt,true);}
+  else if(rt.kind==='multi'){tt=`偵測到兩個需求：${rt.a.label}＋${rt.b.label}`;why=`先轉${rt.a.line}（${keyTxt(rt.a)}），處理完再轉${rt.b.line}（${keyTxt(rt.b)}），不會只回答其中一個。`;col=css('--accent');ic='2';extra=hot(rt.a);}
   else if(rt.kind==='repeat'){tt=`「${rt.s.id}」但已重複來電 → 直接轉真人`;why=`${L.c&&L.c.calls7d?`7 天內已來電 ${L.c.calls7d} 次（${L.c.lastCall}）`:'客戶表示之前打過、還沒解決'}，這次不再丟連結，直接接給專員一起處理。`;col=css('--accent');ic='☎';extra=hot(rt);}
   else if(rt.kind==='self'){
     const s=rt.s; col=css('--gold'); ic='⚡';
@@ -1039,9 +1069,10 @@ function renderP11(){
     else if(L.selfChoice==='human') extra=ask+`<div class="why" style="margin-top:12px">客戶選擇真人 → 照問題類別轉到對的專員（已記錄「已提供自助，客戶選擇真人」，專員不會重複推薦）</div>`+hot(rt);
     else extra=ask+`<div class="clar" id="selfAsk"><button type="button" data-v="link">好，傳連結給我</button><button type="button" data-v="human">不用，我要找真人</button></div>`;
   }
-  else if(rt.kind==='multi'){tt=`偵測到兩個需求：${rt.a.label}＋${rt.b.label}`;why=`先轉${rt.a.line}（${keyTxt(rt.a)}），處理完再轉${rt.b.line}（${keyTxt(rt.b)}），不會只回答其中一個。`;col=css('--accent');ic='2';extra=hot(rt.a);}
   else if(rt.kind==='known'){tt=`判斷為「${rt.label}」→ ${rt.line} ${keyTxt(rt)}`;why=`信心 ${(L.top.p*100).toFixed(0)}% ≥ 門檻 ${(ta*100).toFixed(0)}%，客戶不用聽語音選單，直接接到${rt.desk}。`;col=css('--green');ic='✓';extra=hot(rt);}
   else{tt='分不出類別 → 請按 0，由總機服務';why=L.top.c==='其他/真人'?'不屬於任何服務類別，或客戶主動要找真人，交給總機專員了解需求後再轉接。':`最高的「${L.nonOther[0].c}」信心只有 ${(L.nonOther[0].p*100).toFixed(0)}%，未達門檻 ${(ta*100).toFixed(0)}%，交給總機專員判斷比較保險。`;col=css('--p4');ic='0';extra=hot(rt);}
+  const mm=(L.text||'').match(MENU_RE);
+  if(mm&&!rt.label.includes(mm[1])) extra=`<div class="menunote">客戶在語音選單選了「${mm[1]}」，真正的需求是「${rt.label}」<small>選單路徑不等於最終需求；一句話直接接到對的窗口，不用轉第二次</small></div>`+extra;
   const aist=L.aiState==='pending'?`<div class="aist pend">⏳ API複核中…（先顯示規則初判）</div>`:L.aiState==='done'?`<div class="aist ok">✓ API複核完成（${esc(L.aiModel||'')}，${(L.aiTook/1000).toFixed(1)} 秒）：${esc(r.ai?r.ai.reason:'')}<span class="q">「${hlText(L.text,r.ai?r.ai.evidence:[])}」</span></div>`:L.aiState==='fail'?'<div class="aist off">API未回應，維持規則判斷</div>':'';
   $('out11').innerHTML=`<div class="bars">${bars}</div><div class="decision" id="dec" style="--dc:${col}"><div class="tt"><span class="ic">${ic}</span>${tt}</div>${why?`<div class="why">${why}</div>`:''}${extra}</div>`;
   if(!$('out11').classList.contains('wait')) requestAnimationFrame(()=>requestAnimationFrame(()=>document.querySelectorAll('#out11 .fl').forEach(el=>el.style.width=el.dataset.w+'%')));
@@ -1057,16 +1088,17 @@ function renderP11(){
 function renderP12(){
   const L=LAST, r=L.r;
   const sig=(nm,val,p,on,col,st)=>`<div class="sig${on?' on':''}" style="--sc:${col}"><div class="nm">${nm}</div><div class="val">${val}</div><div class="meter"><i style="width:${(p*100).toFixed(0)}%"></i></div><div class="st">${st}</div></div>`;
+  const rk12=routeOf(r,L.cur);
   const oppTxt=r.hasOpp?(r.urgent?'偵測到，但本次不推薦':`問題解決後${r.opp.o.action}`):'未偵測到商機';
   let ref='';
   const owner=r.hasOpp?((L.c&&L.c.rm&&r.opp.o.owner==='理財專員')?`專屬理專 ${L.c.rm}`:r.opp.o.owner):'';
-  if(r.hasOpp&&r.urgent) ref=`<div class="refbox mute"><div class="tt">⏸ 偵測到商機：${r.opp.o.id}，本次不推薦</div><div class="muted" style="margin-top:8px">客戶遇到急件，這時候推銷只會更反感。系統只把「${r.opp.o.id} → ${r.opp.o.action}」記錄到 CRM，問題解決後由${owner}擇期跟進。</div></div>`;
+  if(r.hasOpp&&r.urgent) ref=`<div class="refbox mute"><div class="tt">⏸ 偵測到商機：${r.opp.o.id}，本次不推薦</div><div class="muted" style="margin-top:8px">客戶遇到急件，先把問題處理好。系統只把「${r.opp.o.id} → ${r.opp.o.action}」記錄到 CRM，問題解決後由${owner}擇期跟進。</div></div>`;
   else if(r.hasOpp) ref=`<div class="refbox" id="refbox"><div class="tt">＄ 商機轉介：${r.opp.o.id} → ${r.opp.o.action}</div><div class="pitch">「${r.opp.o.pitch}」</div><div class="vline earn" style="margin:0 0 10px">＄ 先解決問題，再順勢轉介 → 創造營收</div><div class="acts"><button type="button" class="yes">${r.opp.o.yes}</button><button type="button" class="no">不用了，謝謝</button></div></div>`;
   else ref=`<div class="refbox mute"><div class="tt">這句話沒有偵測到商機</div><div class="muted" style="margin-top:8px">可以回到 1-1 點「商機」範例，例如「下個月要去日本 想換日幣」。</div></div>`;
   $('out12').innerHTML=`<div class="quote">「${esc(L.text)}」</div>
     <div class="sig4">
+      ${sig('可否線上自助（標準化問題）',r.self?r.self.id:'否',r.self?0.9:0.06,!!r.self,css('--goldT'),rk12.kind==='self'?'智慧小豐可辦：先問客戶要不要連結':rk12.kind==='repeat'?'重複來電未解決：直接轉真人':'需要專員判斷：分流並提供輔助')}
       ${sig('是否急件',(r.pu*100).toFixed(0)+'%',r.pu,r.urgent,css('--red'),r.urgent?'急件：立即轉真人專線':'非急件')}
-      ${sig('可線上自助',r.self?r.self.id:'否',r.self?0.9:0,!!r.self,css('--gold'),r.self?`智慧小豐可辦，先問客戶要不要連結`:'需專員協助')}
       ${sig('是否包含多個需求',(r.pm*100).toFixed(0)+'%',r.pm,r.multi,css('--accent'),r.multi?`${r.strong[0].c}、${r.strong[1].c}，拆單處理`:'單一需求')}
       ${sig('潛在商機',r.hasOpp?r.opp.o.id:'無',r.hasOpp?r.opp.p:0,r.hasOpp,css('--green'),oppTxt)}
     </div>
@@ -1080,86 +1112,105 @@ function renderP12(){
 // 關鍵時刻的一句價值標語
 function valText(r,lvl,c){
   if(r.urgent) return '🛡 急件第一時間處理 → 留住客戶';
+  if(routeOf(r,c?{rec:c}:null).kind==='self') return '🛡 能自己辦的不用等，專員留給需要的人 → 留住客戶';
   if(lvl<=2) return '🛡 高價值客戶優先接通 → 留住客戶';
   if(c&&isNew(c)) return '🛡 新客戶第一次求助就接住 → 留住客戶';
-  if(r.self) return '⚡ 能自己辦的不用等 → 留住客戶';
-  if(r.hasOpp) return '＄ 先解決問題，再順勢轉介 → 創造營收';
+  if(r.hasOpp&&!r.urgent) return '＄ 先解決問題，再順勢轉介 → 創造營收';
   return '🛡 一句話接到對的人 → 留住客戶';
 }
 function valLine(r,lvl,c){ const t=valText(r,lvl,c); return `<div class="vline${t.startsWith('＄')?' earn':''}">${t}</div>`; }
 function renderP13(){
   const L=LAST, r=L.r, c=L.c, cur=L.cur;
+  const rk=routeOf(r,cur), au=rk.kind==='self';
   $('crm13').innerHTML=(c?`<div class="kv"><span class="k">客戶</span><span class="v">${esc(L.dname)}　${maskID(cur.id)}</span><span class="k">級距</span><span class="v">${c.tier}${isVIP(c)?' <span class="tag blue">高資產高貢獻</span>':''}</span><span class="k">資產級距</span><span class="v">${c.aum}</span><span class="k">貢獻度</span><span class="v">${c.contrib}（${c.contribNote}）</span><span class="k">往來期間</span><span class="v">${tenure(c)}${isNew(c)?' <span class="tag green">新開戶</span>':''}</span><span class="k">專屬理專</span><span class="v">${c.rm||'—'}</span></div>`
     :`<div class="muted" style="font-size:17px">${cur&&cur.unknown?'查無客戶資料（非本行客戶）':'未提供身分'}，以一般客戶處理。</div>`)
-    +`<div style="margin-top:26px;padding-top:20px;border-top:1px solid var(--line)"><div class="label">系統判斷（來自 1-2）</div><div class="chips">${r.urgent?'<span class="tag red">急件</span>':'<span class="tag">非急件</span>'}${r.self?`<span class="tag self">可線上自助：${r.self.id}</span>`:'<span class="tag">需專員協助</span>'}<span class="tag">「${esc(L.text.length>16?L.text.slice(0,16)+'…':L.text)}」</span></div></div>`;
-  const pc=`var(${PCOL[L.lvl]})`;
+    +`<div style="margin-top:26px;padding-top:20px;border-top:1px solid var(--line)"><div class="label">系統判斷（來自 1-2）</div><div class="chips">${r.urgent?'<span class="tag red">急件</span>':'<span class="tag">非急件</span>'}${rk.kind==='self'?`<span class="tag self">標準化・可線上自助：${r.self.id}</span>`:'<span class="tag">需專員處理</span>'}${r.misrouted?'<span class="tag red">已被轉錯</span>':''}<span class="tag">「${esc(L.text.length>16?L.text.slice(0,16)+'…':L.text)}」</span></div></div>`;
+  const pc=au?'var(--goldT)':`var(${PCOL[L.lvl]})`;
   const res=$('res13'); res.style.setProperty('--pc',pc);
-  res.innerHTML=`<div class="badge">${PNAME[L.lvl]}</div><div><div class="tgt">${PTGT[L.lvl]}${L.vip&&c.rm?`　·　指派專屬理專 ${c.rm}`:''}</div><div class="rs">依據：${L.reasons.join('；')}</div>${valLine(r,L.lvl,c)}</div>`;
-  const rows=[[1,'急件（盜刷、遺失、詐騙），不論客戶等級','立即接通'],[2,'私人銀行，或貴賓理財且貢獻度高','10 秒內'],[3,'一般貢獻的貴賓理財','30 秒內'],[4,'其他客戶，依進線順序服務','依序排隊']];
-  $('ladder').innerHTML=rows.map(([l,cond,t])=>`<div class="lrow${l===L.lvl?' on':''}" style="--pc:var(${PCOL[l]})"><b style="color:var(${PCOL[l]})">${PNAME[l]}</b><span>${cond}</span><span class="tg">${t}</span></div>`).join('');
+  res.innerHTML=au?`<div class="badge">⚡ 線上自助</div><div><div class="tgt">${rk.s.id}：傳智慧小豐連結，不進專員排隊</div><div class="rs">客戶在智慧小豐線上辦好；客戶要真人，照類別轉專員（${PNAME[L.lvl]}）</div>${valLine(r,L.lvl,c)}</div>`
+    :`<div class="badge">${PNAME[L.lvl]}</div><div><div class="tgt">${PTGT[L.lvl]}${L.vip&&c.rm?`　·　指派專屬理專 ${c.rm}`:''}</div><div class="rs">依據：${L.reasons.join('；')}</div>${valLine(r,L.lvl,c)}</div>`;
+  const rows=[[1,'急件（盜刷、遺失、詐騙），不論客戶等級','立即接通'],[2,'私人銀行，或貴賓理財且貢獻度高','10 秒內'],[3,'一般貢獻的貴賓理財、新開戶 12 個月內、7 天內重複來電且上次未解決、這次已被轉錯','30 秒內'],[4,'其他客戶','依序排隊']];
+  $('ladder').innerHTML=`<div class="lrow${au?' on':''}" style="--pc:var(--goldT)"><b style="color:var(--goldT)">⚡ 標準化</b><span>分期、臨時調額、帳單／額度／明細查詢：傳智慧小豐連結自助</span><span class="tg">不用排隊</span></div><div class="lsep">複雜問題 → 分流給專員，依客觀條件排序</div>`
+    +rows.map(([l,cond,t])=>`<div class="lrow${!au&&l===L.lvl?' on':''}" style="--pc:var(${PCOL[l]})"><b style="color:var(${PCOL[l]})">${PNAME[l]}</b><span>${cond}</span><span class="tg">${t}</span></div>`).join('');
 }
 
 /* ---------- 2-1 / 2-2 ---------- */
-function tipOf(L){ const x=svcRoute(L.r,L.best); return x.subObj?x.subObj.tip:SVC[L.best].tip; }
-const catLabel=L=>svcRoute(L.r,L.best).label;
+const catOf=L=>L.fixCat||L.best;
+function tipOf(L){ const x=svcRoute(L.r,catOf(L)); return x.subObj?x.subObj.tip:SVC[catOf(L)].tip; }
+const catLabel=L=>svcRoute(L.r,catOf(L)).label;
 let DESK_T0=0;
 function renderDesk(){
   const L=LAST; if(!L) return; const r=L.r, c=L.c, cur=L.cur, vip=L.vip;
   const who=L.dname, pc=`var(${PCOL[L.lvl]})`;
-  const rt=routeOf(r,cur), declined=rt.kind==='self';
+  const rk=routeOf(r,cur), declined=rk.kind==='self';
+  const howTxt=declined?`<span style="color:var(--goldT)">已提供「${r.self.id}」智慧小豐連結，客戶選擇真人</span>`:rk.kind==='repeat'?'重複來電未解決，未推自助、直接處理':'複雜問題（專員處理）';
+  const catOpts=sel=>CATS.filter(x=>x!=='其他/真人').map(x=>`<option${x===sel?' selected':''}>${x}</option>`).join('');
   const bp=r.probs.find(x=>x.c===L.best)||L.top;
   DESK_T0=performance.now();
   $('call21').style.setProperty('--pc',pc);
   $('call21').innerHTML=`<div class="ring"><i></i>來電中</div><div class="pl">${PNAME[L.lvl]}</div><div class="muted">${L.reasons.join('；')}</div><div class="tm" id="dkTimer">00:00</div>`;
   $('crm21').innerHTML=c?`<div class="kv"><span class="k">客戶</span><span class="v">${esc(L.dname)}　${maskID(cur.id)}</span><span class="k">級距</span><span class="v">${c.tier}${vip?' <span class="tag blue">高資產高貢獻</span>':''}</span><span class="k">資產級距</span><span class="v">${c.aum}</span><span class="k">往來期間</span><span class="v">${tenure(c)}${isNew(c)?' <span class="tag green">新開戶</span>':''}</span><span class="k">持有產品</span><span class="v">${c.products.join('、')}</span><span class="k">專屬理專</span><span class="v">${c.rm||'—'}</span><span class="k">近 7 天進線</span><span class="v">${c.calls7d} 次${c.calls7d>=2?' <span class="tag red">重複來電</span>':''}</span><span class="k">上次進線</span><span class="v">${c.lastCall}</span></div>`
     :`${NAME_OVERRIDE?`<div class="kv" style="margin-bottom:14px"><span class="k">客戶</span><span class="v">${esc(NAME_OVERRIDE)}</span></div>`:''}<div class="verify"><div class="vh"><i>🔒</i>${cur&&cur.unknown?'查無客戶資料（非本行客戶）':'客戶尚未驗證身分'}</div><div class="vs3"><span><b>STEP 1</b>語音或簡訊驗證</span><span><b>STEP 2</b>查詢行內 CRM</span><span><b>STEP 3</b>自動帶出客戶資料</span></div><div class="sk"><span>資產級距</span><em></em><span>往來期間</span><em style="width:70%"></em><span>持有產品</span><em style="width:85%"></em><span>專屬理專</span><em style="width:45%"></em><span>近 7 天進線</span><em style="width:30%"></em></div><div class="note">驗證通過後，資料自動帶到這裡；客戶不用重講一次。</div></div>`;
-  $('call21b').innerHTML=`<div class="quote">「${esc(L.text)}」</div><div class="kv" style="margin-top:22px"><span class="k">問題類別</span><span class="v">${catLabel(L)}（${(bp.p*100).toFixed(0)}%）</span><span class="k">急迫度</span><span class="v">${r.urgent?'<span style="color:var(--red)">急件</span>':'一般'}</span><span class="k">線上自助</span><span class="v">${declined?`已提供「${r.self.id}」連結，客戶選擇真人`:rt.kind==='repeat'?'重複來電，未推自助':'不適用'}</span></div>
-    <div class="chips" style="margin-top:16px">${r.urgent?'<span class="tag red">急件</span>':''}${declined?'<span class="tag self">已提供自助・客戶選真人</span>':''}${r.multi?'<span class="tag blue">兩個需求</span>':''}${r.hasOpp?`<span class="tag green">商機：${r.opp.o.id}</span>`:''}</div>`;
+  $('call21b').innerHTML=`<div class="quote">「${esc(L.text)}」</div><div class="kv" style="margin-top:22px"><span class="k">問題類別</span><span class="v">${catLabel(L)}（${(bp.p*100).toFixed(0)}%）</span><span class="k">急迫度</span><span class="v">${r.urgent?'<span style="color:var(--red)">急件</span>':'一般'}</span><span class="k">處理方式</span><span class="v">${howTxt}</span></div>
+    <div class="fixrow"><span>專員修正分類</span><select id="fixCat">${catOpts(catOf(L))}</select><span>通話中追加需求</span><select id="addCat"><option value="">選擇類別…</option>${catOpts('')}</select></div>
+    <div class="chips" id="needTags" style="margin-top:14px">${r.urgent?'<span class="tag red">急件</span>':''}${r.misrouted?'<span class="tag red">已被轉錯</span>':''}${declined?'<span class="tag self">已提供自助・客戶選真人</span>':''}${(L.extraNeeds||[]).map(x=>`<span class="tag blue">追加：${x}</span>`).join('')}${r.multi?'<span class="tag blue">兩個需求</span>':''}${r.hasOpp?`<span class="tag green">商機：${r.opp.o.id}</span>`:''}</div>`;
   const steps=[];
+  if(r.abuse) steps.push('通話中出現不當用語：可依<b>客服人員保護規範</b>處理（先提醒，持續則可結束通話）');
   if(declined) steps.push(`客戶已婉拒線上自助，<b>直接協助辦理${r.self.id}</b>，不再推薦自助管道`);
+  if(r.misrouted) steps.push('客戶這次已被轉錯：<b>直接處理，不再轉接</b>；確實需要轉時，資料一併帶過去');
   if(c&&c.calls7d>=2) steps.push(`客戶 7 天內已進線 ${c.calls7d} 次（${c.lastCall}），先說明上次問題的處理進度`);
   if(r.urgent) steps.push('<b>立即協助掛失／凍結</b>，再說明後續爭議款處理流程');
   if(r.multi) steps.push(`客戶有兩個需求（${r.strong[0].c}、${r.strong[1].c}），逐一處理，結束前確認都已解決`);
   steps.push(tipOf(L));
+  (L.extraNeeds||[]).forEach(x=>steps.push(`通話中追加需求「${x}」：處理完原需求後轉${SVC[x].desk}，客戶資料一併帶過去`));
   if(vip) steps.push(`結束後通知專屬理專 ${c.rm}，由理專後續關懷`);
   if(r.hasOpp) steps.push(r.urgent?`偵測到商機（${r.opp.o.id}），<b>本次不推薦</b>，只記錄到 CRM`:`問題解決後，再提及：${r.opp.o.offer}`);
-  const greet=r.urgent?`${who}您好，我是專員○○，我先立即協助您處理，請不用擔心。`
+  const greet=c&&c.calls7d>=2?`${who}您好，我是專員○○，我看到您前幾天也有來電，我先跟您說明上次問題的處理進度。`
+    :r.urgent?`${who}您好，我是專員○○，我先立即協助您處理，請不用擔心。`
     :vip?`${who}您好，我是專員○○，了解您想詢問${L.best}的問題，我來為您說明。`
     :`您好，我是專員○○，了解您想詢問${L.best}的問題，我來為您說明。`;
   if(L.script){ $('script22').textContent=`「${L.script.greeting}」`; $('steps22').innerHTML=L.script.steps.map(s=>`<li>${esc(s)}</li>`).join(''); $('scriptSt').textContent=`API生成（${(L.script.took/1000).toFixed(1)} 秒）`; }
   else { $('script22').textContent=`「${greet}」`; $('steps22').innerHTML=steps.map(s=>`<li>${s}</li>`).join(''); $('scriptSt').textContent=L.scriptPending?'AI 生成中…（先顯示範本）':(AIOK?'':'範本話術'); }
-  $('ctx22').innerHTML=`<div class="kv"><span class="k">客戶</span><span class="v">${esc(c||NAME_OVERRIDE?L.dname:'未驗證客戶')}</span><span class="k">服務等級</span><span class="v" style="color:${pc}">${PNAME[L.lvl]}</span><span class="k">問題類別</span><span class="v">${catLabel(L)}</span><span class="k">轉接</span><span class="v">${rt.line} ${keyTxt(rt)}</span></div>${c&&c.calls7d>=2?`<div style="margin-top:20px" class="tag red">7 天內第 ${c.calls7d+1} 次來電</div>`:''}`;
+  $('ctx22').innerHTML=`<div class="kv"><span class="k">客戶</span><span class="v">${esc(c||NAME_OVERRIDE?L.dname:'未驗證客戶')}</span><span class="k">服務等級</span><span class="v" style="color:${pc}">${PNAME[L.lvl]}</span><span class="k">問題類別</span><span class="v">${catLabel(L)}</span><span class="k">轉接</span><span class="v">${rk.line} ${keyTxt(rk)}</span><span class="k">處理方式</span><span class="v">${howTxt}</span></div>${c&&c.calls7d>=2?`<div style="margin-top:20px" class="tag red">7 天內第 ${c.calls7d+1} 次來電</div>`:''}`;
   $('dkRef').style.display=r.hasOpp&&!r.urgent?'':'none';
-  $('dkMsg').textContent='';
+  $('dkMsg').textContent=L.fixMsg||'';
+  $('fixCat').onchange=e=>{ L.fixCat=e.target.value===L.best?'':e.target.value; L.script=null;
+    L.fixMsg=L.fixCat?`已把分類從「${L.best}」修正為「${L.fixCat}」，修正紀錄回寫，作為模型校正的標註。`:'已改回系統原本的分類。'; renderDesk(); e.target.blur(); };
+  $('addCat').onchange=e=>{ const x=e.target.value; if(!x) return; L.extraNeeds=L.extraNeeds||[];
+    if(!L.extraNeeds.includes(x)&&x!==catOf(L)) L.extraNeeds.push(x); L.script=null;
+    L.fixMsg=`已追加需求「${x}」：語音選單選的路徑不一定是最終需求，追加的類別一併記入本次案件。`; renderDesk(); e.target.blur(); };
 }
 $('dkAnswer').onclick=()=>$('dkMsg').textContent='已接聽，通話紀錄與系統判斷已自動帶入工單。';
-$('dkXfer').onclick=()=>$('dkMsg').textContent=`已轉接${routeOf(LAST.r).desk}，客戶資料一併帶過去，客戶不用重講一次。`;
+$('dkXfer').onclick=()=>$('dkMsg').textContent=`已轉接${routeOf(LAST.r,LAST.cur).desk}，客戶資料一併帶過去，客戶不用重講一次。`;
 $('dkRef').onclick=()=>$('dkMsg').textContent=`已建立轉介單 → ${LAST.vip&&LAST.c.rm?'專屬理專 '+LAST.c.rm:LAST.r.opp.o.owner}（需客戶同意後送出）。`;
 
 /* ---------- 3 排隊看板 ---------- */
-const QPOOL_Q=MAIN_SAMPLES.map(s=>s.q).concat(MORE_SAMPLES,['信用卡帳單怎麼還沒寄來','房貸利率可以調降嗎','請問定存怎麼解約','我的金融卡不見了','外幣匯款要多久','網銀密碼忘記了','我搬家了要改通訊地址','手機號碼換了要怎麼改']);
+const QPOOL_Q=MAIN_SAMPLES.map(s=>s.q).concat(MORE_SAMPLES,['信用卡帳單想分12期','刷卡額度不夠 想臨時調額','我的信用卡可用額度還有多少','上期卡費有沒有繳到','信用卡帳單怎麼還沒寄來','房貸利率可以調降嗎','請問定存怎麼解約','我的金融卡不見了','外幣匯款要多久','網銀密碼忘記了','我搬家了要改通訊地址','手機號碼換了要怎麼改']);
 const QPOOL_ID=[[null,50],['B200000004',20],['E100000005',5],['H200000000',12],['F123456784',8],['A123456789',5]];
-let QS={t:0,q:[],agents:[],seq:0,paused:false,served:0,waitSum:0};
+let QS={t:0,q:[],agents:[],seq:0,paused:false,served:0,waitSum:0,auto:0,mineAuto:false};
+const isAuto=c=>routeOf(c.r,c.cur).kind==='self';
 function pickId(){let x=Math.random()*100;for(const [id,w] of QPOOL_ID){if((x-=w)<0) return id;}return null;}
 function makeCaller(text,id,mine){const r=classify(text);const cur=id?(CRM[id]?{id,rec:CRM[id]}:{id,unknown:true}):null;const {lvl}=computePrio(r,cur);const tp=r.probs.filter(x=>x.c!=='其他/真人')[0];return {n:++QS.seq,text,cur,r,lvl,cat:tp.p>=0.15?tp.c:r.probs[0].c,arr:QS.t,mine:!!mine};}
 const rnd=()=>QPOOL_Q[Math.floor(Math.random()*QPOOL_Q.length)];
-function qReset(){const n=+$('qAgents').value;QS={t:0,q:[],agents:Array.from({length:n},(_,i)=>({id:i+1,busy:null,until:0})),seq:0,paused:QS.paused,served:0,waitSum:0};
-  for(let i=0;i<14;i++){const c=makeCaller(rnd(),pickId());c.arr=-Math.random()*240;QS.q.push(c);}
-  QS.agents.forEach(a=>{a.busy=makeCaller(rnd(),pickId());a.until=60+Math.random()*240;}); renderQueue();}
+function rndHuman(){let c;do{c=makeCaller(rnd(),pickId());}while(isAuto(c));return c;}
+function qReset(){const n=+$('qAgents').value;QS={t:0,q:[],agents:Array.from({length:n},(_,i)=>({id:i+1,busy:null,until:0})),seq:0,paused:QS.paused,served:0,waitSum:0,auto:0,mineAuto:false};
+  for(let i=0;i<14;i++){const c=rndHuman();c.arr=-Math.random()*240;QS.q.push(c);}
+  QS.agents.forEach(a=>{a.busy=rndHuman();a.until=60+Math.random()*240;}); renderQueue();}
 const mmss=s=>{s=Math.max(0,Math.round(s));return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');};
-function qTick(dt){QS.t+=dt; if(QS.q.length<40&&Math.random()<dt/32) QS.q.push(makeCaller(rnd(),pickId()));
-  QS.agents.forEach(a=>{if(a.busy&&QS.t>=a.until) a.busy=null; if(!a.busy&&QS.q.length){QS.q.sort((x,y)=>x.lvl-y.lvl||x.arr-y.arr);const c=QS.q.shift();QS.served++;QS.waitSum+=QS.t-c.arr;a.busy=c;a.until=QS.t+(c.lvl===1?150:180)+Math.random()*200;}});}
+function qTick(dt){QS.t+=dt; if(QS.q.length<40&&Math.random()<dt/32){const c=makeCaller(rnd(),pickId()); if(isAuto(c)) QS.auto++; else QS.q.push(c);}
+  QS.agents.forEach(a=>{if(a.busy&&QS.t>=a.until) a.busy=null; if(!a.busy&&QS.q.length){QS.q.sort((x,y)=>x.lvl-y.lvl||x.arr-y.arr);const c=QS.q.shift();QS.served++;QS.waitSum+=QS.t-c.arr;a.busy=c;const ht=(c.lvl===1?150:180)+Math.random()*200;a.until=QS.t+ht;a.n=(a.n||0)+1;a.ht=(a.ht||0)+ht;}});}
 function renderQueue(){
   const q=[...QS.q].sort((x,y)=>x.lvl-y.lvl||x.arr-y.arr); const waits=q.map(c=>QS.t-c.arr);
-  $('qStat').innerHTML=`<div>等待中<b>${q.length} 人</b></div><div>平均等待<b>${q.length?mmss(waits.reduce((a,b)=>a+b,0)/q.length):'00:00'}</b></div><div>急件<b style="color:var(--red)">${q.filter(c=>c.r.urgent).length} 件</b></div>`;
+  $('qStat').innerHTML=`<div>等待中<b>${q.length} 人</b></div><div>平均等待<b>${q.length?mmss(waits.reduce((a,b)=>a+b,0)/q.length):'00:00'}</b></div><div>急件<b style="color:var(--red)">${q.filter(c=>c.r.urgent).length} 件</b></div><div>線上自助<b style="color:var(--goldT)">${QS.auto} 件</b></div>`;
   $('qCols').innerHTML=[1,2,3,4].map(l=>{const L0=q.filter(c=>c.lvl===l);let L=L0;const mi=L0.findIndex(c=>c.mine);if(mi>=7){L=[...L0.slice(0,6),L0[mi],...L0.slice(6).filter(c=>!c.mine)];}
     return `<div class="qcol" style="--pc:var(${PCOL[l]})"><div class="qh"><b>${PNAME[l]}</b><span>${L0.length} 人</span></div><div class="ql">${L.slice(0,7).map(c=>{const rec=c.cur&&c.cur.rec;
-      return `<div class="qi${c.mine?' mine':''}"${c.judge?' style="background:#f6eef4"':''}><span>${c.judge?`<b style="color:var(--purple)">📱 ${esc(c.judge)}</b> · `:''}${c.mine?'<b style="color:var(--accent)">剛才的客戶</b> · ':''}${rec?rec.tier:(c.cur?'非本行':'未驗證')}</span><span class="w">${mmss(QS.t-c.arr)}</span><span class="t">${c.cat}${c.r.urgent?' <span class="tag red">急件</span>':''}</span></div>`;}).join('')}
+      return `<div class="qi${c.mine?' mine':''}"${c.judge?' style="background:#f6eef4"':''}><span>${c.judge?`<b style="color:var(--purple)">📱 ${esc(c.judge)}</b> · `:''}${c.mine?'<b style="color:var(--accent)">剛才的客戶</b> · ':''}${rec?rec.tier:(c.cur?'非本行':'未驗證')}</span><span class="w">${mmss(QS.t-c.arr)}</span><span class="t">${c.cat}${c.r.urgent?' <span class="tag red">急件</span>':''}${c.r.misrouted?' <span class="tag red">已轉錯</span>':''}</span></div>`;}).join('')}
       ${L.length>7?`<div class="small dim" style="padding:2px 4px">還有 ${L.length-7} 人…</div>`:''}</div></div>`;}).join('');
-  $('qAgentsRow').innerHTML='<span>專員狀態</span>'+QS.agents.map(a=>`<span class="ag" style="--pc:${a.busy?`var(${PCOL[a.busy.lvl]})`:'var(--green)'}"><i></i>專員 ${a.id}${a.busy?(a.busy.mine?'（剛才的客戶）':''):'（空閒）'}</span>`).join('');
+  $('qAgentsRow').innerHTML='<span>專員狀態</span>'+QS.agents.map(a=>`<span class="ag" style="--pc:${a.busy?`var(${PCOL[a.busy.lvl]})`:'var(--green)'}"><i></i>專員 ${a.id}${a.busy?(a.busy.mine?'（剛才的客戶）':''):'（空閒）'}<small class="agst">${a.n?`今日 ${a.n} 件・平均 ${mmss(a.ht/a.n)}`:'今日 0 件'}</small></span>`).join('');
   if(SC===5) $('capTxt').textContent=capText(5);
 }
-$('qInject').onclick=()=>{ensureDemo(); QS.q.push(makeCaller(LAST.text,LAST.cur&&!LAST.cur.bad?LAST.cur.id:null,true)); renderQueue();};
+$('qInject').onclick=()=>{ensureDemo(); const c=makeCaller(LAST.text,LAST.cur&&!LAST.cur.bad?LAST.cur.id:null,true);
+  if(isAuto(c)){QS.auto++;QS.mineAuto=true;} else {QS.mineAuto=false;QS.q.push(c);} renderQueue();};
 $('qPause').onclick=e=>{QS.paused=!QS.paused; e.currentTarget.textContent=QS.paused?'▶':'❚❚';};
 $('qReset').onclick=qReset;
 $('qAgents').onchange=e=>{qReset(); e.target.blur();};
@@ -1170,6 +1221,7 @@ const CTRL=[
   {k:'vPhone',l:'每日電話進線',min:1000,max:15000,step:500,v:5000,f:v=>fmt(v)+' 通'},
   {k:'agents',l:'尖峰電話客服人數',min:20,max:120,step:1,v:52,f:v=>v+' 人',h:'拉到 46 人以下，現況會爆線'},
   {k:'acc',l:'Jev 平均準確度',min:0.6,max:0.98,step:0.01,v:0.88,f:v=>(v*100).toFixed(0)+'%',h:'假設值，待以行內資料實測'},
+  {k:'autoShare',l:'可導引線上自助的進線比例',min:0,max:0.6,step:0.01,v:0.25,f:v=>(v*100).toFixed(0)+'%',h:'分期、臨時調額、帳單查詢等智慧小豐可辦的常見業務；假設值，待客服中心數據校正'},
 ];
 const CTRL_ADV=[
   {k:'vText',l:'每日文字進線',min:1000,max:20000,step:500,v:8000,f:v=>fmt(v)+' 則'},
@@ -1183,6 +1235,8 @@ const CTRL_ADV=[
   {k:'tRe',l:'轉錯後重新說明時間',min:30,max:240,step:10,v:90,f:v=>v+' 秒'},
   {k:'ivr',l:'語音選單聆聽時間',min:20,max:120,step:5,v:60,f:v=>v+' 秒'},
   {k:'eOp',l:'總機人工分錯比例',min:0,max:0.3,step:0.01,v:0.05,f:v=>(v*100).toFixed(0)+'%'},
+  {k:'autoDone',l:'客戶接受線上自助比例',min:0.3,max:1,step:0.01,v:0.80,f:v=>(v*100).toFixed(0)+'%'},
+  {k:'tAuto',l:'線上自助辦理時間',min:30,max:240,step:10,v:90,f:v=>v+' 秒'},
 ];
 function buildCtl(list,el){
   el.innerHTML=list.map(c=>`<div class="ctl"><label for="c_${c.k}">${c.l}<output id="o_${c.k}"></output></label><input type="range" id="c_${c.k}" min="${c.min}" max="${c.max}" step="${c.step}" value="${c.v}">${c.h?`<div class="hint">${c.h}</div>`:''}</div>`).join('');
@@ -1203,9 +1257,12 @@ function erlangC(N,A){if(A>=N) return 1;let sum=0,term=1;for(let k=0;k<N;k++){if
 function queue(vDay,svc,N){const lam=vDay*0.12/3600;const A=lam*svc;if(A>=N) return {asa:Infinity,sl:0};const C=erlangC(N,A);return {asa:C*svc/(N-A),sl:1-C*Math.exp(-(N-A)*20/svc)};}
 const W_OP=30;
 function phoneModel(mode,thA,thQ){
-  if(mode==='asis'){const mis=P.fOp*P.eOp+(1-P.fOp)*P.eSelf;const svc=P.aht+P.fOp*P.tOp+mis*P.tRe;const q=queue(P.vPhone,svc,P.agents);return {mis,svc,q,cust:P.ivr+P.fOp*(W_OP+P.tOp)+q.asa+P.aht+mis*(q.asa+P.tRe),transfers:P.vPhone*(P.fOp+mis)};}
-  const r=routing(thA,thQ);const svc=P.aht+r.human*P.tOp+r.mis*P.tRe;const q=queue(P.vPhone,svc,P.agents);
-  return {mis:r.mis,svc,q,r,cust:10+r.ask*15+r.human*(W_OP+P.tOp)+q.asa+P.aht+r.mis*(q.asa+P.tRe),transfers:P.vPhone*(r.human+r.mis)};
+  if(mode==='asis'){const mis=P.fOp*P.eOp+(1-P.fOp)*P.eSelf;const svc=P.aht+P.fOp*P.tOp+mis*P.tRe;const q=queue(P.vPhone,svc,P.agents);return {mis,svc,q,vAgent:P.vPhone,autoN:0,cust:P.ivr+P.fOp*(W_OP+P.tOp)+q.asa+P.aht+mis*(q.asa+P.tRe),transfers:P.vPhone*(P.fOp+mis)};}
+  // 線上自助：可自助的進線中，接受連結的不進專員排隊；要真人的多花 30 秒後轉專員
+  const sa=(P.autoShare||0)*(P.autoDone||0), fail=(P.autoShare||0)-sa, vAgent=P.vPhone*(1-sa);
+  const r=routing(thA,thQ);const svc=P.aht+r.human*P.tOp+r.mis*P.tRe;const q=queue(vAgent,svc,P.agents);
+  const human=10+r.ask*15+r.human*(W_OP+P.tOp)+q.asa+P.aht+r.mis*(q.asa+P.tRe);
+  return {mis:r.mis*(1-sa),svc,q,r,vAgent,autoN:P.vPhone*sa,cust:sa*P.tAuto+(1-sa)*human+fail*(P.tAuto/3),transfers:vAgent*(r.human+r.mis)};
 }
 function textModel(mode){const base=90;if(mode==='asis'){const m=P.missAsis,esc=m*0.4;return {miss:m,cust:base+m*80+esc*300,escN:P.vText*esc,agentSec:P.vText*esc*300};}
   const r=routing(P.thAuto,P.thAsk);const m=Math.min(1,r.mis+0.05),esc=m*0.4+r.human;return {miss:m,cust:base+r.ask*15+m*80+esc*300,escN:P.vText*esc,agentSec:P.vText*esc*300};}
@@ -1213,13 +1270,14 @@ const fmtSec=s=>!isFinite(s)?'爆線':s>=60?`${Math.floor(s/60)} 分 ${Math.roun
 let SIM={};
 function recompute(){
   const A=phoneModel('asis'),B=phoneModel('tobe',P.thAuto,P.thAsk),TA=textModel('asis'),TB=textModel('tobe');
-  const lessMis=Math.max(0,(A.mis-B.mis)*P.vPhone);
+  const jevCost=(P.vPhone+P.vText)*500*365/1e6*0.042*32/1e4;
   const custHrs=((isFinite(A.cust)&&isFinite(B.cust)?(A.cust-B.cust)*P.vPhone:0)+(TA.cust-TB.cust)*P.vText)*250/3600;
-  $('hero').innerHTML=`<div><div class="big">${(B.q.sl*100).toFixed(0)}%</div><div class="u">尖峰 20 秒內接通<br>（現況 ${(A.q.sl*100).toFixed(0)}%）</div></div><div><div class="big">${fmt(lessMis,0)}</div><div class="u">通電話每天少轉錯窗口<br>（不用重新排隊）</div></div><div><div class="big">${fmt(Math.max(0,custHrs),0)}</div><div class="u">小時客戶等待與溝通時間<br>（每年少花）</div></div>`;
-  $('heroNote').textContent='所有數字為假設值；上線後用通話結束的案件紀錄（案件量、處理時長、轉接、重複來電）校正模型。';
+  const dWait=isFinite(A.q.asa)&&isFinite(B.q.asa)?Math.max(0,A.q.asa-B.q.asa):null;
+  $('hero').innerHTML=`<div><div class="big">${dWait===null?'不再爆線':fmt(dWait,0)}</div><div class="u">${dWait===null?'尖峰時段接得起來':'秒：尖峰平均等待縮短'}</div></div><div><div class="big">${fmt(Math.max(0,A.transfers-B.transfers))}</div><div class="u">次：每日少轉接</div></div><div><div class="big">${fmt(Math.max(0,custHrs),0)}</div><div class="u">小時：每年客戶少花的等待與溝通時間</div></div>`;
+  $('heroNote').textContent=`效益以服務品質衡量，不以減少人力為目標；省下的專員時間用在複雜問題與新人輔導。Jev 模型費用每則約 500 token，一年約 ${fmt(jevCost*1e4,0)} 元。所有數字為假設值，上線後以通話結束的案件分類紀錄校正。`;
   const kp=(k,va,vb,better,f)=>{const d=vb-va;const good=better==='low'?d<0:d>0;const pct=va&&isFinite(va)&&isFinite(vb)?Math.abs(d/va*100):null;
     return `<div class="kpi"><div class="k">${k}</div><div class="v"${good?'':' style="color:var(--red)"'}>${f(vb)}</div><div class="c">現況 ${f(va)}</div><div class="d${good?'':' bad'}">${pct===null?'':(good?'改善 ':'惡化 ')+pct.toFixed(0)+'%'}</div></div>`;};
-  $('kpis').innerHTML=kp('電話：客戶平均總耗時',A.cust,B.cust,'low',fmtSec)+kp('電話：尖峰平均等待',A.q.asa,B.q.asa,'low',fmtSec)+kp('電話：轉錯窗口比例',A.mis,B.mis,'low',v=>(v*100).toFixed(1)+'%')+kp('文字：每日轉真人',TA.escN,TB.escN,'low',v=>fmt(v)+' 則');
+  $('kpis').innerHTML=kp('電話：客戶平均總耗時',A.cust,B.cust,'low',fmtSec)+kp('電話：尖峰平均等待',A.q.asa,B.q.asa,'low',fmtSec)+kp('電話：轉錯窗口比例',A.mis,B.mis,'low',v=>(v*100).toFixed(1)+'%')+kp('文字：每日轉真人',TA.escN,TB.escN,'low',v=>fmt(v)+' 則')+kp('電話：每日線上自助',A.autoN,B.autoN,'high',v=>fmt(v)+' 通');
   const r=B.r, segs=[['直接分流',r.auto,'var(--accent)'],['反問確認',r.ask,'var(--orange)'],['轉人工分類',r.human,'var(--gray)']];
   $('stack').innerHTML=segs.map(s=>`<div style="flex:0 0 calc(${s[1]*100}% - 2px);background:${s[2]}"></div>`).join('');
   $('stackLegend').innerHTML=segs.map(s=>`<span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${s[2]};margin-right:6px"></span>${s[0]} <b>${(s[1]*100).toFixed(0)}%</b></span>`).join('');
@@ -1246,38 +1304,50 @@ function drawCurve(){
 /* 流量動畫 */
 const LANES=[{cv:$('cv0'),mode:'asis',dots:[],stat:{done:0,mis:0}},{cv:$('cv1'),mode:'tobe',dots:[],stat:{done:0,mis:0}}];
 const BOX=['信用卡','存款外匯','貸款','財富信託','保險','數位服務','資料變更'];
-function laneGeom(cv){const dpr=(devicePixelRatio||1)*S;const w=cv.clientWidth,h=cv.clientHeight||300;
+// 導入後那側多一個「線上自助」出口（排在最上面）
+const BOXES=m=>m==='tobe'?['⚡ 線上自助',...BOX]:BOX;
+function laneGeom(cv,mode){const dpr=(devicePixelRatio||1)*S;const w=cv.clientWidth,h=cv.clientHeight||300;
   if(cv.width!==Math.round(w*dpr)||cv.height!==Math.round(h*dpr)){cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);}
-  const ctx=cv.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);return {ctx,w,h,hubX:w*0.38,boxes:BOX.map((b,i)=>({x:w*0.80,y:22+i*(h-44)/(BOX.length-1)}))};}
+  const B=BOXES(mode);const ctx=cv.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);return {ctx,w,h,hubX:w*0.38,labels:B,boxes:B.map((b,i)=>({x:w*0.80,y:22+i*(h-44)/(B.length-1)}))};}
 let lastT=performance.now(), spawnAcc=[0,0];
-function spawn(L){const g=laneGeom(L.cv);const NB=BOX.length, target=Math.floor(Math.random()*NB);let wrong=-1,ask=false,hubDwell;
+function spawn(L){const g=laneGeom(L.cv,L.mode);const NB=BOX.length;let target=Math.floor(Math.random()*NB);let wrong=-1,ask=false,hubDwell,auto=false;
   if(L.mode==='asis'){const m=SIM.A?SIM.A.mis:0.14;if(Math.random()<m) wrong=(target+1+Math.floor(Math.random()*(NB-1)))%NB;hubDwell=(P.ivr+P.fOp*(W_OP+P.tOp))/30;}
-  else{const r=SIM.B?SIM.B.r:{ask:0.2,human:0.05},m=SIM.B?SIM.B.mis:0.06;if(Math.random()<m) wrong=(target+1+Math.floor(Math.random()*(NB-1)))%NB;ask=Math.random()<r.ask;hubDwell=(10+(ask?15:0)+(Math.random()<r.human?(W_OP+P.tOp):0))/30;}
-  L.dots.push({x:10,y:g.h/2+(Math.random()-0.5)*60,phase:0,target,wrong,ask,hubDwell,dwell:0,col:'ink'});}
+  else{const r=SIM.B?SIM.B.r:{ask:0.2,human:0.05},m=SIM.B?SIM.B.mis:0.06,sa=(P.autoShare||0)*(P.autoDone||0);
+    if(Math.random()<sa){auto=true;target=0;hubDwell=10/30;}
+    else{target+=1;if(Math.random()<m) wrong=1+(target-1+1+Math.floor(Math.random()*(NB-1)))%NB;ask=Math.random()<r.ask;hubDwell=(10+(ask?15:0)+(Math.random()<r.human?(W_OP+P.tOp):0))/30;}}
+  L.dots.push({x:10,y:g.h/2+(Math.random()-0.5)*60,phase:0,target,wrong,ask,auto,hubDwell,dwell:0,col:'ink'});}
 function rr(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath();}
 function mv(d,tx,ty,dist){const dx=tx-d.x,dy=ty-d.y,L=Math.hypot(dx,dy);if(L<=dist){d.x=tx;d.y=ty;return true;}d.x+=dx/L*dist;d.y+=dy/L*dist;return false;}
-const DOT={ink:'#8a93a6',warn:'#F59F00',crit:'#D9363E',good:'#1E2761'};
+const DOT={ink:'#8a93a6',warn:'#F59F00',crit:'#D9363E',good:'#1E2761',auto:'#03C0AF'};
+// 背景神經網路：輸入層 → 隱藏層 → 分流框 → 七個窗口，淡淡的連線與節點（節點亮度緩慢呼吸）
+function drawNet(ctx,w,h,hubX,boxes,now){
+  const col=(a)=>`rgba(30,39,97,${a})`;
+  ctx.lineWidth=1;
+  const edge=(a,b,al)=>{ ctx.strokeStyle=col(al); ctx.beginPath(); ctx.moveTo(a[0],a[1]); ctx.bezierCurveTo((a[0]+b[0])/2,a[1],(a[0]+b[0])/2,b[1],b[0],b[1]); ctx.stroke(); };
+  boxes.forEach(b=>edge([hubX+58,h/2],[b.x-8,b.y],.08));
+}
 function step(now){
   const dt=Math.min(0.05,(now-lastT)/1000); lastT=now; const vis=SC===7;
   LANES.forEach((L,li)=>{
     spawnAcc[li]+=dt*(P.vPhone||5000)/2500; while(spawnAcc[li]>=1){spawnAcc[li]-=1; if(L.dots.length<90) spawn(L);}
-    const {ctx,w,h,hubX,boxes}=laneGeom(L.cv); const sp=w*0.33;
+    const {ctx,w,h,hubX,boxes,labels}=laneGeom(L.cv,L.mode); const sp=w*0.33;
     L.dots.forEach(d=>{
       if(d.phase===0){d.x+=sp*dt;if(d.x>=hubX-44) d.phase=1;}
       else if(d.phase===1){d.dwell+=dt;d.col=d.ask?'warn':'ink';if(d.dwell>=d.hubDwell){d.phase=2;d.col='ink';}}
-      else if(d.phase===2){const b=boxes[d.wrong>=0?d.wrong:d.target];if(mv(d,b.x-12,b.y,sp*1.2*dt)){if(d.wrong>=0){d.phase=3;d.col='crit';L.stat.mis++;}else{d.phase=4;d.col='good';d.dwell=0;}}}
+      else if(d.phase===2){const b=boxes[d.wrong>=0?d.wrong:d.target];if(mv(d,b.x-12,b.y,sp*1.2*dt)){if(d.wrong>=0){d.phase=3;d.col='crit';L.stat.mis++;}else{d.phase=4;d.col=d.auto?'auto':'good';d.dwell=0;if(d.auto) L.stat.auto=(L.stat.auto||0)+1;}}}
       else if(d.phase===3){const b=boxes[d.target];if(mv(d,b.x-12,b.y,sp*0.35*dt)){d.phase=4;d.col='good';d.dwell=0;}}
       else if(d.phase===4){d.dwell+=dt;if(d.dwell>0.5){d.dead=true;L.stat.done++;}}
     });
     L.dots=L.dots.filter(d=>!d.dead);
     if(!vis) return;
     ctx.clearRect(0,0,w,h);
-    const hc=L.mode==='asis'?'#f28e2b':'#2f6db5';
+    drawNet(ctx,w,h,hubX,boxes,now);
+    const hc=L.mode==='asis'?'#f28e2b':'#1E2761';
     ctx.fillStyle='#fff';ctx.strokeStyle=hc;ctx.lineWidth=2;rr(ctx,hubX-58,h/2-24,116,48,10);ctx.fill();ctx.stroke();
-    ctx.fillStyle='#1f2a3a';ctx.font='700 15px "Microsoft JhengHei",sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(L.mode==='asis'?'語音選單／總機':'Jev 一句話分流',hubX,h/2);
-    boxes.forEach((b,i)=>{ctx.fillStyle='#fff';ctx.strokeStyle='#cfd7e3';ctx.lineWidth=1;rr(ctx,b.x-6,b.y-13,Math.min(80,w-b.x-4),26,6);ctx.fill();ctx.stroke();ctx.fillStyle='#3e4a5b';ctx.font='14px "Microsoft JhengHei",sans-serif';ctx.textAlign='left';ctx.fillText(BOX[i],b.x+6,b.y+1);});
+    ctx.fillStyle='#1f2a3a';ctx.font='700 15px "Noto Sans TC","Microsoft JhengHei",sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(L.mode==='asis'?'語音選單／總機':'Jev 一句話分流',hubX,h/2);
+    boxes.forEach((b,i)=>{const au=labels[i].startsWith('⚡');ctx.fillStyle=au?'#E6F8F6':'#fff';ctx.strokeStyle=au?'#029E91':'#cfd7e3';ctx.lineWidth=au?1.5:1;rr(ctx,b.x-6,b.y-13,Math.min(au?96:80,w-b.x-4),26,6);ctx.fill();ctx.stroke();ctx.fillStyle=au?'#027D73':'#3e4a5b';ctx.font=(au?'700 ':'')+'14px "Noto Sans TC","Microsoft JhengHei",sans-serif';ctx.textAlign='left';ctx.fillText(labels[i],b.x+6,b.y+1);});
     L.dots.forEach(d=>{ctx.beginPath();ctx.arc(d.x,d.y,5,0,Math.PI*2);ctx.fillStyle=DOT[d.col];ctx.fill();});
-    $('c'+li).textContent=L.stat.done?`已服務 ${L.stat.done} 通 · 轉錯 ${L.stat.mis} 通（${(L.stat.mis/Math.max(1,L.stat.done)*100).toFixed(0)}%）`:'';
+    $('c'+li).textContent=L.stat.done?`已服務 ${L.stat.done} 通 · 轉錯 ${L.stat.mis} 通（${(L.stat.mis/Math.max(1,L.stat.done)*100).toFixed(0)}%）${L.stat.auto?` · 線上自助 ${L.stat.auto} 通`:''}`:'';
   });
   requestAnimationFrame(step);
 }
@@ -1290,14 +1360,15 @@ let SC=0;
 function capText(i){
   const L=LAST, who=L?L.dname:'客戶';
   switch(i){
-    case 0: return L?`${who}說：「${L.text}」→ ${routeOf(L.r,L.cur).title}。`:'客戶遇到問題，只要說一句話；系統判斷服務類別，告訴他該撥哪支專線、按哪個鍵；分期、調額等常見業務可傳智慧小豐連結自助辦理。';
-    case 1: return '同一次判斷，系統還讀出急件、可否線上自助、多個需求和潛在商機；急件時只記錄商機、不推銷。';
-    case 2: return L?`結合行內 CRM 的資產級距與貢獻度，${who}被排入 ${PNAME[L.lvl]}；急件不論等級永遠排第一。`:'結合行內 CRM 的資產級距與貢獻度，決定服務順序。';
+    case 0: return L?`${who}說：「${L.text}」→ ${routeOf(L.r,L.cur).title}。`:'客戶遇到問題，只要說一句話；在現有信用卡分類的基礎上擴及存款、貸款、理財等各類，告訴他該撥哪支專線、按哪個鍵，分不出來就轉總機。';
+    case 1: return '同一次判斷，系統還讀出急件、多個需求、可否線上自助和潛在商機；急件時只記錄商機、不推銷。';
+    case 2: return L?(routeOf(L.r,L.cur).kind==='self'?`${who}的需求是標準化問題，傳智慧小豐連結線上辦好、不進排隊；複雜問題才排給專員。`:`${who}的問題需要專員處理，依急件、客戶等級、重複來電等客觀條件排入 ${PNAME[L.lvl]}。`):'標準化問題傳智慧小豐連結自助辦好；複雜問題分流給專員，依客觀條件決定服務順序。';
     case 3: return `電話接通，專員畫面已經備好${who}的資料和這通電話的判斷，客戶不用重講一次。`;
-    case 4: return '系統依急件、重複來電、客戶是否已婉拒自助和商機，給出處理步驟與開場話術，新進專員也能一次到位。';
+    case 4: return '系統依急件、重複來電、客戶是否已婉拒自助、多個需求和商機，給出處理步驟與開場話術；分類不對或客戶追加需求，專員可直接修正，新進專員也能一次到位。';
     case 5: {const q=[...QS.q].sort((x,y)=>x.lvl-y.lvl||x.arr-y.arr);const pos=q.findIndex(c=>c.mine);const ag=QS.agents.find(a=>a.busy&&a.busy.mine);
+      if(pos<0&&!ag&&QS.mineAuto) return `${who}的「${routeOf(L.r,L.cur).s.id}」已傳智慧小豐連結線上辦理，沒有進入排隊；專員留給真正需要人的客戶。`;
       return pos>=0?`主管看見全中心：${who}目前排在第 ${pos+1} 位（${PNAME[q[pos].lvl]}）；專員空下來，一律先接等級最高的客戶。`:ag?`${who}已由專員 ${ag.id} 接起。`:'主管看見全中心：誰最急、誰等最久、哪位專員空著；按「把剛才的客戶加入排隊」看他排在哪裡。';}
-    case 6: return '上線前先推演：用同樣的進線量，比較導入前後客戶的等待時間、接通率和轉錯窗口；數字皆為假設值。';
+    case 6: return '上線前先推演：用同樣的進線量，比較導入前後的客戶等待、轉錯窗口與線上自助的件數；數字皆為假設值。';
     case 7: return '左邊是現況的語音選單與總機，右邊是一句話分流；紅點代表轉錯窗口、要重新排隊。';
   }
 }
@@ -1307,7 +1378,7 @@ function ensureScript(){
   L.scriptPending=true; renderDesk(); const t0=performance.now();
   aiCall('/api/demo/script',{name:L.dname==='客戶'?'':L.dname,tier:c?c.tier:'未驗證',tenure:c?tenure(c):'',is_new:isNew(c),vip:L.vip,rm:c&&c.rm||'',
     calls7d:c?c.calls7d:0,last_call:c?c.lastCall:'',text:L.text,category:catLabel(L),extension:`${rt.line} ${rt.tel} ${keyTxt(rt)}`,priority:PNAME[L.lvl],
-    urgent:r.urgent,self_service_declined:rt.kind==='self',multi:r.multi,second_category:r.multi?r.strong[1].c:'',
+    urgent:r.urgent,abuse:!!r.abuse,misrouted:!!r.misrouted,self_service_declined:rt.kind==='self',extra_needs:(L.extraNeeds||[]).join('、'),multi:r.multi,second_category:r.multi?r.strong[1].c:'',
     opportunity:r.hasOpp?r.opp.o.offer:''},{front:true}).then(res=>{
     L.scriptPending=false;
     const s=res&&res.result;
@@ -1315,14 +1386,14 @@ function ensureScript(){
     if(LAST===L) renderDesk();
   });
 }
-function ensureDemo(){ if(LAST) return; $('cid').value='H200000000'; lookupCust('H200000000'); $('q').value='轉帳到現在還沒到'; runJev('轉帳到現在還沒到',{quiet:true}); }
+function ensureDemo(){ if(LAST) return; $('cid').value='H200000000'; lookupCust('H200000000'); $('q').value='轉帳到現在還沒到 上次說會幫我查'; runJev('轉帳到現在還沒到 上次說會幫我查',{quiet:true}); }
 function renderNav(){
   $('nav').innerHTML=STEPS.map((st,k)=>{const on=st.pages.includes(SC), done=st.pages[st.pages.length-1]<SC;
     const dots=st.pages.length>1?`<span class="dots">${st.pages.map(p=>`<i class="${p===SC?'on':p<SC?'done':''}"></i>`).join('')}</span>`:'';
     return (k?'<span class="arrow">→</span>':'')+`<button type="button" class="step${on?' on':''}${done?' done':''}" data-p="${st.pages[0]}"><span class="n">${st.n}</span><span class="t"><b>${st.b}</b><small>${st.s}</small>${dots}</span></button>`;}).join('');
 }
 // 每頁頁尾的價值標語（不放數字，只反覆點出價值）
-const CAPVAL=['不用等、不轉錯 → 留住客戶','急件不漏、商機不漏 → 留住客戶・創造營收','高價值客戶優先 → 留住客戶','客戶不用重講 → 留住客戶','問題解決後順勢轉介 → 創造營收','急件與貴賓永遠先接 → 留住客戶','等待變短 → 留住客戶・創造營收','少轉錯、少流失 → 留住客戶'];
+const CAPVAL=['不用等、不轉錯 → 留住客戶','急件不漏、簡單的線上自助 → 留住客戶・創造營收','簡單的自助、複雜的優先接 → 留住客戶','客戶不用重講 → 留住客戶','問題解決後順勢轉介 → 創造營收','急件與貴賓永遠先接 → 留住客戶','等待變短 → 留住客戶・創造營收','少轉錯、少流失 → 留住客戶'];
 function updateChrome(){ renderNav(); $('capNo').textContent=NOS[SC]; $('capTxt').textContent=capText(SC); $('capVal').textContent=CAPVAL[SC]; $('progBar').style.width=((SC+1)/PAGES.length*100)+'%'; }
 // 換章節時先播全螢幕章節頁（約 1.3 秒），同章節內直接換頁
 const CH_SUB=['客戶說一句話，系統在背後判斷','電話接通的那一刻，專員看見什麼','主管看見全中心的即時排隊','上線前，先在電腦裡推演一遍'];
@@ -1394,7 +1465,7 @@ function onJudge(m,pre){
   const tier=TIER_ID[m.tier]?m.tier:'未提供身分';
   const id=TIER_ID[m.tier]||null;
   const c=makeCaller(text,id,false); c.judge=name; QS.q.push(c);
-  const jrec={name,tier,text,id,cat:c.cat,lvl:c.lvl,urgent:c.r.urgent}; JUDGES.push(jrec);
+  const jrec={name,tier,text,id,cat:c.cat,lvl:c.lvl,urgent:c.r.urgent,auto:false}; JUDGES.push(jrec);
   const rid=/^[a-z0-9]{6,16}$/.test(m.rid||'')?m.rid:'';
   $('jCount').textContent=JUDGES.length;
   if($('ovlJudge').classList.contains('on')) renderJudgePanel();
@@ -1405,10 +1476,11 @@ function onJudge(m,pre){
   box.prepend(el); while(box.children.length>3) box.lastChild.remove();
   setTimeout(()=>el.remove(),20000);
   const finish=(ai)=>{
-    const rt=routeOf(c.r,c.cur);
-    const rs=el.querySelector('.rs'); if(rs){ rs.textContent=`${ai?'API 判斷':'規則判斷'}：${rt.title} · ${PNAME[c.lvl]}`; rs.insertAdjacentHTML('afterend',valLine(c.r,c.lvl,null)); }
+    const rt=routeOf(c.r,c.cur), au=rt.kind==='self', pn=au?'智慧小豐線上自助，不用排隊':PNAME[c.lvl];
+    jrec.auto=au; if(au){ const i=QS.q.indexOf(c); if(i>=0){ QS.q.splice(i,1); QS.auto++; } }
+    const rs=el.querySelector('.rs'); if(rs){ rs.textContent=`${ai?'API 判斷':'規則判斷'}：${rt.title} · ${pn}`; rs.insertAdjacentHTML('afterend',valLine(c.r,c.lvl,null)); }
     if(rid) sendReply(rid,{title:rt.title,cat:rt.label,ext:rt.key,tel:rt.tel,line:rt.line,desk:rt.desk,kind:rt.kind,pname:PNAME[c.lvl],ai:!!ai,name,
-      self:rt.kind==='self'?{id:rt.s.id,menu:rt.s.menu,time:rt.s.time,ext:`${rt.label}：請撥${rt.line} ${rt.tel}，${keyTxt(rt)}`}:null});
+      self:au?{id:rt.s.id,menu:rt.s.menu,time:rt.s.time,ext:`${rt.label}：請撥${rt.line} ${rt.tel}，${keyTxt(rt)}`}:null});
     if(SC===5) renderQueue(); if($('ovlJudge').classList.contains('on')) renderJudgePanel();
   };
   if(!AIOK&&!pre) return finish(false);
@@ -1469,17 +1541,18 @@ connectJudges();
 
 /* ---------- AI 總結全場（呼叫本機法遵系統 → API；失敗改用本機統計） ---------- */
 function sumCalls(){
-  const calls=JUDGES.map(j=>({name:j.name,tier:j.tier,text:j.text,cat:j.cat,lvl:j.lvl,urgent:j.urgent}));
+  const calls=JUDGES.map(j=>({name:j.name,tier:j.tier,text:j.text,cat:j.cat,lvl:j.lvl,urgent:j.urgent,auto:!!j.auto}));
   return {calls,src:`評審來電 ${calls.length} 通`};
 }
 function localSummary(calls){
   const by={}; calls.forEach(c=>{(by[c.cat]=by[c.cat]||[]).push(c);});
   const themes=Object.entries(by).sort((a,b)=>b[1].length-a[1].length).slice(0,5).map(([k,v])=>({title:k,count:v.length,examples:v.slice(0,2).map(x=>x.text),
-    insight:`${v.filter(x=>x.urgent).length} 件急件`}));
-  const urg=calls.filter(c=>c.urgent).length, top=themes[0];
-  const alerts=[]; if(urg) alerts.push(`目前有 ${urg} 件急件，確認都已優先接通`);
+    insight:`${v.filter(x=>x.auto).length} 通導引線上自助、${v.filter(x=>x.urgent).length} 件急件`}));
+  const urg=calls.filter(c=>c.urgent).length, aut=calls.filter(c=>c.auto).length, top=themes[0];
+  const alerts=[]; if(urg) alerts.push(`目前有 ${urg} 件急件，確認都已優先接通`); if(top&&top.count>=3) alerts.push(`「${top.title}」集中進線 ${top.count} 通，確認是否有系統或公告異常`);
   const actions=[]; if(top) actions.push(`「${top.title}」進線最多（${top.count} 通），檢查對應 FAQ 與智能客服回答是否完整`);
   if(top) actions.push(`尖峰時段可把「${top.title}」窗口暫時多排 1 位專員`);
+  if(aut) actions.push(`${aut} 通屬常見業務已導引智慧小豐自助，可評估擴大自助項目`);
   return {headline:`共 ${calls.length} 通進線，以「${top?top.title:'—'}」最多`,themes,alerts,actions};
 }
 function renderSummary(d,meta){
