@@ -98,6 +98,32 @@ button{font:inherit;cursor:pointer}
 .custmini{margin-top:14px;padding:12px 16px;border-radius:12px;background:var(--soft);font-size:15.5px;display:flex;gap:18px;flex-wrap:wrap;align-items:center;min-height:50px}
 .custmini b{font-size:16.5px}
 .more{background:none;border:0;color:var(--accent);font-size:14px;padding:6px 4px}
+/* 1-1 來電紀錄：評審來電／範例情境 */
+.seg{display:flex;gap:4px;padding:4px;border-radius:12px;background:var(--soft);flex:none;margin-bottom:14px}
+.seg button{flex:1;border:0;background:none;border-radius:9px;padding:8px 10px;font-size:15px;font-weight:700;color:var(--muted)}
+.seg button.on{background:#fff;color:var(--navy);box-shadow:0 1px 3px rgba(30,45,70,.12)}
+.seg button span{margin-left:6px;font-size:12px;background:var(--purple);color:#fff;border-radius:999px;padding:1px 8px}
+.seg button span:empty{display:none}
+.v11{flex:1;min-height:0;overflow:auto}
+.jlog{display:flex;flex-direction:column;gap:8px;min-height:100%}
+.jwait{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;color:var(--muted);border:1.5px dashed #C8CDE0;border-radius:14px;padding:20px}
+.jwait .ph9{width:68px;height:68px;border-radius:50%;display:grid;place-items:center;font-size:30px;background:#fff;color:var(--purple);animation:ring9 1.4s ease-out infinite}
+@keyframes ring9{from{box-shadow:0 0 0 0 rgba(3,192,175,.35)}to{box-shadow:0 0 0 20px rgba(3,192,175,0)}}
+.jwait b{font-size:24px;color:var(--ink-2)}
+.jwait small{font-size:14.5px;line-height:1.7}
+.jlive{display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--dim);margin:0 0 2px 2px}
+.jlive i{width:8px;height:8px;border-radius:50%;background:var(--purple);animation:pulse 1.2s infinite}
+.jitem{display:block;width:100%;text-align:left;border:1px solid var(--line);background:var(--card);border-radius:12px;padding:10px 14px;font:inherit;color:inherit;flex:none}
+.jitem:hover{border-color:var(--purple)}
+.jitem.on{border-color:var(--navy);box-shadow:0 0 0 3px rgba(30,39,97,.12)}
+.jitem .jh{display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--dim)}
+.jitem .jh b{font-size:15.5px;color:var(--purple)}
+.jitem .jh .js{margin-left:auto;font-weight:700}
+.jitem .jh .js.new{color:var(--purple)}
+.jitem .jq{font-size:17px;font-weight:700;margin:4px 0 2px;color:var(--ink-2)}
+.jitem .jr{font-size:13.5px;color:var(--muted)}
+.man11{margin-top:10px;flex:none}
+.man11 summary{cursor:pointer;font-size:14px;color:var(--accent);padding:4px}
 .bars{display:flex;flex-direction:column;gap:16px;margin-top:4px}
 .bar{display:grid;grid-template-columns:130px 1fr 64px;align-items:center;gap:16px}
 .bar .lab{font-size:19px;color:var(--ink-2);white-space:nowrap}
@@ -497,16 +523,22 @@ body{font-family:var(--font)}
   <div class="ph"><div class="phk"><span class="no">1-1</span>01｜客戶開口</div><h2>客戶說一句話，系統就知道<em>他要問什麼</em></h2><div class="vtags"><span class="vtag keep">🛡 留住客戶</span></div></div>
   <div class="pb grid2 p11">
     <div class="card" style="--d:.05s">
-      <div class="ch">客戶</div>
-      <div class="label">客戶身分（電話端由語音驗證取得，只在行內 CRM 查詢）</div>
-      <div class="inrow"><input id="cid" placeholder="身分證字號" maxlength="10" autocomplete="off" style="text-transform:uppercase"><button type="button" class="btn" id="cidGo">查詢</button></div>
-      <div class="chips" id="cidChips" style="margin-top:12px"></div>
+      <div class="ch">來電紀錄<span class="r" id="callStat"></span></div>
+      <div class="seg" id="seg11"><button type="button" class="on" data-v="judge">評審來電<span id="jN11"></span></button><button type="button" data-v="demo">範例情境</button></div>
+      <div class="v11" id="v11judge"><div class="jlog" id="jLog"></div></div>
+      <div class="v11" id="v11demo" style="display:none">
+        <div class="chips" id="qChips"></div>
+        <div><button type="button" class="more" id="moreBtn">更多範例 ▾</button></div>
+        <div class="chips" id="qMore" style="display:none;margin-top:4px"></div>
+      </div>
       <div class="custmini" id="custMini"><span class="dim">尚未查詢客戶，以一般客戶處理</span></div>
-      <div class="label" style="margin-top:26px">客戶說的一句話</div>
-      <div class="inrow"><input id="q" placeholder="例：我想買房子要跟你們借錢" autocomplete="off"><button type="button" class="btn" id="go">送出</button></div>
-      <div class="chips" id="qChips" style="margin-top:12px"></div>
-      <div><button type="button" class="more" id="moreBtn">更多範例 ▾</button></div>
-      <div class="chips" id="qMore" style="display:none;margin-top:4px"></div>
+      <details class="man11"><summary>手動輸入客戶身分與一句話</summary>
+        <div class="label" style="margin-top:8px">客戶身分（電話端由語音驗證取得，只在行內 CRM 查詢）</div>
+        <div class="inrow"><input id="cid" placeholder="身分證字號" maxlength="10" autocomplete="off" style="text-transform:uppercase"><button type="button" class="btn" id="cidGo">查詢</button></div>
+        <div class="chips" id="cidChips" style="margin-top:10px"></div>
+        <div class="label" style="margin-top:14px">客戶說的一句話</div>
+        <div class="inrow"><input id="q" placeholder="例：我想買房子要跟你們借錢" autocomplete="off"><button type="button" class="btn" id="go">送出</button></div>
+      </details>
     </div>
     <div class="card" style="--d:.12s">
       <div class="ch sys">系統在背後判斷<span class="r" id="lat"></span></div>
@@ -922,7 +954,7 @@ function computePrio(r,cur){
   return {lvl,reasons,c,vip};
 }
 
-let CUR=null, LAST=null, NAME_OVERRIDE='';
+let CUR=null, LAST=null, NAME_OVERRIDE='', ACTIVE_J=-1;
 const dispName=c=>NAME_OVERRIDE||(c?c.name:'客戶');
 function lookupCust(raw){
   const id=(raw||'').trim().toUpperCase();
@@ -962,11 +994,15 @@ const MAIN_SAMPLES=[
 const MORE_SAMPLES=['下個月要買家電 想臨時調高額度','我這期信用卡帳單要繳多少','分期的事我上週打過兩次了還沒好','新卡要怎麼開卡','網銀密碼忘記了','剛剛被轉錯了 我要問的是房貸寬限期','我想看這個月的刷卡明細','上個月帳戶被扣了一筆錢不知道是什麼','新青安現在還能申請嗎','我想借30萬周轉','卡費可以分期嗎','想開數位帳戶要帶什麼','美金定存利率多少','我要找真人','我已經打三次了都沒人處理信用卡的問題 到底要怎樣','你們房貸利率也太扯了吧 我要找人講','保險理賠要準備什麼文件','定存下個月到期 不知道要怎麼放','保險理賠拖了兩個月還沒下來 到底要等多久'];
 $('qChips').innerHTML=MAIN_SAMPLES.map((s,i)=>`<button type="button" class="chip" data-q="${s.q}"><i style="color:${s.c}">${s.t}</i>${s.q}</button>`).join('');
 $('qMore').innerHTML=MORE_SAMPLES.map(q=>`<button type="button" class="chip" data-q="${q}">${q}</button>`).join('');
-const onChip=e=>{const b=e.target.closest('.chip'); if(!b) return; $('q').value=b.dataset.q; runJev(b.dataset.q);};
+// 改走範例或手動輸入時，取消評審來電的「進行中」標記
+function clearJ(){ if(ACTIVE_J<0) return; ACTIVE_J=-1; NAME_OVERRIDE=''; renderCustMini(); renderJudgeLog(); }
+const onChip=e=>{const b=e.target.closest('.chip'); if(!b) return; clearJ(); $('q').value=b.dataset.q; runJev(b.dataset.q);};
 $('qChips').onclick=onChip; $('qMore').onclick=onChip;
 $('moreBtn').onclick=()=>{const m=$('qMore'); const open=m.style.display==='none'; m.style.display=open?'flex':'none'; $('moreBtn').textContent=open?'收起範例 ▴':'更多範例 ▾';};
-$('go').onclick=()=>runJev($('q').value);
-$('q').addEventListener('keydown',e=>{if(e.key==='Enter'){runJev(e.target.value);e.target.blur();}});
+$('go').onclick=()=>{clearJ(); runJev($('q').value);};
+$('q').addEventListener('keydown',e=>{if(e.key==='Enter'){clearJ(); runJev(e.target.value);e.target.blur();}});
+function setSeg(v){ document.querySelectorAll('#seg11 button').forEach(b=>b.classList.toggle('on',b.dataset.v===v)); $('v11judge').style.display=v==='judge'?'':'none'; $('v11demo').style.display=v==='demo'?'':'none'; }
+$('seg11').onclick=e=>{const b=e.target.closest('button'); if(b) setSeg(b.dataset.v);};
 
 // 把API 的判斷合併進規則判斷的結構（介面沿用同一套欄位）
 function applyAI(r,a){
@@ -1137,7 +1173,7 @@ function renderP13(){
 }
 
 /* ---------- 2-1 / 2-2 ---------- */
-const catOf=L=>L.fixCat||L.best;
+const catOf=L=>L.best;
 function tipOf(L){ const x=svcRoute(L.r,catOf(L)); return x.subObj?x.subObj.tip:SVC[catOf(L)].tip; }
 const catLabel=L=>svcRoute(L.r,catOf(L)).label;
 let DESK_T0=0;
@@ -1154,7 +1190,7 @@ function renderDesk(){
   $('crm21').innerHTML=c?`<div class="kv"><span class="k">客戶</span><span class="v">${esc(L.dname)}　${maskID(cur.id)}</span><span class="k">級距</span><span class="v">${c.tier}${vip?' <span class="tag blue">高資產高貢獻</span>':''}</span><span class="k">資產級距</span><span class="v">${c.aum}</span><span class="k">往來期間</span><span class="v">${tenure(c)}${isNew(c)?' <span class="tag green">新開戶</span>':''}</span><span class="k">持有產品</span><span class="v">${c.products.join('、')}</span><span class="k">專屬理專</span><span class="v">${c.rm||'—'}</span><span class="k">近 7 天進線</span><span class="v">${c.calls7d} 次${c.calls7d>=2?' <span class="tag red">重複來電</span>':''}</span><span class="k">上次進線</span><span class="v">${c.lastCall}</span></div>`
     :`${NAME_OVERRIDE?`<div class="kv" style="margin-bottom:14px"><span class="k">客戶</span><span class="v">${esc(NAME_OVERRIDE)}</span></div>`:''}<div class="verify"><div class="vh"><i>🔒</i>${cur&&cur.unknown?'查無客戶資料（非本行客戶）':'客戶尚未驗證身分'}</div><div class="vs3"><span><b>STEP 1</b>語音或簡訊驗證</span><span><b>STEP 2</b>查詢行內 CRM</span><span><b>STEP 3</b>自動帶出客戶資料</span></div><div class="sk"><span>資產級距</span><em></em><span>往來期間</span><em style="width:70%"></em><span>持有產品</span><em style="width:85%"></em><span>專屬理專</span><em style="width:45%"></em><span>近 7 天進線</span><em style="width:30%"></em></div><div class="note">驗證通過後，資料自動帶到這裡；客戶不用重講一次。</div></div>`;
   $('call21b').innerHTML=`<div class="quote">「${esc(L.text)}」</div><div class="kv" style="margin-top:22px"><span class="k">問題類別</span><span class="v">${catLabel(L)}（${(bp.p*100).toFixed(0)}%）</span><span class="k">急迫度</span><span class="v">${r.urgent?'<span style="color:var(--red)">急件</span>':'一般'}</span><span class="k">處理方式</span><span class="v">${howTxt}</span></div>
-    <div class="fixrow"><span>專員修正分類</span><select id="fixCat">${catOpts(catOf(L))}</select><span>通話中追加需求</span><select id="addCat"><option value="">選擇類別…</option>${catOpts('')}</select></div>
+    <div class="fixrow"><span>通話中追加需求</span><select id="addCat"><option value="">選擇類別…</option>${catOpts('')}</select></div>
     <div class="chips" id="needTags" style="margin-top:14px">${r.urgent?'<span class="tag red">急件</span>':''}${r.misrouted?'<span class="tag red">已被轉錯</span>':''}${declined?'<span class="tag self">已提供自助・客戶選真人</span>':''}${(L.extraNeeds||[]).map(x=>`<span class="tag blue">追加：${x}</span>`).join('')}${r.multi?'<span class="tag blue">兩個需求</span>':''}${r.hasOpp?`<span class="tag green">商機：${r.opp.o.id}</span>`:''}</div>`;
   const steps=[];
   if(r.abuse) steps.push('通話中出現不當用語：可依<b>客服人員保護規範</b>處理（先提醒，持續則可結束通話）');
@@ -1176,8 +1212,6 @@ function renderDesk(){
   $('ctx22').innerHTML=`<div class="kv"><span class="k">客戶</span><span class="v">${esc(c||NAME_OVERRIDE?L.dname:'未驗證客戶')}</span><span class="k">服務等級</span><span class="v" style="color:${pc}">${PNAME[L.lvl]}</span><span class="k">問題類別</span><span class="v">${catLabel(L)}</span><span class="k">轉接</span><span class="v">${rk.line} ${keyTxt(rk)}</span><span class="k">處理方式</span><span class="v">${howTxt}</span></div>${c&&c.calls7d>=2?`<div style="margin-top:20px" class="tag red">7 天內第 ${c.calls7d+1} 次來電</div>`:''}`;
   $('dkRef').style.display=r.hasOpp&&!r.urgent?'':'none';
   $('dkMsg').textContent=L.fixMsg||'';
-  $('fixCat').onchange=e=>{ L.fixCat=e.target.value===L.best?'':e.target.value; L.script=null;
-    L.fixMsg=L.fixCat?`已把分類從「${L.best}」修正為「${L.fixCat}」，修正紀錄回寫，作為模型校正的標註。`:'已改回系統原本的分類。'; renderDesk(); e.target.blur(); };
   $('addCat').onchange=e=>{ const x=e.target.value; if(!x) return; L.extraNeeds=L.extraNeeds||[];
     if(!L.extraNeeds.includes(x)&&x!==catOf(L)) L.extraNeeds.push(x); L.script=null;
     L.fixMsg=`已追加需求「${x}」：語音選單選的路徑不一定是最終需求，追加的類別一併記入本次案件。`; renderDesk(); e.target.blur(); };
@@ -1366,7 +1400,7 @@ function capText(i){
     case 1: return '同一次判斷，系統還讀出急件、多個需求、可否線上自助和潛在商機；急件時只記錄商機、不推銷。';
     case 2: return L?(routeOf(L.r,L.cur).kind==='self'?`${who}的需求是標準化問題，傳智慧小豐連結線上辦好、不進排隊；複雜問題才排給專員。`:`${who}的問題需要專員處理，依急件、客戶等級、重複來電等客觀條件排入 ${PNAME[L.lvl]}。`):'標準化問題傳智慧小豐連結自助辦好；複雜問題分流給專員，依客觀條件決定服務順序。';
     case 3: return `電話接通，專員畫面已經備好${who}的資料和這通電話的判斷，客戶不用重講一次。`;
-    case 4: return '系統依急件、重複來電、客戶是否已婉拒自助、多個需求和商機，給出處理步驟與開場話術；分類不對或客戶追加需求，專員可直接修正，新進專員也能一次到位。';
+    case 4: return '系統依急件、重複來電、客戶是否已婉拒自助、多個需求和商機，給出處理步驟與開場話術；客戶通話中追加需求，專員可直接加入，新進專員也能一次到位。';
     case 5: {const q=[...QS.q].sort((x,y)=>x.lvl-y.lvl||x.arr-y.arr);const pos=q.findIndex(c=>c.mine);const ag=QS.agents.find(a=>a.busy&&a.busy.mine);
       if(pos<0&&!ag&&QS.mineAuto) return `${who}的「${routeOf(L.r,L.cur).s.id}」已傳智慧小豐連結線上辦理，沒有進入排隊；專員留給真正需要人的客戶。`;
       return pos>=0?`主管看見全中心：${who}目前排在第 ${pos+1} 位（${PNAME[q[pos].lvl]}）；專員空下來，一律先接等級最高的客戶。`:ag?`${who}已由專員 ${ag.id} 接起。`:'主管看見全中心：誰最急、誰等最久、哪位專員空著；按「把剛才的客戶加入排隊」看他排在哪裡。';}
@@ -1427,7 +1461,7 @@ document.querySelectorAll('[data-ovl]').forEach(b=>b.onclick=()=>{$(b.dataset.ov
 document.querySelectorAll('.ovl').forEach(o=>o.addEventListener('click',e=>{if(e.target===o||e.target.closest('[data-close]')) o.classList.remove('on');}));
 const app=$('app');
 app.addEventListener('click',e=>{const b=e.target.closest('button'); if(b) setTimeout(()=>b.blur(),0);
-  if(e.target.closest('button,input,select,textarea,label,a,canvas,svg,.ovl,.chip,.toast')) return;
+  if(e.target.closest('button,input,select,textarea,label,a,canvas,svg,details,.ovl,.chip,.toast')) return;
   if(String(window.getSelection())) return; go(SC+1);});
 document.addEventListener('keydown',e=>{
   const ae=document.activeElement, typing=ae&&/^(INPUT|SELECT|TEXTAREA)$/.test(ae.tagName);
@@ -1467,14 +1501,14 @@ function onJudge(m,pre){
   const tier=TIER_ID[m.tier]?m.tier:'未提供身分';
   const id=TIER_ID[m.tier]||null;
   const c=makeCaller(text,id,false); c.judge=name; QS.q.push(c);
-  const jrec={name,tier,text,id,cat:c.cat,lvl:c.lvl,urgent:c.r.urgent,auto:false}; JUDGES.push(jrec);
+  const jrec={name,tier,text,id,cat:c.cat,lvl:c.lvl,urgent:c.r.urgent,auto:false,t:now,done:false}; JUDGES.push(jrec); renderJudgeLog();
   const rid=/^[a-z0-9]{6,16}$/.test(m.rid||'')?m.rid:'';
   $('jCount').textContent=JUDGES.length;
   if($('ovlJudge').classList.contains('on')) renderJudgePanel();
   if(SC===5) renderQueue();
   const box=$('toasts'); const el=document.createElement('div'); el.className='toast';
   el.innerHTML=`<div class="who">📱 ${esc(name)} 打進來（${esc(tier)}）</div><div class="tx">「${esc(text)}」</div><div class="rs">${AIOK?'⏳ API複核中…':`系統判斷：${routeOf(c.r,c.cur).title} · ${PNAME[c.lvl]}`}</div><button type="button">用這句走一遍</button>`;
-  el.querySelector('button').onclick=()=>{ $('cid').value=id||''; NAME_OVERRIDE=(name&&name!=='評審')?name:''; lookupCust(id||''); $('q').value=text; go(0); runJev(text); el.remove(); };
+  el.querySelector('button').onclick=()=>{ pickJudge(JUDGES.indexOf(jrec)); el.remove(); };
   box.prepend(el); while(box.children.length>3) box.lastChild.remove();
   setTimeout(()=>el.remove(),20000);
   const finish=(ai)=>{
@@ -1483,7 +1517,7 @@ function onJudge(m,pre){
     const rs=el.querySelector('.rs'); if(rs){ rs.textContent=`${ai?'API 判斷':'規則判斷'}：${rt.title} · ${pn}`; rs.insertAdjacentHTML('afterend',valLine(c.r,c.lvl,null)); }
     if(rid) sendReply(rid,{title:rt.title,cat:rt.label,ext:rt.key,tel:rt.tel,line:rt.line,desk:rt.desk,kind:rt.kind,pname:PNAME[c.lvl],ai:!!ai,name,
       self:au?{id:rt.s.id,menu:rt.s.menu,time:rt.s.time,link:xfLink(rt.s),q:rt.s.q,ext:`${rt.label}：請撥${rt.line} ${rt.tel}，${keyTxt(rt)}`}:null});
-    if(SC===5) renderQueue(); if($('ovlJudge').classList.contains('on')) renderJudgePanel();
+    if(SC===5) renderQueue(); if($('ovlJudge').classList.contains('on')) renderJudgePanel(); renderJudgeLog();
   };
   if(!AIOK&&!pre) return finish(false);
   // 本機服務收到來電時已預先判斷，直接套用；沒有才自己呼叫 API
@@ -1494,6 +1528,22 @@ function onJudge(m,pre){
     finish(!!r2);
   });
 }
+// 1-1 左側來電紀錄：每位評審的來電都留著，點任一通就用它繼續走
+const hhmm=t=>{const d=new Date(t);return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');};
+function renderJudgeLog(){
+  const n=JUDGES.length; $('jN11').textContent=n||''; $('callStat').textContent=n?`已收到 ${n} 通評審來電`:'';
+  if(!n){ $('jLog').innerHTML='<div class="jwait"><div class="ph9">☎</div><b>等待評審來電中…</b><small>請評審掃描右上角「評審參與」的 QR code，用手機打進來<br>也可以切到「範例情境」直接開始</small></div>'; return; }
+  $('jLog').innerHTML='<div class="jlive"><i></i>持續等待評審來電中…點任一通繼續進行</div>'+JUDGES.map((j,k)=>[j,k]).reverse().map(([j,k])=>
+    `<button type="button" class="jitem${k===ACTIVE_J?' on':''}" data-k="${k}"><div class="jh"><b>${esc(j.name)}</b><span class="tag">${esc(j.tier)}</span><span>${hhmm(j.t)}</span><span class="js${j.done?'':' new'}">${k===ACTIVE_J?'進行中':j.done?'已走過':'新來電'}</span></div>`
+    +`<div class="jq">「${esc(j.text)}」</div><div class="jr">${j.urgent?'<span class="tag red">急件</span> ':''}${esc(j.cat)} · ${j.auto?'智慧小豐線上自助':PNAME[j.lvl]}</div></button>`).join('');
+}
+function pickJudge(k){
+  const j=JUDGES[k]; if(!j) return; ACTIVE_J=k; j.done=true; setSeg('judge');
+  $('cid').value=j.id||''; NAME_OVERRIDE=(j.name&&j.name!=='評審')?j.name:''; lookupCust(j.id||''); $('q').value=j.text;
+  renderJudgeLog(); go(0); runJev(j.text);
+}
+$('jLog').onclick=e=>{const b=e.target.closest('.jitem'); if(b) pickJudge(+b.dataset.k);};
+renderJudgeLog();
 function sendReply(rid,payload){
   fetch(`https://ntfy.sh/${encodeURIComponent(TOPIC+'-r-'+rid)}/publish?message=${encodeURIComponent(JSON.stringify(payload))}`,{cache:'no-store'}).catch(()=>{});
 }
@@ -1580,7 +1630,7 @@ $('aiSumBtn').onclick=runSummary;
 
 // 1-1 待命：八個服務類別的空長條
 (function(){ const el=$('idle11'); if(!el) return;
-  el.innerHTML=CATS.map(c=>`<div class="ib"><span>${c}</span><i></i><b>—</b></div>`).join('')+'<div class="hint">等待客戶開口…　輸入一句話，或點左邊的範例</div>'; })();
+  el.innerHTML=CATS.map(c=>`<div class="ib"><span>${c}</span><i></i><b>—</b></div>`).join('')+'<div class="hint">等待評審來電中…　或從左邊選一個範例情境</div>'; })();
 // 背景大理石紋：斜向不規則主紋＋細分支＋淡淡暈染（固定亂數種子，每次畫面一樣）
 (function drawMarble(){
   const ns='http://www.w3.org/2000/svg', svg=$('waves'); if(!svg) return;
