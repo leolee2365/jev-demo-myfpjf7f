@@ -88,6 +88,8 @@ h2 em{font-style:normal;color:var(--tealT)}
 /* ---------- 開場動畫 ---------- */
 .intro{padding:0;background:#0E1440}
 .intro canvas{position:absolute;inset:0;width:1600px;height:900px}
+.intro .coverwrap{position:absolute;inset:0;opacity:0;transition:opacity 1s;pointer-events:none;color:#fff}
+.intro .coverwrap.on{opacity:1;pointer-events:auto}
 
 /* ---------- 封面 ---------- */
 .cover{padding:0;display:grid;grid-template-columns:1fr 560px}
@@ -554,10 +556,7 @@ h2 em{font-style:normal;color:var(--tealT)}
 <!-- ================= 00 開場動畫 ================= -->
 <section class="slide intro" id="p-intro" data-part="0" data-steps="0">
   <canvas id="introCv"></canvas>
-</section>
-
-<!-- ================= 01 封面 ================= -->
-<section class="slide dark cover" id="p-cover" data-part="0" data-steps="0">
+  <div class="cover coverwrap" id="coverWrap">
   <div class="l">
     <div class="ek a" style="--i:0">DESIGN THINKING 專題提案</div>
     <h1 class="a" style="--i:1">客服營運<br>數位孿生平台</h1>
@@ -576,7 +575,9 @@ h2 em{font-style:normal;color:var(--tealT)}
     <div class="dot" style="left:84%;top:66%;animation-delay:-2s"></div><div class="dot" style="left:22%;top:72%;animation-delay:-.5s"></div>
     <div class="jv a" style="--i:2">Jev<small>DIGITAL TWIN</small></div>
   </div>
+  </div>
 </section>
+
 
 <!-- ================= 02 客戶旅程 ================= -->
 <section class="slide" id="p-journey" data-part="1" data-steps="1">
@@ -1191,21 +1192,18 @@ function introDraw(t){
     c.globalAlpha = E * 0.35; c.strokeStyle = '#3B4A8C'; c.lineWidth = 1;
     for (let i = -8; i <= 8; i++){ c.beginPath(); c.moveTo(W / 2 + i * 120, H); c.lineTo(W / 2 + i * 26, 600); c.stroke(); }
     for (let k = 1; k <= 6; k++){ const y = 600 + Math.pow(k / 6, 1.8) * 300; c.beginPath(); c.moveTo(0, y); c.lineTo(W, y); c.stroke(); }
-    c.globalAlpha = E; c.textAlign = 'center';
-    c.fillStyle = '#03C0AF'; c.font = `700 18px ${IF}`; c.fillText('D E S I G N   T H I N K I N G   專 題 提 案', W / 2, 300);
-    c.fillStyle = '#fff'; c.font = `900 86px ${IF}`; c.shadowColor = 'rgba(3,192,175,.75)'; c.shadowBlur = 36 * E; c.fillText('客服營運數位孿生平台', W / 2, 392); c.shadowBlur = 0;
-    c.globalAlpha = seg(t, 10.5, 11.0); c.fillStyle = 'rgba(201,211,242,.9)'; c.font = `500 28px ${IF}`; c.fillText('Jev 分類 × 數位孿生模擬', W / 2, 470);
-    c.globalAlpha = seg(t, 11.0, 11.5); c.fillStyle = '#fff'; c.font = `700 24px ${IF}`; c.fillText('不用等 ・ 不轉錯 ・ 順勢轉介', W / 2, 536);
-    c.globalAlpha = seg(t, 11.8, 12.3) * (0.55 + 0.45 * Math.sin(t * 3)); c.fillStyle = 'rgba(255,255,255,.7)'; c.font = `500 15px ${IF}`; c.fillText('按 → 開始', W / 2, 780);
     c.globalAlpha = 1;
   }
 }
 function introLoop(now){
   if (!INTRO.on) return;
   let t = (now - INTRO.t0) / 1000; if (INTRO.skipped) t = Math.max(t, 12.4) ;
-  introDraw(t); INTRO.raf = requestAnimationFrame(introLoop);
+  introDraw(t);
+  const cw = document.getElementById('coverWrap');
+  if (t >= 10.0 && !cw.classList.contains('on')){ cw.classList.add('on'); cw.querySelectorAll('.a').forEach(el => { el.style.animation = 'none'; void el.offsetWidth; el.style.animation = ''; }); }
+  INTRO.raf = requestAnimationFrame(introLoop);
 }
-RESET['p-intro'] = () => { introInit(); INTRO.on = true; INTRO.skipped = false; INTRO.t0 = performance.now(); cancelAnimationFrame(INTRO.raf); INTRO.raf = requestAnimationFrame(introLoop); };
+RESET['p-intro'] = () => { document.getElementById('coverWrap').classList.remove('on'); introInit(); INTRO.on = true; INTRO.skipped = false; INTRO.t0 = performance.now(); cancelAnimationFrame(INTRO.raf); INTRO.raf = requestAnimationFrame(introLoop); };
 
 /* ---------- 02 客戶旅程 ---------- */
 RESET['p-journey'] = () => {
