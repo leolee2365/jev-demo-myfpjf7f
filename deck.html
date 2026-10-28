@@ -88,7 +88,15 @@ h2 em{font-style:normal;color:var(--tealT)}
 /* ---------- 開場動畫 ---------- */
 .intro{padding:0;background:#0E1440}
 .intro canvas{position:absolute;inset:0;width:1600px;height:900px}
-.intro .coverwrap{position:absolute;inset:0;opacity:0;transition:opacity 1s;pointer-events:none;color:#fff}
+.intro .coverwrap{position:absolute;inset:0;opacity:0;transition:opacity 1s;pointer-events:none;color:#fff;display:flex;align-items:center;justify-content:center;text-align:center}
+.coverwrap .cc{margin-top:-60px}
+.coverwrap .ek{font-size:19px;font-weight:700;letter-spacing:.3em;color:var(--teal)}
+.coverwrap h1{margin:18px 0 0;font-size:84px;font-weight:900;line-height:1.15;letter-spacing:.02em;text-shadow:0 0 36px rgba(3,192,175,.55)}
+.coverwrap .ds{margin:22px auto 0;font-size:23px;line-height:1.7;color:rgba(255,255,255,.78);max-width:900px}
+.coverwrap .slogan{display:inline-block;margin-top:48px;padding:14px 40px;border-radius:999px;border:1.5px solid rgba(3,192,175,.7);background:rgba(3,192,175,.10);font-size:26px;font-weight:700;letter-spacing:.18em}
+.coverwrap .team2{position:absolute;left:0;right:0;bottom:92px;display:flex;justify-content:center;align-items:center;gap:34px;font-size:16.5px;color:rgba(255,255,255,.88)}
+.coverwrap .team2 b{color:var(--teal);margin-right:8px;font-weight:700}
+.coverwrap .team2 .date{background:var(--teal);color:var(--navy);padding:5px 16px;border-radius:999px;font-weight:700}
 .intro .coverwrap.on{opacity:1;pointer-events:auto}
 
 /* ---------- 封面 ---------- */
@@ -556,25 +564,16 @@ h2 em{font-style:normal;color:var(--tealT)}
 <!-- ================= 00 開場動畫 ================= -->
 <section class="slide intro" id="p-intro" data-part="0" data-steps="0">
   <canvas id="introCv"></canvas>
-  <div class="cover coverwrap" id="coverWrap">
-  <div class="l">
-    <div class="ek a" style="--i:0">DESIGN THINKING 專題提案</div>
-    <h1 class="a" style="--i:1">客服營運<br>數位孿生平台</h1>
-    <div class="ds a" style="--i:2">用 Jev 分類 × 數位孿生模擬，找出銀行客服營運最佳模式，<br>提升客戶滿意並挖掘潛在商機</div>
-    <div class="team a" style="--i:3">
-      <b>組別</b><span>第四組</span>
-      <b>訪談組</b><span>蕭信隆、黃榆萱、古雅萍</span>
-      <b>簡報組</b><span>吳奕寰、李律昕、林俊佑</span>
-      <b>報告組</b><span>李柏儀、陳昆鴻、張法仁</span>
+  <div class="coverwrap" id="coverWrap">
+    <div class="cc">
+      <div class="ek a" style="--i:0">DESIGN THINKING 專題提案</div>
+      <h1 class="a" style="--i:1">客服營運數位孿生平台</h1>
+      <div class="ds a" style="--i:2">用 Jev 分類 × 數位孿生模擬，找出銀行客服營運最佳模式，<br>提升客戶滿意並挖掘潛在商機</div>
+      <div class="slogan a" style="--i:4">不用等 ・ 不轉錯 ・ 順勢轉介</div>
     </div>
-    <div><div class="date a" style="--i:4">2026/11/04</div></div>
-  </div>
-  <div class="r">
-    <div class="orb o4"></div><div class="orb o3"></div><div class="orb o2"></div><div class="orb o1"></div>
-    <div class="dot" style="left:18%;top:30%"></div><div class="dot" style="left:78%;top:26%;animation-delay:-1s"></div>
-    <div class="dot" style="left:84%;top:66%;animation-delay:-2s"></div><div class="dot" style="left:22%;top:72%;animation-delay:-.5s"></div>
-    <div class="jv a" style="--i:2">Jev<small>DIGITAL TWIN</small></div>
-  </div>
+    <div class="team2 a" style="--i:6">
+      <span><b>組別</b>第四組</span><span><b>訪談組</b>蕭信隆、黃榆萱、古雅萍</span><span><b>簡報組</b>吳奕寰、李律昕、林俊佑</span><span><b>報告組</b>李柏儀、陳昆鴻、張法仁</span><span class="date">2026/11/04</span>
+    </div>
   </div>
 </section>
 
@@ -1089,7 +1088,8 @@ function introInit(){
   ISC = Array.from({ length: 24 }, (_, i) => ({                        // 24 個推演情境: 參數各自不同, 排隊與等待整體往下
     p: [Math.round(44 + irnd() * 20), Math.round(8 + irnd() * 28), +(0.70 + irnd() * 0.25).toFixed(2)],
     q: Math.max(0, Math.min(16, Math.round(15 - i / 24 * 13 + (irnd() - 0.5) * 6))),
-    au: Math.round(2 + irnd() * 8), w: Math.max(0, Math.round(48 - i / 24 * 44 + (irnd() - 0.5) * 16)) }));
+    au: Math.round(2 + irnd() * 8), w: Math.max(0, Math.round(48 - i / 24 * 44 + (irnd() - 0.5) * 16)),
+    d: [60 + irnd() * 35, 3000 + irnd() * 4000, 3 + irnd() * 14, 60 + irnd() * 38, 150 + irnd() * 120, 200 + irnd() * 220] }));
 }
 const mmss2 = s => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
 function introDraw(t){
@@ -1132,13 +1132,20 @@ function introDraw(t){
     else { vals = [0, 1, 2].map(i => S0.p[i] + (S1.p[i] - S0.p[i]) * kf); Q = Math.round(S0.q + (S1.q - S0.q) * kf); AU = S0.au; WS = S0.w; }
     // 左: 排隊人數 (現況) → 拉桿 (推演)
     if (twin < 1){ c.globalAlpha = BC * (1 - twin); c.font = `700 30px ${IF}`; c.fillStyle = '#F59F6B'; c.fillText(`排隊 ${Q} 人`, 120, 420); c.font = `500 17px ${IF}`; c.fillStyle = 'rgba(255,255,255,.55)'; c.fillText('語音選單 → 按 0 總機 → 排隊等真人', 120, 462); c.globalAlpha = BC; }
-    if (twin > 0){
-      const S = [['尖峰客服人數', 40, 70, v => `${Math.round(v)} 人`], ['可導引線上自助', 0, 40, v => `${Math.round(v)}%`], ['直接分流門檻', 0.6, 1.0, v => v.toFixed(2)]];
-      S.forEach(([lb, lo, hi, fmt], i) => { const y = 420 + i * 72, q = clamp01((vals[i] - lo) / (hi - lo)); c.globalAlpha = BC * twin;
-        c.font = `500 16px ${IF}`; c.fillStyle = 'rgba(255,255,255,.7)'; c.textAlign = 'left'; c.fillText(lb, 120, y); c.textAlign = 'right'; c.font = `700 18px ${IF}`; c.fillStyle = fin > 0 ? '#03C0AF' : '#fff'; c.fillText(fmt(vals[i]), 600, y);
-        c.strokeStyle = 'rgba(255,255,255,.18)'; c.lineWidth = 6; c.lineCap = 'round'; c.beginPath(); c.moveTo(120, y + 26); c.lineTo(600, y + 26); c.stroke();
-        c.strokeStyle = '#03C0AF'; c.beginPath(); c.moveTo(120, y + 26); c.lineTo(120 + 480 * q, y + 26); c.stroke();
-        c.fillStyle = '#fff'; c.shadowColor = 'rgba(0,0,0,.4)'; c.shadowBlur = 8; c.beginPath(); c.arc(120 + 480 * q, y + 26, 10, 0, 7); c.fill(); c.shadowBlur = 0; });
+    if (twin > 0){                                     // 儀表板: 九格參數隨情境跳動, 最後鎖定在推演結果 (青綠)
+      const D0 = ISC[k].d, D1 = ISC[Math.min(23, k + 1)].d, DF = [88, 5000, 5.3, 99.8, 240, 332];
+      const dv = [0, 1, 2, 3, 4, 5].map(i => fin > 0 ? D0[i] + (DF[i] - D0[i]) * ease(fin) : D0[i] + (D1[i] - D0[i]) * kf + (fin > 0 ? 0 : Math.sin(t * 37 + i * 1.7) * (D1[i] - D0[i]) * 0.15));
+      const T = [['尖峰客服人數', `${Math.round(vals[0])} 人`], ['可導引線上自助', `${Math.round(vals[1])}%`], ['直接分流門檻', vals[2].toFixed(2)],
+                 ['Jev 準確度', `${Math.round(dv[0])}%`], ['每日進線', `${Math.round(dv[1]).toLocaleString()} 通`], ['轉錯窗口比例', `${dv[2].toFixed(1)}%`],
+                 ['20 秒內接聽率', `${dv[3].toFixed(1)}%`], ['平均總耗時', mmss2(dv[4])], ['每日轉接', `${Math.round(dv[5])} 次`]];
+      c.globalAlpha = BC * twin;
+      T.forEach(([lb, v], i) => { const x = 120 + (i % 3) * 170, y = 400 + Math.floor(i / 3) * 86;
+        c.fillStyle = fin > 0 ? 'rgba(3,192,175,.10)' : 'rgba(255,255,255,.05)'; c.strokeStyle = fin > 0 ? 'rgba(3,192,175,.55)' : 'rgba(255,255,255,.12)'; c.lineWidth = 1; c.beginPath(); c.roundRect(x, y, 156, 70, 10); c.fill(); c.stroke();
+        c.textAlign = 'left'; c.font = `500 12px ${IF}`; c.fillStyle = 'rgba(255,255,255,.5)'; c.fillText(lb, x + 12, y + 18);
+        c.font = `700 22px ${IF}`; c.fillStyle = fin > 0 ? '#03C0AF' : '#fff'; c.fillText(v, x + 12, y + 46);
+        // 右下小火花線 (隨機抖動, 鎖定後變平)
+        c.strokeStyle = fin > 0 ? 'rgba(3,192,175,.7)' : 'rgba(255,255,255,.3)'; c.lineWidth = 1.2; c.beginPath();
+        for (let j = 0; j < 9; j++){ const sx = x + 100 + j * 6, sy = y + 52 + (fin > 0 ? 0 : Math.sin(t * 23 + i * 3 + j * 1.3) * 6); j ? c.lineTo(sx, sy) : c.moveTo(sx, sy); } c.stroke(); });
       c.globalAlpha = BC;
     }
     // 右: 客服中心看板
