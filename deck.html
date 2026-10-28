@@ -85,6 +85,10 @@ h2 em{font-style:normal;color:var(--tealT)}
 .arrow{align-self:center;justify-self:center;width:0;height:0;border:16px solid transparent;border-left:26px solid #B9C1D6;border-right:0}
 .arrow.teal{border-left-color:var(--teal)} .arrow.gold{border-left-color:var(--gold)} .arrow.navy{border-left-color:#8B93C4}
 
+/* ---------- 開場動畫 ---------- */
+.intro{padding:0;background:#0E1440}
+.intro canvas{position:absolute;inset:0;width:1600px;height:900px}
+
 /* ---------- 封面 ---------- */
 .cover{padding:0;display:grid;grid-template-columns:1fr 560px}
 .cover .l{padding:120px 0 0 110px;position:relative;z-index:1}
@@ -547,6 +551,11 @@ h2 em{font-style:normal;color:var(--tealT)}
 <body>
 <div id="stage">
 
+<!-- ================= 00 開場動畫 ================= -->
+<section class="slide intro" id="p-intro" data-part="0" data-steps="0">
+  <canvas id="introCv"></canvas>
+</section>
+
 <!-- ================= 01 封面 ================= -->
 <section class="slide dark cover" id="p-cover" data-part="0" data-steps="0">
   <div class="l">
@@ -894,6 +903,7 @@ const ICONS = {
 };
 document.querySelectorAll('[data-ic]').forEach(el => { el.innerHTML = `<svg viewBox="0 0 24 24">${ICONS[el.dataset.ic] || ''}</svg>`; });
 let editing = false;
+const INTRO = { on: false, t0: 0, skipped: false, raf: 0 };
 
 /* ---------- 特效才會出現的文字：集中在這裡，編輯模式的「特效文字」面板可以改 ---------- */
 const STAGES = ['痛點與機會', '智慧分流&引導', '提示儀表板', '數位孿生模擬', '效益評估'];
@@ -972,7 +982,7 @@ slides.forEach((s, i) => {
     pg.querySelectorAll('.st').forEach((el, k) => { el.title = '跳到 PART ' + (k + 1); el.onclick = ev => { ev.stopPropagation(); if (editing) commitEdits(); const idx = slides.findIndex(x => +x.dataset.part === k + 1); if (idx >= 0) show(idx, 0, false); }; });
     s.appendChild(pg);
   }
-  if (i === 0) return;
+  if (s.classList.contains('intro') || s.classList.contains('cover')) return;
   const ft = document.createElement('div'); ft.className = 'foot';
   ft.innerHTML = `<span>${FOOT.t}</span><span><b>${String(i + 1).padStart(2, '0')}</b> / ${slides.length}</span>`;
   s.appendChild(ft);
@@ -988,6 +998,7 @@ function show(i, k = 0, withChap = true){
   if (i < 0 || i >= slides.length) return;
   if (editing && cur >= 0) commitEdits();
   if (chapPending){ chapPending = null; document.getElementById('chap').classList.remove('show'); }
+  INTRO.on = false; cancelAnimationFrame(INTRO.raf);
   clearAll();
   const prevPart = cur >= 0 ? slides[cur].dataset.part : null;
   slides.forEach(s => s.classList.remove('on', 'enter'));
@@ -1017,6 +1028,7 @@ function chapGo(){
 function next(){
   if (chapBusy) return;
   if (chapGo()) return;
+  if (slides[cur].id === 'p-intro' && INTRO.on && !INTRO.skipped && (performance.now() - INTRO.t0) / 1000 < 11.6){ INTRO.skipped = true; return; }
   const s = slides[cur];
   if (step < +s.dataset.steps){ step++; applyStep(s, step); history.replaceState(null, '', `#${cur + 1}.${step}`); }
   else if (cur === slides.length - 1) location.href = 'index.html';     // 最後一頁再按 → 直接接 Demo (同資料夾的 index.html)
@@ -1061,6 +1073,132 @@ function count(el, from, to, ms, fmt, lin){
     el.textContent = fmt(from + (to - from) * e); if (p < 1 && slides[cur].contains(el)) requestAnimationFrame(tick); };
   requestAnimationFrame(tick);
 }
+
+/* ---------- 00 開場動畫 ---------- */
+const icv = document.getElementById('introCv'), ictx = icv.getContext('2d');
+icv.width = 3200; icv.height = 1800;
+const IF = '"Noto Sans TC","Microsoft JhengHei",sans-serif';
+let iseed = 7; const irnd = () => ((iseed = (iseed * 1664525 + 1013904223) >>> 0) / 4294967296);
+const clamp01 = v => Math.max(0, Math.min(1, v)), seg = (t, a, b) => clamp01((t - a) / (b - a)), ease = p => 1 - Math.pow(1 - clamp01(p), 3);
+const PHONE = new Path2D(ICONS.phone.match(/d="([^"]+)"/)[1]);
+const CUR_PTS = [0.28, 0.34, 0.31, 0.47, 0.55, 0.66, 0.76];            // 現況: 客戶總耗時一路漲到 6 分 5 秒 (8 分 = 1.0)
+const FIN_PTS = [0.28, 0.30, 0.31, 0.36, 0.42, 0.47, 0.50];            // 導入後: 4 分 0 秒
+let IP = [], ISC = [];
+function introInit(){
+  iseed = 7;
+  IP = Array.from({ length: 150 }, () => { const a = irnd() * Math.PI * 2; return { a, r: 560 + irnd() * 420, s: 0.5 + irnd() * 0.9, d: irnd() * 1.1 }; });
+  ISC = Array.from({ length: 24 }, (_, i) => ({                        // 24 個推演情境: 曲線越來越低, 參數各自不同
+    pts: CUR_PTS.map((v, k) => v - (k / 6) * (0.08 + i / 24 * 0.22) + (irnd() - 0.5) * 0.07),
+    p: [Math.round(44 + irnd() * 20), Math.round(8 + irnd() * 28), +(0.70 + irnd() * 0.25).toFixed(2)] }));
+}
+const CH = { x: 740, y: 210, w: 740, h: 430 };                           // 圖表區
+const cx = k => CH.x + k / 6 * CH.w, cy = v => CH.y + (1 - v) * CH.h;
+function line(c, pts, prog, color, width, glow){
+  const n = pts.length - 1, L = prog * n; if (L <= 0) return null;
+  c.beginPath(); c.moveTo(cx(0), cy(pts[0]));
+  for (let k = 1; k <= Math.floor(L); k++) c.lineTo(cx(k), cy(pts[k]));
+  const k = Math.floor(L), fr = L - k; let ex = cx(k), ey = cy(pts[k]);
+  if (k < n && fr > 0){ ex = cx(k) + (cx(k + 1) - cx(k)) * fr; ey = cy(pts[k]) + (cy(pts[k + 1]) - cy(pts[k])) * fr; c.lineTo(ex, ey); }
+  c.strokeStyle = color; c.lineWidth = width; c.lineJoin = 'round'; c.lineCap = 'round';
+  if (glow){ c.shadowColor = color; c.shadowBlur = 18; } c.stroke(); c.shadowBlur = 0; return [ex, ey];
+}
+const mmss2 = s => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+function introDraw(t){
+  const c = ictx, W = 1600, H = 900; c.setTransform(2, 0, 0, 2, 0, 0); c.clearRect(0, 0, W, H);
+  const g = c.createLinearGradient(0, 0, W, H); g.addColorStop(0, '#0E1440'); g.addColorStop(1, '#0F1D4C'); c.fillStyle = g; c.fillRect(0, 0, W, H);
+  c.fillStyle = 'rgba(255,255,255,.055)'; for (let x = 20; x < W; x += 26) for (let y = 20; y < H; y += 26) c.fillRect(x, y, 1.5, 1.5);
+  c.textBaseline = 'middle';
+  /* A. 一通電話打進來 (0–2.2) */
+  const A = 1 - seg(t, 2.0, 2.3);
+  if (A > 0){
+    c.globalAlpha = A;
+    IP.forEach(p => { const q = ease(seg(t - p.d, 0, 1.3)); const r = p.r * (1 - q) + 60 * q; const x = W / 2 + Math.cos(p.a) * r, y = H / 2 + Math.sin(p.a) * r * 0.62;
+      c.globalAlpha = A * Math.min(1, q * 3) * (1 - q * 0.9); c.fillStyle = irnd() < 0.08 ? '#03C0AF' : '#C9D3F2'; c.beginPath(); c.arc(x, y, 1.6 * p.s, 0, 7); c.fill(); });
+    c.globalAlpha = A;
+    for (let i = 0; i < 4; i++){ const q = ((t * 0.7 + i / 4) % 1); c.strokeStyle = `rgba(3,192,175,${(1 - q) * 0.5})`; c.lineWidth = 2; c.beginPath(); c.ellipse(W / 2, H / 2, 60 + q * 260, (60 + q * 260) * 0.62, 0, 0, 7); c.stroke(); }
+    c.fillStyle = '#03C0AF'; c.shadowColor = '#03C0AF'; c.shadowBlur = 30; c.beginPath(); c.arc(W / 2, H / 2, 52, 0, 7); c.fill(); c.shadowBlur = 0;
+    c.save(); c.translate(W / 2 - 30, H / 2 - 30); c.scale(2.5, 2.5); c.strokeStyle = '#0E1440'; c.lineWidth = 2; c.lineJoin = 'round'; c.lineCap = 'round'; c.stroke(PHONE); c.restore();
+    c.globalAlpha = A * seg(t, 1.0, 1.5); c.fillStyle = 'rgba(255,255,255,.75)'; c.font = `500 20px ${IF}`; c.textAlign = 'center'; c.fillText('每 天 5,000 通 進 線 ・ 每 一 通 都 在 等', W / 2, H / 2 + 150);
+    c.globalAlpha = 1;
+  }
+  /* B+C. 現況 → 數位孿生推演 (2.2–8.4) */
+  const BC = seg(t, 2.2, 2.5) * (1 - seg(t, 8.3, 8.6));
+  if (BC > 0){
+    c.globalAlpha = BC; const twin = seg(t, 4.6, 4.9), fin = seg(t, 7.0, 7.8);
+    // 左: 標籤
+    c.textAlign = 'left'; c.font = `700 15px ${IF}`;
+    c.fillStyle = `rgba(249,159,107,${1 - twin})`; c.fillText('現 況', 120, 230);
+    c.fillStyle = `rgba(3,192,175,${twin})`; c.fillText('DIGITAL TWIN ・ 推 演 情 境', 120, 230);
+    // 左: 計時器
+    const tv = 365 * ease(seg(t, 2.4, 4.0));
+    c.font = `900 96px ${IF}`;
+    if (fin < 0.3){ c.fillStyle = '#fff'; c.fillText(mmss2(tv), 118, 300); }
+    else { c.fillStyle = 'rgba(255,255,255,.35)'; c.fillText('06:05', 118, 300); const w = c.measureText('06:05').width; c.strokeStyle = '#D9363E'; c.lineWidth = 5; c.beginPath(); c.moveTo(118, 300); c.lineTo(118 + w, 300); c.stroke();
+      c.globalAlpha = BC * seg(t, 7.3, 7.7); c.fillStyle = '#03C0AF'; c.fillText('04:00', 118 + w + 30, 300); c.globalAlpha = BC; }
+    c.font = `500 18px ${IF}`; c.fillStyle = 'rgba(255,255,255,.6)'; c.fillText(fin > 0.3 ? '客戶平均總耗時' : '客戶平均總耗時（現況）', 120, 356);
+    // 左: 排隊人數 → 拉桿
+    if (twin < 1){ c.globalAlpha = BC * (1 - twin); c.font = `700 30px ${IF}`; c.fillStyle = '#F59F6B'; c.fillText(`排隊 ${Math.round(14 * ease(seg(t, 2.6, 4.0)))} 人`, 120, 420); c.font = `500 17px ${IF}`; c.fillStyle = 'rgba(255,255,255,.55)'; c.fillText('語音選單 → 按 0 總機 → 排隊等真人', 120, 462); c.globalAlpha = BC; }
+    if (twin > 0){
+      const k = Math.min(23, Math.floor(seg(t, 4.8, 7.0) * 24)), kf = seg(t, 4.8, 7.0) * 24 - k;
+      const pa = ISC[k].p, pb = ISC[Math.min(23, k + 1)].p, FINP = [52, 15, 0.82];
+      const vals = [0, 1, 2].map(i => fin > 0 ? pa[i] + (FINP[i] - pa[i]) * ease(fin) : pa[i] + (pb[i] - pa[i]) * kf);
+      const S = [['尖峰客服人數', 40, 70, v => `${Math.round(v)} 人`], ['可導引線上自助', 0, 40, v => `${Math.round(v)}%`], ['直接分流門檻', 0.6, 1.0, v => v.toFixed(2)]];
+      S.forEach(([lb, lo, hi, fmt], i) => { const y = 420 + i * 72, q = clamp01((vals[i] - lo) / (hi - lo)); c.globalAlpha = BC * twin;
+        c.font = `500 16px ${IF}`; c.fillStyle = 'rgba(255,255,255,.7)'; c.textAlign = 'left'; c.fillText(lb, 120, y); c.textAlign = 'right'; c.font = `700 18px ${IF}`; c.fillStyle = fin > 0 ? '#03C0AF' : '#fff'; c.fillText(fmt(vals[i]), 600, y);
+        c.strokeStyle = 'rgba(255,255,255,.18)'; c.lineWidth = 6; c.lineCap = 'round'; c.beginPath(); c.moveTo(120, y + 26); c.lineTo(600, y + 26); c.stroke();
+        c.strokeStyle = '#03C0AF'; c.beginPath(); c.moveTo(120, y + 26); c.lineTo(120 + 480 * q, y + 26); c.stroke();
+        c.fillStyle = '#fff'; c.shadowColor = 'rgba(0,0,0,.4)'; c.shadowBlur = 8; c.beginPath(); c.arc(120 + 480 * q, y + 26, 10, 0, 7); c.fill(); c.shadowBlur = 0; });
+      c.globalAlpha = BC * twin; c.textAlign = 'right'; c.font = `900 54px ${IF}`; c.fillStyle = fin > 0 ? '#03C0AF' : '#fff'; c.fillText(String(fin > 0 ? 24 : k + 1).padStart(2, '0'), CH.x + CH.w, 180);
+      c.font = `500 14px ${IF}`; c.fillStyle = 'rgba(255,255,255,.5)'; c.fillText('情 境', CH.x + CH.w - 80, 180);
+    }
+    // 右: 圖表
+    c.textAlign = 'right'; c.font = `500 13px ${IF}`;
+    for (let i = 0; i <= 4; i++){ const y = cy(i / 4); c.strokeStyle = 'rgba(255,255,255,.08)'; c.lineWidth = 1; c.beginPath(); c.moveTo(CH.x, y); c.lineTo(CH.x + CH.w, y); c.stroke(); c.fillStyle = 'rgba(255,255,255,.4)'; c.fillText(`${i * 2} 分`, CH.x - 14, y); }
+    c.setLineDash([6, 8]); c.strokeStyle = 'rgba(3,192,175,.6)'; c.lineWidth = 1.5; c.beginPath(); c.moveTo(CH.x, cy(0.5)); c.lineTo(CH.x + CH.w, cy(0.5)); c.stroke(); c.setLineDash([]);
+    c.textAlign = 'left'; c.fillStyle = 'rgba(3,192,175,.9)'; c.fillText('目標 4 分', CH.x + 8, cy(0.5) - 14);
+    c.font = `500 14px ${IF}`; c.fillStyle = 'rgba(255,255,255,.45)'; c.fillText('客戶平均總耗時 ・ 尖峰時段 →', CH.x, CH.y - 30);
+    if (twin > 0){ ISC.forEach((s, i) => { const q = seg(t, 4.8 + i * (2.2 / 24), 4.8 + (i + 1) * (2.2 / 24)); if (q > 0) line(c, s.pts, q, `rgba(201,211,242,${0.28 * (1 - fin * 0.6)})`, 1.5); }); }
+    const curEnd = line(c, CUR_PTS, ease(seg(t, 2.4, 4.3)), fin > 0 ? 'rgba(249,159,107,.45)' : '#F59F6B', 3.5, fin === 0);
+    if (curEnd && seg(t, 2.4, 4.3) >= 1 && fin === 0){ c.fillStyle = '#F59F6B'; c.beginPath(); c.arc(curEnd[0], curEnd[1], 6, 0, 7); c.fill(); c.font = `700 18px ${IF}`; c.textAlign = 'right'; c.fillText('6 分 5 秒', curEnd[0] - 14, curEnd[1] - 22); }
+    if (fin > 0){ const e = line(c, FIN_PTS, ease(fin), '#03C0AF', 4.5, true);
+      if (fin >= 1 && e){ const q = seg(t, 7.8, 8.1); c.globalAlpha = BC * q; c.fillStyle = '#03C0AF'; c.beginPath(); c.arc(e[0], e[1], 7, 0, 7); c.fill();
+        const txt = '✓ 4 分 0 秒 ・ 最佳門檻 0.82'; c.font = `700 17px ${IF}`; const w = c.measureText(txt).width + 36; c.fillStyle = '#03C0AF'; c.beginPath(); c.roundRect(e[0] - w, e[1] - 62, w, 38, 19); c.fill(); c.fillStyle = '#0E1440'; c.textAlign = 'right'; c.fillText(txt, e[0] - 18, e[1] - 43); } }
+    c.globalAlpha = 1;
+  }
+  /* D. 三個關鍵字 (8.4–10.0) */
+  const D = seg(t, 8.4, 8.55) * (1 - seg(t, 9.95, 10.1));
+  if (D > 0){
+    const KW = [['分流', '一句話接到對的人'], ['提示', '專員一接起就備好'], ['孿生', '上線前先驗證']];
+    iseed = 99; for (let i = 0; i < 40; i++){ const y = irnd() * H, w = 60 + irnd() * 300, x = irnd() * W; c.fillStyle = `rgba(255,255,255,${0.03 + irnd() * 0.05})`; c.fillRect(x + ((t * 60) % 400) - 200, y, w, 1); }
+    const i = Math.min(2, Math.floor(seg(t, 8.4, 10.0) * 3)), q = seg(t, 8.4, 10.0) * 3 - i, inq = seg(q, 0, 0.22), outq = 1 - seg(q, 0.85, 1);
+    c.globalAlpha = D * inq * outq; c.textAlign = 'center';
+    c.save(); c.translate(W / 2, H / 2); c.scale(1.12 - 0.12 * inq, 1.12 - 0.12 * inq); c.fillStyle = '#fff'; c.font = `900 150px ${IF}`; c.shadowColor = 'rgba(3,192,175,.6)'; c.shadowBlur = 40; c.fillText(KW[i][0], 0, -20); c.shadowBlur = 0; c.restore();
+    c.fillStyle = 'rgba(201,211,242,.85)'; c.font = `500 26px ${IF}`; c.fillText(KW[i][1], W / 2, H / 2 + 92);
+    c.globalAlpha = D; c.textAlign = 'left'; c.font = `500 14px ${IF}`; c.fillStyle = 'rgba(255,255,255,.5)'; c.fillText(`0${i + 1}  /  03`, 120, 150);
+    for (let k = 0; k < 3; k++){ c.fillStyle = k <= i ? '#03C0AF' : 'rgba(255,255,255,.2)'; c.fillRect(120 + k * 26, 170, 18, 3); }
+    c.globalAlpha = 1;
+  }
+  /* E. 標題 (10.0+) */
+  const E = seg(t, 10.0, 10.8);
+  if (E > 0){
+    c.globalAlpha = E * 0.35; c.strokeStyle = '#3B4A8C'; c.lineWidth = 1;
+    for (let i = -8; i <= 8; i++){ c.beginPath(); c.moveTo(W / 2 + i * 120, H); c.lineTo(W / 2 + i * 26, 600); c.stroke(); }
+    for (let k = 1; k <= 6; k++){ const y = 600 + Math.pow(k / 6, 1.8) * 300; c.beginPath(); c.moveTo(0, y); c.lineTo(W, y); c.stroke(); }
+    c.globalAlpha = E; c.textAlign = 'center';
+    c.fillStyle = '#03C0AF'; c.font = `700 18px ${IF}`; c.fillText('D E S I G N   T H I N K I N G   專 題 提 案', W / 2, 300);
+    c.fillStyle = '#fff'; c.font = `900 86px ${IF}`; c.shadowColor = 'rgba(3,192,175,.75)'; c.shadowBlur = 36 * E; c.fillText('客服營運數位孿生平台', W / 2, 392); c.shadowBlur = 0;
+    c.globalAlpha = seg(t, 10.5, 11.0); c.fillStyle = 'rgba(201,211,242,.9)'; c.font = `500 28px ${IF}`; c.fillText('Jev 分類 × 數位孿生模擬', W / 2, 470);
+    c.globalAlpha = seg(t, 11.0, 11.5); c.fillStyle = '#fff'; c.font = `700 24px ${IF}`; c.fillText('不用等 ・ 不轉錯 ・ 順勢轉介', W / 2, 536);
+    c.globalAlpha = seg(t, 11.8, 12.3) * (0.55 + 0.45 * Math.sin(t * 3)); c.fillStyle = 'rgba(255,255,255,.7)'; c.font = `500 15px ${IF}`; c.fillText('按 → 開始', W / 2, 780);
+    c.globalAlpha = 1;
+  }
+}
+function introLoop(now){
+  if (!INTRO.on) return;
+  let t = (now - INTRO.t0) / 1000; if (INTRO.skipped) t = Math.max(t, 12.4) ;
+  introDraw(t); INTRO.raf = requestAnimationFrame(introLoop);
+}
+RESET['p-intro'] = () => { introInit(); INTRO.on = true; INTRO.skipped = false; INTRO.t0 = performance.now(); cancelAnimationFrame(INTRO.raf); INTRO.raf = requestAnimationFrame(introLoop); };
 
 /* ---------- 02 客戶旅程 ---------- */
 RESET['p-journey'] = () => {
