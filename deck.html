@@ -1028,7 +1028,7 @@ function chapGo(){
 function next(){
   if (chapBusy) return;
   if (chapGo()) return;
-  if (slides[cur].id === 'p-intro' && INTRO.on && !INTRO.skipped && (performance.now() - INTRO.t0) / 1000 < 11.6){ INTRO.skipped = true; return; }
+  if (slides[cur].id === 'p-intro' && INTRO.on && !INTRO.skipped && (performance.now() - INTRO.t0) / 1000 < 13.0){ INTRO.skipped = true; return; }
   const s = slides[cur];
   if (step < +s.dataset.steps){ step++; applyStep(s, step); history.replaceState(null, '', `#${cur + 1}.${step}`); }
   else if (cur === slides.length - 1) location.href = 'index.html';     // 最後一頁再按 → 直接接 Demo (同資料夾的 index.html)
@@ -1180,21 +1180,42 @@ function introDraw(t){
     else { c.fillStyle = twin > 0 ? 'rgba(255,255,255,.85)' : '#F59F6B'; c.fillText(twin > 0 ? `情境 ${String(k + 1).padStart(2, '0')} ・ 尖峰平均等待 ${WS} 秒` : `尖峰平均等待 ${WS} 秒 ・ 總耗時 6 分 5 秒`, BX + 26, BY + BH - 44); }
     c.globalAlpha = 1;
   }
-  /* D. 三個關鍵字 (8.4–10.0) */
-  const D = seg(t, 8.4, 8.55) * (1 - seg(t, 9.95, 10.1));
+  /* D. 流程圖 (8.4–11.6)：一句話 → 自動分類 → 同質性自動處理(亮) / 異質性專員 → 商機轉介(亮) */
+  const D = seg(t, 8.4, 8.6) * (1 - seg(t, 11.4, 11.7));
   if (D > 0){
-    const KW = [['問題自動分類', '一句話判斷類別與急迫性'], ['同質性自動處理', '常見業務傳智慧小豐連結，當場辦好'], ['商機轉介', '問題解決後，順勢轉介理專']];
-    iseed = 99; for (let i = 0; i < 40; i++){ const y = irnd() * H, w = 60 + irnd() * 300, x = irnd() * W; c.fillStyle = `rgba(255,255,255,${0.03 + irnd() * 0.05})`; c.fillRect(x + ((t * 60) % 400) - 200, y, w, 1); }
-    const i = Math.min(2, Math.floor(seg(t, 8.4, 10.0) * 3)), q = seg(t, 8.4, 10.0) * 3 - i, inq = seg(q, 0, 0.22), outq = 1 - seg(q, 0.85, 1);
-    c.globalAlpha = D * inq * outq; c.textAlign = 'center';
-    c.save(); c.translate(W / 2, H / 2); c.scale(1.12 - 0.12 * inq, 1.12 - 0.12 * inq); c.fillStyle = '#fff'; c.font = `900 108px ${IF}`; c.shadowColor = 'rgba(3,192,175,.6)'; c.shadowBlur = 40; c.fillText(KW[i][0], 0, -20); c.shadowBlur = 0; c.restore();
-    c.fillStyle = 'rgba(201,211,242,.85)'; c.font = `500 26px ${IF}`; c.fillText(KW[i][1], W / 2, H / 2 + 92);
-    c.globalAlpha = D; c.textAlign = 'left'; c.font = `500 14px ${IF}`; c.fillStyle = 'rgba(255,255,255,.5)'; c.fillText(`0${i + 1}  /  03`, 120, 150);
-    for (let k = 0; k < 3; k++){ c.fillStyle = k <= i ? '#03C0AF' : 'rgba(255,255,255,.2)'; c.fillRect(120 + k * 26, 170, 18, 3); }
+    const d = t - 8.4, pulse = 0.5 + 0.5 * Math.sin(t * 5);
+    const N = { A: [230, 450, 210, 84], B: [600, 450, 260, 96], C: [1010, 320, 290, 96], Dn: [1010, 580, 290, 96], E: [1380, 580, 230, 96] };   // [cx, cy, w, h]
+    const bez = (a, b) => [a[0] + a[2] / 2, a[1], (a[0] + a[2] / 2 + b[0] - b[2] / 2) / 2, a[1], (a[0] + a[2] / 2 + b[0] - b[2] / 2) / 2, b[1], b[0] - b[2] / 2, b[1]];
+    const bpt = (p, q) => { const u = 1 - q; return [u*u*u*p[0] + 3*u*u*q*p[2] + 3*u*q*q*p[4] + q*q*q*p[6], u*u*u*p[1] + 3*u*u*q*p[3] + 3*u*q*q*p[5] + q*q*q*p[7]]; };
+    const edge = (a, b, prog, col) => { if (prog <= 0) return; const p = bez(a, b), L = Math.hypot(p[6] - p[0], p[7] - p[1]) * 1.3;
+      c.save(); c.setLineDash([L, L]); c.lineDashOffset = L * (1 - prog); c.strokeStyle = col; c.lineWidth = 2.5; c.beginPath(); c.moveTo(p[0], p[1]); c.bezierCurveTo(p[2], p[3], p[4], p[5], p[6], p[7]); c.stroke(); c.restore(); };
+    const token = (a, b, q, col) => { if (q <= 0 || q >= 1) return; const [x, y] = bpt(bez(a, b), q); c.fillStyle = col; c.shadowColor = col; c.shadowBlur = 18; c.beginPath(); c.arc(x, y, 8, 0, 7); c.fill(); c.shadowBlur = 0; };
+    const node = (n, alpha, title, sub, on, col) => { if (alpha <= 0) return; const [x, y, w, h] = n; c.save(); c.globalAlpha = D * alpha;
+      c.translate(x, y); c.scale(0.92 + 0.08 * alpha, 0.92 + 0.08 * alpha);
+      if (on){ c.shadowColor = col; c.shadowBlur = 28 + 18 * pulse; c.fillStyle = col; } else { c.fillStyle = 'rgba(255,255,255,.06)'; }
+      c.strokeStyle = on ? col : 'rgba(255,255,255,.35)'; c.lineWidth = on ? 0 : 1.5; c.beginPath(); c.roundRect(-w / 2, -h / 2, w, h, 16); c.fill(); if (!on) c.stroke(); c.shadowBlur = 0;
+      c.textAlign = 'center'; c.fillStyle = on ? '#0E1440' : '#fff'; c.font = `900 ${sub ? 24 : 22}px ${IF}`; c.fillText(title, 0, sub ? -12 : 0);
+      if (sub){ c.fillStyle = on ? 'rgba(14,20,64,.75)' : 'rgba(201,211,242,.8)'; c.font = `500 14px ${IF}`; c.fillText(sub, 0, 18); } c.restore(); };
+    const TEAL = '#03C0AF', GOLD = '#F59F00', LINE = 'rgba(201,211,242,.45)';
+    // 連線與光點
+    edge(N.A, N.B, seg(d, 0.35, 0.75), LINE); token(N.A, N.B, seg(d, 0.45, 0.95), '#fff');
+    edge(N.B, N.C, seg(d, 1.25, 1.7), LINE); token(N.B, N.C, seg(d, 1.3, 1.9), TEAL);
+    edge(N.B, N.Dn, seg(d, 1.25, 1.7), LINE); token(N.B, N.Dn, seg(d, 1.3, 1.9), '#fff');
+    edge(N.Dn, N.E, seg(d, 2.1, 2.5), LINE); token(N.Dn, N.E, seg(d, 2.15, 2.65), GOLD);
+    // 節點
+    node(N.A, seg(d, 0, 0.35), '客戶一句話', null, false);
+    node(N.B, seg(d, 0.6, 0.95), '問題自動分類', 'Jev・類別＋急迫性', seg(d, 0.95, 1.3) > 0 && d < 1.3, TEAL);
+    node(N.C, seg(d, 1.6, 1.95), '同質性 → 自動處理', '傳智慧小豐連結，當場辦好', d >= 1.9, TEAL);
+    node(N.Dn, seg(d, 1.6, 1.95), '異質性 → 專員處理', '接聽前帶出資料與建議', false);
+    node(N.E, seg(d, 2.3, 2.65), '商機轉介', '問題解決後，順勢轉介理專', d >= 2.65, GOLD);
+    // 發亮節點旁的小標
+    c.globalAlpha = D * seg(d, 2.0, 2.3); c.textAlign = 'left'; c.font = `700 15px ${IF}`; c.fillStyle = TEAL; c.fillText('⚡ 減少進線、立即解決', N.C[0] + N.C[2] / 2 + 18, N.C[1]);
+    c.globalAlpha = D * seg(d, 2.75, 3.05); c.fillStyle = GOLD; c.textAlign = 'center'; c.fillText('＄ 創造營收', N.E[0], N.E[1] + N.E[3] / 2 + 26);
+    c.globalAlpha = D; c.textAlign = 'left'; c.font = `700 15px ${IF}`; c.fillStyle = 'rgba(255,255,255,.5)'; c.fillText('一 句 話 進 來 之 後', 120, 230);
     c.globalAlpha = 1;
   }
   /* E. 標題 (10.0+) */
-  const E = seg(t, 10.0, 10.8);
+  const E = seg(t, 11.4, 12.2);
   if (E > 0){
     c.globalAlpha = E * 0.35; c.strokeStyle = '#3B4A8C'; c.lineWidth = 1;
     for (let i = -8; i <= 8; i++){ c.beginPath(); c.moveTo(W / 2 + i * 120, H); c.lineTo(W / 2 + i * 26, 600); c.stroke(); }
@@ -1204,10 +1225,10 @@ function introDraw(t){
 }
 function introLoop(now){
   if (!INTRO.on) return;
-  let t = (now - INTRO.t0) / 1000; if (INTRO.skipped) t = Math.max(t, 12.4) ;
+  let t = (now - INTRO.t0) / 1000; if (INTRO.skipped) t = Math.max(t, 13.8) ;
   introDraw(t);
   const cw = document.getElementById('coverWrap');
-  if (t >= 10.0 && !cw.classList.contains('on')){ cw.classList.add('on'); cw.querySelectorAll('.a').forEach(el => { el.style.animation = 'none'; void el.offsetWidth; el.style.animation = ''; }); }
+  if (t >= 11.4 && !cw.classList.contains('on')){ cw.classList.add('on'); cw.querySelectorAll('.a').forEach(el => { el.style.animation = 'none'; void el.offsetWidth; el.style.animation = ''; }); }
   INTRO.raf = requestAnimationFrame(introLoop);
 }
 RESET['p-intro'] = () => { document.getElementById('coverWrap').classList.remove('on'); introInit(); INTRO.on = true; INTRO.skipped = false; INTRO.t0 = performance.now(); cancelAnimationFrame(INTRO.raf); INTRO.raf = requestAnimationFrame(introLoop); };
