@@ -149,6 +149,7 @@ button{font:inherit;cursor:pointer}
 .sig{background:var(--card);border-radius:16px;padding:20px 22px;box-shadow:0 1px 2px rgba(30,45,70,.05),0 8px 24px rgba(30,45,70,.06);border-top:5px solid var(--line);display:flex;flex-direction:column;gap:6px}
 .sig .nm{font-size:15px;color:var(--muted);font-weight:700}
 .sig .val{font-size:42px;font-weight:800;line-height:1.15;color:var(--dim)}
+.sig .val .valp{font-size:15px;font-weight:600;color:var(--muted);margin-left:10px;vertical-align:middle}
 .sig .st{font-size:15.5px;color:var(--muted)}
 .sig.on{border-top-color:var(--sc)} .sig.on .val{color:var(--sc)} .sig.on .st{color:var(--text);font-weight:700}
 .meter{height:8px;border-radius:4px;background:var(--soft);overflow:hidden;margin-top:6px}
@@ -199,7 +200,14 @@ button{font:inherit;cursor:pointer}
 #p13 .ladder{gap:6px}
 #p13 .lrow{padding:8px 18px;grid-template-columns:140px 1fr 100px}
 .agst{margin-left:6px;font-size:12px;color:var(--muted)}
-.p22{grid-template-columns:420px 1fr;align-items:start}
+.p22{grid-template-columns:420px 1fr;align-items:stretch}
+.p22 .card.opp22{flex:1;overflow:hidden}
+.p22>div:first-child{min-height:0}
+.opp22 .lite{margin-top:12px;font-size:14px;color:var(--muted)}
+.opp22 .ok2{font-size:21px;font-weight:800;color:#A76A00}
+.opp22 .pitch2{margin-top:8px;padding:12px 14px;border-radius:12px;background:#fff;border:1px solid var(--line);font-size:15px;line-height:1.6;color:var(--ink-2)}
+.opp22 ul{margin:14px 0 0;padding-left:20px;font-size:15px;line-height:1.9;color:var(--ink-2)}
+.opp22.on{background:var(--goldS)}
 .script{font-size:26px;font-weight:700;line-height:1.6;padding:22px 26px;border-radius:14px;background:#e8f0fa;color:#1d3f6b}
 .steps{margin:20px 0 0;padding-left:26px;font-size:18px}
 .steps li{margin:10px 0}
@@ -591,7 +599,10 @@ body{font-family:var(--font)}
 <section class="page" id="p22">
   <div class="ph"><div class="phk"><span class="no">2-2</span>02｜電話接通</div><h2>專員不用想，系統給出<em>步驟和開場話術</em></h2><div class="vtags"><span class="vtag keep">🛡 留住客戶</span><span class="vtag earn">＄ 創造營收</span></div></div>
   <div class="pb grid2 p22">
-    <div class="card" style="--d:.05s"><div class="ch">這通電話</div><div id="ctx22"></div></div>
+    <div style="display:flex;flex-direction:column;gap:24px;min-height:0">
+      <div class="card" style="--d:.05s"><div class="ch">這通電話</div><div id="ctx22"></div></div>
+      <div class="card opp22" id="opp22card" style="--d:.1s"><div class="ch sys">商機</div><div id="opp22"></div></div>
+    </div>
     <div class="card" style="--d:.12s">
       <div class="ch sys">建議開場話術<span class="r" id="scriptSt"></span></div>
       <div class="script" id="script22"></div>
@@ -645,7 +656,7 @@ body{font-family:var(--font)}
     <div class="legend"><span><i style="background:#6b7787"></i>處理中</span><span><i style="background:var(--orange)"></i>反問確認</span><span><i style="background:var(--red)"></i>轉錯窗口</span><span><i style="background:var(--green)"></i>解決</span><span><i style="background:#03C0AF"></i>線上自助</span>
     <button type="button" class="btn ghost" data-ovl="ovlCurve" style="padding:6px 14px;font-size:14px">門檻分析</button></div></div>
   <div class="lanes">
-    <div class="card lane" style="--d:.05s"><div class="lh"><b style="color:var(--red)">現況：語音選單／總機</b><span class="muted small" id="c0"></span></div><canvas id="cv0"></canvas>
+    <div class="card lane" style="--d:.05s"><div class="lh"><b style="color:var(--ink-2)">現況：語音選單／總機</b><span class="muted small" id="c0"></span></div><canvas id="cv0"></canvas>
       <div class="cnt" id="cnt0"></div></div>
     <div class="card lane" style="--d:.12s"><div class="lh"><b style="color:var(--accent)">導入 Jev：一句話直接分流</b><span class="muted small" id="c1"></span></div><canvas id="cv1"></canvas>
       <div class="cnt" id="cnt1"></div></div>
@@ -717,7 +728,7 @@ async function aiHealth(){
 function renderAIBadge(){ const b=document.getElementById('aiBadge'); if(!b) return;
   b.classList.toggle('on',AIOK); b.style.cursor=AIOK?'':'pointer';
   b.title=AIOK?`API：${AIMODEL}`:'點一下輸入密語，改用 API 判斷';
-  b.innerHTML=`<i></i>${AIOK?'API 已連線':'規則模式'}`; }
+  b.innerHTML=AIOK?`<i></i>API 已連線`:`<i></i>`; b.style.padding=AIOK?'':'0 10px'; b.style.opacity=AIOK?'':'.45'; }
 document.getElementById('aiBadge').addEventListener('click',async()=>{
   if(AIOK) return;
   const pw=prompt('輸入密語以啟用 API 判斷'); if(!pw) return;
@@ -927,7 +938,7 @@ function classify(text){
 /* ---------- 行內 CRM（虛構測試資料） ---------- */
 const CRM={
   'A123456789':{name:'客戶甲',tier:'私人銀行',aum:'3,000 萬以上',contrib:'高',contribNote:'年度貢獻度前 1%',products:['房貸','信託','外幣定存'],rm:'陳○○',calls7d:0,lastCall:'—',months:180},
-  'F123456784':{name:'客戶乙',tier:'貴賓理財',aum:'300 萬–3,000 萬',contrib:'高',contribNote:'年度貢獻度前 10%',products:['基金','信用卡','外幣存款'],rm:'林○○',calls7d:1,lastCall:'09/27 基金贖回進度',months:96},
+  'F123456784':{name:'客戶乙',tier:'貴賓理財',aum:'300 萬–3,000 萬',contrib:'高',contribNote:'年度貢獻度前 10%',products:['定存','基金','信用卡'],rm:'林○○',calls7d:1,lastCall:'09/27 基金贖回進度',months:96},
   'H200000000':{name:'客戶丙',tier:'貴賓理財',aum:'300 萬–3,000 萬',contrib:'中',contribNote:'年度貢獻度中等',products:['定存','信用卡'],rm:'黃○○',calls7d:2,lastCall:'09/29 轉帳未入帳（未解決）',months:72},
   'B200000004':{name:'客戶丁',tier:'一般',aum:'300 萬以下',contrib:'低',contribNote:'年度貢獻度一般',products:['活存'],rm:null,calls7d:0,lastCall:'—',months:144},
   'E100000005':{name:'客戶戊',tier:'一般',aum:'300 萬以下',contrib:'低',contribNote:'新戶，尚在累積',products:['數位帳戶','信用卡'],rm:null,calls7d:0,lastCall:'—',months:2},
@@ -982,22 +993,26 @@ $('cidChips13').onclick=e=>{const b=e.target.closest('.chip'); if(b) pickCust(b.
 $('cidGo').onclick=()=>pickCust($('cid').value);
 $('cid').addEventListener('keydown',e=>{if(e.key==='Enter'){pickCust(e.target.value);e.target.blur();}});
 
+// 每個範例綁一位預設客戶 (id)，點了就一起帶入，2-1 才不會是空的；之後仍可用身分證 chip 改人
 const MAIN_SAMPLES=[
-  {q:'我想買房子要跟你們借錢',t:'實測',c:'var(--orange)'},
-  {q:'錢放銀行利息太少 有沒有穩一點的可以放',t:'模糊',c:'var(--muted)'},
-  {q:'這期卡費想分6期',t:'可自助',c:'var(--goldT)'},
-  {q:'我想開戶順便辦一張信用卡',t:'兩個需求',c:'var(--accent)'},
-  {q:'我的卡好像被盜刷了怎麼辦',t:'急件',c:'var(--red)'},
-  {q:'轉帳到現在還沒到 上次說會幫我查',t:'重複來電',c:'var(--purple)'},
-  {q:'我按了帳單 但其實是有一筆刷卡不認得',t:'需求延伸',c:'var(--p3)'},
-  {q:'下個月要去日本 想換日幣',t:'商機',c:'var(--green)'},
+  {q:'我想買房子要跟你們借錢',t:'實測',c:'var(--orange)',id:'B200000004'},
+  {q:'錢放銀行利息太少 有沒有穩一點的可以放',t:'模糊',c:'var(--muted)',id:'B200000004'},
+  {q:'這期卡費想分6期',t:'可自助',c:'var(--goldT)',id:'E100000005'},
+  {q:'我想開戶順便辦一張信用卡',t:'兩個需求',c:'var(--accent)',id:'A100000001'},
+  {q:'我的卡好像被盜刷了怎麼辦',t:'急件',c:'var(--red)',id:'A123456789'},
+  {q:'轉帳到現在還沒到 上次說會幫我查',t:'重複來電',c:'var(--purple)',id:'H200000000'},
+  {q:'我按了帳單 但其實是有一筆刷卡不認得',t:'需求延伸',c:'var(--p3)',id:'B200000004'},
+  {q:'定存到期了 想續存',t:'商機',c:'var(--green)',id:'F123456784'},
+  {q:'下個月要去日本 想換日幣',t:'商機',c:'var(--green)',id:'B200000004'},
 ];
 const MORE_SAMPLES=['下個月要買家電 想臨時調高額度','我這期信用卡帳單要繳多少','分期的事我上週打過兩次了還沒好','新卡要怎麼開卡','網銀密碼忘記了','剛剛被轉錯了 我要問的是房貸寬限期','我想看這個月的刷卡明細','上個月帳戶被扣了一筆錢不知道是什麼','新青安現在還能申請嗎','我想借30萬周轉','卡費可以分期嗎','想開數位帳戶要帶什麼','美金定存利率多少','我要找真人','我已經打三次了都沒人處理信用卡的問題 到底要怎樣','你們房貸利率也太扯了吧 我要找人講','保險理賠要準備什麼文件','定存下個月到期 不知道要怎麼放','保險理賠拖了兩個月還沒下來 到底要等多久'];
-$('qChips').innerHTML=MAIN_SAMPLES.map((s,i)=>`<button type="button" class="chip" data-q="${s.q}"><i style="color:${s.c}">${s.t}</i>${s.q}</button>`).join('');
+$('qChips').innerHTML=MAIN_SAMPLES.map((s,i)=>`<button type="button" class="chip" data-q="${s.q}" data-id="${s.id||''}"><i style="color:${s.c}">${s.t}</i>${s.q}</button>`).join('');
 $('qMore').innerHTML=MORE_SAMPLES.map(q=>`<button type="button" class="chip" data-q="${q}">${q}</button>`).join('');
 // 改走範例或手動輸入時，取消評審來電的「進行中」標記
 function clearJ(){ if(ACTIVE_J<0) return; ACTIVE_J=-1; NAME_OVERRIDE=''; renderCustMini(); renderJudgeLog(); }
-const onChip=e=>{const b=e.target.closest('.chip'); if(!b) return; clearJ(); $('q').value=b.dataset.q; runJev(b.dataset.q);};
+const onChip=e=>{const b=e.target.closest('.chip'); if(!b) return; clearJ();
+  if(b.dataset.id!==undefined){ NAME_OVERRIDE=''; $('cid').value=b.dataset.id; lookupCust(b.dataset.id); }   // 範例綁的預設客戶
+  $('q').value=b.dataset.q; runJev(b.dataset.q);};
 $('qChips').onclick=onChip; $('qMore').onclick=onChip;
 $('moreBtn').onclick=()=>{const m=$('qMore'); const open=m.style.display==='none'; m.style.display=open?'flex':'none'; $('moreBtn').textContent=open?'收起範例 ▴':'更多範例 ▾';};
 $('go').onclick=()=>{clearJ(); runJev($('q').value);};
@@ -1095,7 +1110,7 @@ function renderP11(){
     +`<div class="bar"><span class="lab dim">其他</span><div class="tr"><div class="fl" style="width:0" data-w="${(rest*100).toFixed(1)}"></div></div><span class="pv dim">${(rest*100).toFixed(0)}%</span></div>`;
   let tt,why,col,ic,extra='';
   const rt=routeOf(r,L.cur);
-  const hot=(x,urg)=>`<div class="hot"><div><div class="label">${x.line}${urg?'（急件優先）':''}</div><div class="num">${x.tel}</div></div><div><div class="label">請按（示意）</div><div class="num" style="font-size:30px">${x.key||'—'}</div></div><div><div class="label">接聽窗口</div><div class="num">${x.desk}</div></div></div>`;
+  const hot=(x,urg)=>`<div class="hot"><div><div class="label">${urg?'急件優先・':''}直接轉接（不用聽語音選單）</div><div class="num" style="font-size:26px">${x.desk}</div></div><div><div class="label">文字管道才需撥</div><div class="num" style="font-size:18px;color:var(--muted)">${x.line} ${x.tel}</div></div><div><div class="label">請按（示意）</div><div class="num" style="font-size:18px;color:var(--muted)">${x.key||'0'}</div></div></div>`;
   if(rt.kind==='urgent'){tt=`急件：${rt.label} → 優先轉真人`;why='盜刷、遺失、詐騙類不走一般流程，也不推線上自助；優先接給真人先止付，並帶上判斷結果。';col=css('--red');ic='!';extra=hot(rt,true);}
   else if(rt.kind==='multi'){tt=`偵測到兩個需求：${rt.a.label}＋${rt.b.label}`;why=`先轉${rt.a.line}（${keyTxt(rt.a)}），處理完再轉${rt.b.line}（${keyTxt(rt.b)}），不會只回答其中一個。`;col=css('--accent');ic='2';extra=hot(rt.a);}
   else if(rt.kind==='repeat'){tt=`「${rt.s.id}」但已重複來電 → 直接轉真人`;why=`${L.c&&L.c.calls7d?`7 天內已來電 ${L.c.calls7d} 次（${L.c.lastCall}）`:'客戶表示之前打過、還沒解決'}，這次不再丟連結，直接接給專員一起處理。`;col=css('--accent');ic='☎';extra=hot(rt);}
@@ -1108,8 +1123,8 @@ function renderP11(){
     else if(L.selfChoice==='human') extra=ask+`<div class="why" style="margin-top:12px">客戶選擇真人 → 照問題類別轉到對的專員（已記錄「已提供自助，客戶選擇真人」，專員不會重複推薦）</div>`+hot(rt);
     else extra=ask+`<div class="clar" id="selfAsk"><button type="button" data-v="link">好，傳連結給我</button><button type="button" data-v="human">不用，我要找真人</button></div>`;
   }
-  else if(rt.kind==='known'){tt=`判斷為「${rt.label}」→ ${rt.line} ${keyTxt(rt)}`;why=`信心 ${(L.top.p*100).toFixed(0)}% ≥ 門檻 ${(ta*100).toFixed(0)}%，客戶不用聽語音選單，直接接到${rt.desk}。`;col=css('--green');ic='✓';extra=hot(rt);}
-  else{tt='分不出類別 → 請按 0，由總機服務';why=L.top.c==='其他/真人'?'不屬於任何服務類別，或客戶主動要找真人，交給總機專員了解需求後再轉接。':`最高的「${L.nonOther[0].c}」信心只有 ${(L.nonOther[0].p*100).toFixed(0)}%，未達門檻 ${(ta*100).toFixed(0)}%，交給總機專員判斷比較保險。`;col=css('--p4');ic='0';extra=hot(rt);}
+  else if(rt.kind==='known'){tt=`判斷為「${rt.label}」→ 直接轉接${rt.desk}`;why=`信心 ${(L.top.p*100).toFixed(0)}% ≥ 門檻 ${(ta*100).toFixed(0)}%，客戶不用聽語音選單，直接接到${rt.desk}。`;col=css('--green');ic='✓';extra=hot(rt);}
+  else{tt='分不出類別 → 轉總機專員了解需求';why=L.top.c==='其他/真人'?'不屬於任何服務類別，或客戶主動要找真人，交給總機專員了解需求後再轉接。':`最高的「${L.nonOther[0].c}」信心只有 ${(L.nonOther[0].p*100).toFixed(0)}%，未達門檻 ${(ta*100).toFixed(0)}%，交給總機專員判斷比較保險。`;col=css('--p4');ic='0';extra=hot(rt);}
   const mm=(L.text||'').match(MENU_RE);
   if(mm&&!rt.label.includes(mm[1])) extra=`<div class="menunote">客戶在語音選單選了「${mm[1]}」，真正的需求是「${rt.label}」<small>選單路徑不等於最終需求；一句話直接接到對的窗口，不用轉第二次</small></div>`+extra;
   const aist=L.aiState==='pending'?`<div class="aist pend">⏳ API複核中…（先顯示規則初判）</div>`:L.aiState==='done'?`<div class="aist ok">✓ API複核完成（${esc(L.aiModel||'')}，${(L.aiTook/1000).toFixed(1)} 秒）：${esc(r.ai?r.ai.reason:'')}<span class="q">「${hlText(L.text,r.ai?r.ai.evidence:[])}」</span></div>`:L.aiState==='fail'?'<div class="aist off">API未回應，維持規則判斷</div>':'';
@@ -1137,8 +1152,8 @@ function renderP12(){
   $('out12').innerHTML=`<div class="quote">「${esc(L.text)}」</div>
     <div class="sig4">
       ${sig('可否線上自助（標準化問題）',r.self?r.self.id:'否',r.self?0.9:0.06,!!r.self,css('--goldT'),rk12.kind==='self'?'智慧小豐可辦：先問客戶要不要連結':rk12.kind==='repeat'?'重複來電未解決：直接轉真人':'需要專員判斷：分流並提供輔助')}
-      ${sig('是否急件',(r.pu*100).toFixed(0)+'%',r.pu,r.urgent,css('--red'),r.urgent?'急件：立即轉真人專線':'非急件')}
-      ${sig('是否包含多個需求',(r.pm*100).toFixed(0)+'%',r.pm,r.multi,css('--accent'),r.multi?`${r.strong[0].c}、${r.strong[1].c}，拆單處理`:'單一需求')}
+      ${sig('是否急件',`${r.urgent?'是':'否'}<small class="valp">機率 ${(r.pu*100).toFixed(0)}%</small>`,r.pu,r.urgent,css('--red'),r.urgent?'急件：立即轉真人專線':'非急件')}
+      ${sig('是否包含多個需求',`${r.multi?'是':'否'}<small class="valp">機率 ${(r.pm*100).toFixed(0)}%</small>`,r.pm,r.multi,css('--accent'),r.multi?`${r.strong[0].c}、${r.strong[1].c}，拆單處理`:'單一需求')}
       ${sig('潛在商機',r.hasOpp?r.opp.o.id:'無',r.hasOpp?r.opp.p:0,r.hasOpp,css('--green'),oppTxt)}
     </div>
     <div class="ref">${ref}<div class="rules"><b>商機轉介的底線（公平待客）</b><ul><li>先解決客戶的問題，最後才推薦</li><li>客戶同意才建立轉介單</li><li>急件：只記錄、不推銷</li><li>婉拒後 30 天內不重複推薦</li></ul></div></div>`;
@@ -1210,8 +1225,15 @@ function renderDesk(){
     :`您好，我是專員○○，了解您想詢問${L.best}的問題，我來為您說明。`;
   if(L.script){ $('script22').textContent=`「${L.script.greeting}」`; $('steps22').innerHTML=L.script.steps.map(s=>`<li>${esc(s)}</li>`).join(''); $('scriptSt').textContent=`API生成（${(L.script.took/1000).toFixed(1)} 秒）`; }
   else { $('script22').textContent=`「${greet}」`; $('steps22').innerHTML=steps.map(s=>`<li>${s}</li>`).join(''); $('scriptSt').textContent=L.scriptPending?'AI 生成中…（先顯示範本）':(AIOK?'':'範本話術'); }
-  $('ctx22').innerHTML=`<div class="kv"><span class="k">客戶</span><span class="v">${esc(c||NAME_OVERRIDE?L.dname:'未驗證客戶')}</span><span class="k">服務等級</span><span class="v" style="color:${pc}">${PNAME[L.lvl]}</span><span class="k">問題類別</span><span class="v">${catLabel(L)}</span><span class="k">轉接</span><span class="v">${rk.line} ${keyTxt(rk)}</span><span class="k">處理方式</span><span class="v">${howTxt}</span></div>${c&&c.calls7d>=2?`<div style="margin-top:20px" class="tag red">7 天內第 ${c.calls7d+1} 次來電</div>`:''}`;
+  $('ctx22').innerHTML=`<div class="kv"><span class="k">客戶</span><span class="v">${esc(c||NAME_OVERRIDE?L.dname:'未驗證客戶')}</span><span class="k">服務等級</span><span class="v" style="color:${pc}">${PNAME[L.lvl]}</span><span class="k">問題類別</span><span class="v">${catLabel(L)}</span><span class="k">轉接</span><span class="v">${rk.desk}</span><span class="k">處理方式</span><span class="v">${howTxt}</span></div>${c&&c.calls7d>=2?`<div style="margin-top:20px" class="tag red">7 天內第 ${c.calls7d+1} 次來電</div>`:''}`;
   $('dkRef').style.display=r.hasOpp&&!r.urgent?'':'none';
+  // 商機區塊 (對應簡報第 8 頁的第三塊)
+  const ownerTxt=r.hasOpp?((c&&c.rm&&r.opp.o.owner==='理財專員')?`專屬理專 ${c.rm}`:r.opp.o.owner):'';
+  const lines='<ul><li>問題解決後才提</li><li>客戶同意才建單</li><li>急件只記錄、不推銷</li></ul>';
+  $('opp22card').classList.toggle('on',!!(r.hasOpp&&!r.urgent));
+  $('opp22').innerHTML=r.hasOpp&&!r.urgent?`<div class="ok2">${r.opp.o.id}</div><div class="kv" style="margin-top:8px;grid-template-columns:60px 1fr"><span class="k">建議</span><span class="v">→ ${r.opp.o.action}</span><span class="k">轉給</span><span class="v">${ownerTxt}</span></div><div class="label" style="margin-top:12px">轉介話術（問題解決後才提）</div><div class="pitch2">「${r.opp.o.pitch}」</div>`
+    :r.hasOpp?`<div class="ok2" style="color:var(--muted)">⏸ ${r.opp.o.id}：急件，本次不推薦</div><div class="muted" style="margin-top:8px;font-size:15px">只記錄到 CRM，問題解決後由${ownerTxt}擇期跟進。</div>${lines}`
+    :`<div class="muted" style="font-size:16px">這通電話沒有偵測到商機，專心把問題解決。</div>${lines}`;
   $('dkMsg').textContent=L.fixMsg||'';
   $('addCat').onchange=e=>{ const x=e.target.value; if(!x) return; L.extraNeeds=L.extraNeeds||[];
     if(!L.extraNeeds.includes(x)&&x!==catOf(L)) L.extraNeeds.push(x); L.script=null;
@@ -1232,17 +1254,18 @@ const rnd=()=>QPOOL_Q[Math.floor(Math.random()*QPOOL_Q.length)];
 function rndHuman(){let c;do{c=makeCaller(rnd(),pickId());}while(isAuto(c));return c;}
 function qReset(){const n=+$('qAgents').value;QS={t:0,q:[],agents:Array.from({length:n},(_,i)=>({id:i+1,busy:null,until:0})),seq:0,paused:QS.paused,served:0,waitSum:0,auto:0,mineAuto:false};
   for(let i=0;i<14;i++){const c=rndHuman();c.arr=-Math.random()*240;QS.q.push(c);}
-  QS.agents.forEach(a=>{a.busy=rndHuman();a.until=60+Math.random()*240;}); renderQueue();}
+  [['美金定存利率多少',-120],['房貸利率可以調降嗎',-40]].forEach(([q,t])=>{const c=makeCaller(q,'F123456784');c.arr=t;QS.q.push(c);});   // 先放兩位貴賓優先，P2 欄位不留白
+  QS.agents.forEach(a=>{a.busy=rndHuman();a.until=60+Math.random()*240;a.n=3+Math.floor(Math.random()*6);a.ht=a.n*(150+Math.random()*120);}); renderQueue();}
 const mmss=s=>{s=Math.max(0,Math.round(s));return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');};
 function qTick(dt){QS.t+=dt; if(QS.q.length<40&&Math.random()<dt/32){const c=makeCaller(rnd(),pickId()); if(isAuto(c)) QS.auto++; else QS.q.push(c);}
   QS.agents.forEach(a=>{if(a.busy&&QS.t>=a.until) a.busy=null; if(!a.busy&&QS.q.length){QS.q.sort((x,y)=>x.lvl-y.lvl||x.arr-y.arr);const c=QS.q.shift();QS.served++;QS.waitSum+=QS.t-c.arr;a.busy=c;const ht=(c.lvl===1?150:180)+Math.random()*200;a.until=QS.t+ht;a.n=(a.n||0)+1;a.ht=(a.ht||0)+ht;}});}
 function renderQueue(){
   const q=[...QS.q].sort((x,y)=>x.lvl-y.lvl||x.arr-y.arr); const waits=q.map(c=>QS.t-c.arr);
-  $('qStat').innerHTML=`<div>等待中<b>${q.length} 人</b></div><div>平均等待<b>${q.length?mmss(waits.reduce((a,b)=>a+b,0)/q.length):'00:00'}</b></div><div>急件<b style="color:var(--red)">${q.filter(c=>c.r.urgent).length} 件</b></div><div>線上自助<b style="color:var(--goldT)">${QS.auto} 件</b></div>`;
+  $('qStat').innerHTML=`<div>等待中<b>${q.length} 人</b></div><div>平均等待<b>${q.length?mmss(waits.reduce((a,b)=>a+b,0)/q.length):'00:00'}</b></div><div>急件<b style="color:${q.some(c=>c.r.urgent)?'var(--red)':'inherit'}">${q.filter(c=>c.r.urgent).length} 件</b></div><div>線上自助<b style="color:var(--goldT)">${QS.auto} 件</b></div>`;
   $('qCols').innerHTML=[1,2,3,4].map(l=>{const L0=q.filter(c=>c.lvl===l);let L=L0;const mi=L0.findIndex(c=>c.mine);if(mi>=7){L=[...L0.slice(0,6),L0[mi],...L0.slice(6).filter(c=>!c.mine)];}
     return `<div class="qcol" style="--pc:var(${PCOL[l]})"><div class="qh"><b>${PNAME[l]}</b><span>${L0.length} 人</span></div><div class="ql">${L.slice(0,7).map(c=>{const rec=c.cur&&c.cur.rec;
       return `<div class="qi${c.mine?' mine':''}"${c.judge?' style="background:#f6eef4"':''}><span>${c.judge?`<b style="color:var(--purple)">📱 ${esc(c.judge)}</b> · `:''}${c.mine?'<b style="color:var(--accent)">剛才的客戶</b> · ':''}${rec?rec.tier:(c.cur?'非本行':'未驗證')}</span><span class="w">${mmss(QS.t-c.arr)}</span><span class="t">${c.cat}${c.r.urgent?' <span class="tag red">急件</span>':''}${c.r.misrouted?' <span class="tag red">已轉錯</span>':''}</span></div>`;}).join('')}
-      ${L.length>7?`<div class="small dim" style="padding:2px 4px">還有 ${L.length-7} 人…</div>`:''}</div></div>`;}).join('');
+      ${L.length>7?`<div class="small dim" style="padding:2px 4px">還有 ${L.length-7} 人…</div>`:''}${!L.length?`<div class="small dim" style="padding:14px 4px;line-height:1.7">${l===1?'目前沒有急件':l===2?'目前沒有人在等<br>貴賓一有專員空出就先接':'目前沒有人在等'}</div>`:''}</div></div>`;}).join('');
   $('qAgentsRow').innerHTML='<span>專員狀態</span>'+QS.agents.map(a=>`<span class="ag" style="--pc:${a.busy?`var(${PCOL[a.busy.lvl]})`:'var(--green)'}"><i></i>專員 ${a.id}${a.busy?(a.busy.mine?'（剛才的客戶）':''):'（空閒）'}<small class="agst">${a.n?`今日 ${a.n} 件・平均 ${mmss(a.ht/a.n)}`:'今日 0 件'}</small></span>`).join('');
   if(SC===5) $('capTxt').textContent=capText(5);
 }
@@ -1394,14 +1417,23 @@ const PAGES=['p11','p12','p13','p21','p22','p3','p41','p42'];
 const NOS=['1-1','1-2','1-3','2-1','2-2','3','4-1','4-2'];
 const STEPS=[{n:1,b:'客戶開口',s:'系統在背後判斷',pages:[0,1,2]},{n:2,b:'電話接通',s:'專員看見什麼',pages:[3,4]},{n:3,b:'主管監控',s:'全中心即時排隊',pages:[5]},{n:4,b:'數位孿生模擬',s:'全局推演',pages:[6,7]}];
 let SC=0;
+// 摘要列用的短版分流結果 (不講電話號碼；號碼只給文字管道的評審手機)
+function shortRoute(rt){
+  if(rt.kind==='urgent') return `急件，立即轉真人專線（${rt.desk}）`;
+  if(rt.kind==='repeat') return `重複來電未解決，直接轉${rt.desk}`;
+  if(rt.kind==='multi') return `兩個需求：先轉${rt.a.desk}，再轉${rt.b.desk}`;
+  if(rt.kind==='self') return `「${rt.s.id}」傳智慧小豐連結自助；要真人照樣轉${rt.desk}`;
+  if(rt.kind==='known') return `直接轉接${rt.desk}，不用聽語音選單`;
+  return '分不出類別，轉總機專員了解需求';
+}
 function capText(i){
   const L=LAST, who=L?L.dname:'客戶';
   switch(i){
-    case 0: return L?`${who}說：「${L.text}」→ ${routeOf(L.r,L.cur).title}。`:'客戶遇到問題，只要說一句話；在現有信用卡分類的基礎上擴及存款、貸款、理財等各類，告訴他該撥哪支專線、按哪個鍵，分不出來就轉總機。';
+    case 0: return L?`${who}說：「${L.text}」→ ${shortRoute(routeOf(L.r,L.cur))}。`:'客戶遇到問題，只要說一句話；在現有信用卡分類的基礎上擴及存款、貸款、理財等各類，直接轉到對的專員，不用聽語音選單；分不出來才轉總機。';
     case 1: return '同一次判斷，系統還讀出急件、多個需求、可否線上自助和潛在商機；急件時只記錄商機、不推銷。';
     case 2: return L?(routeOf(L.r,L.cur).kind==='self'?`${who}的需求是標準化問題，傳智慧小豐連結線上辦好、不進排隊；複雜問題才排給專員。`:`${who}的問題需要專員處理，依急件、客戶等級、重複來電等客觀條件排入 ${PNAME[L.lvl]}。`):'標準化問題傳智慧小豐連結自助辦好；複雜問題分流給專員，依客觀條件決定服務順序。';
     case 3: return `電話接通，專員畫面已經備好${who}的資料和這通電話的判斷，客戶不用重講一次。`;
-    case 4: return '系統依急件、重複來電、客戶是否已婉拒自助、多個需求和商機，給出處理步驟與開場話術；客戶通話中追加需求，專員可直接加入，新進專員也能一次到位。';
+    case 4: return '系統依急件、重複來電、多個需求和商機，給出處理步驟與開場話術；通話中追加需求也能直接加入。';
     case 5: {const q=[...QS.q].sort((x,y)=>x.lvl-y.lvl||x.arr-y.arr);const pos=q.findIndex(c=>c.mine);const ag=QS.agents.find(a=>a.busy&&a.busy.mine);
       if(pos<0&&!ag&&QS.mineAuto) return `${who}的「${routeOf(L.r,L.cur).s.id}」已傳智慧小豐連結線上辦理，沒有進入排隊；專員留給真正需要人的客戶。`;
       return pos>=0?`主管看見全中心：${who}目前排在第 ${pos+1} 位（${PNAME[q[pos].lvl]}）；專員空下來，一律先接等級最高的客戶。`:ag?`${who}已由專員 ${ag.id} 接起。`:'主管看見全中心：誰最急、誰等最久、哪位專員空著；按「把剛才的客戶加入排隊」看他排在哪裡。';}
