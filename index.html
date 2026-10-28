@@ -372,7 +372,8 @@ button{font:inherit;cursor:pointer}
 #app.bg-glow{background-image:radial-gradient(760px 520px at 92% -8%,rgba(30,39,97,.11),transparent 70%),radial-gradient(640px 480px at -4% 108%,rgba(245,159,0,.10),transparent 70%)}
 #app.bg-glowdots{background-image:radial-gradient(rgba(30,39,97,.09) 1px,transparent 1.3px);background-size:24px 24px}
 #app.bg-diag{background-image:repeating-linear-gradient(135deg,rgba(30,39,97,.04) 0 1px,transparent 1px 16px)}
-.bgbtn{height:36px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink-2);font-size:13.5px;font-weight:700;white-space:nowrap}
+.bgbtn{height:36px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink-2);font-size:13.5px;font-weight:700;white-space:nowrap;display:inline-flex;align-items:center;text-decoration:none;cursor:pointer}
+.bgbtn:hover{background:#EEF0F7;color:var(--navy)}
 .bgbtn:hover{border-color:var(--navy);color:var(--navy)}
 .tools{width:420px}.brand{width:240px}
 .jbtn,.aibadge{white-space:nowrap}
@@ -513,7 +514,7 @@ body{font-family:var(--font)}
 <header class="topbar">
   <div class="brand"><span class="motto">留住客戶 ・ 創造營收</span>客服營運數位孿生平台</div>
   <nav class="nav" id="nav"></nav>
-  <div class="tools"><span class="aibadge" id="aiBadge" title="本機 Demo AI 服務 → API"><i></i>規則模式</span><button type="button" class="jbtn" id="jBtn" data-ovl="ovlJudge"><i id="jDot"></i>評審參與<span id="jCount"></span></button><button type="button" class="bgbtn" id="bgBtn" title="切換背景樣式">背景</button><button type="button" class="icon" id="fsBtn" title="全螢幕（F）">⛶</button></div>
+  <div class="tools"><span class="aibadge" id="aiBadge" title="本機 Demo AI 服務 → API"><i></i>規則模式</span><button type="button" class="jbtn" id="jBtn" data-ovl="ovlJudge"><i id="jDot"></i>評審參與<span id="jCount"></span></button><a class="bgbtn" id="backDeck" href="deck.html" title="回到簡報（deck.html）">← 回到簡報</a><button type="button" class="icon" id="fsBtn" title="全螢幕（F）">⛶</button></div>
 </header>
 
 <main class="stage">
@@ -1660,7 +1661,7 @@ $('aiSumBtn').onclick=runSummary;
     main(x0+ (rnd()-.5)*60, y0+(rnd()-.5)*60, .42+(rnd()-.5)*.16, 115, .7+rnd()*.5);
   }
 })();
-// 背景樣式：點一下換下一種（記在這台電腦的瀏覽器）
+// 背景樣式：固定用「柔光＋點陣」（切換鈕已改成「回到簡報」）
 (function(){
   const ns='http://www.w3.org/2000/svg', svg=$('waves');
   let seed=7; const rnd=()=>((seed=(seed*1664525+1013904223)>>>0)/4294967296);
@@ -1681,12 +1682,8 @@ $('aiSumBtn').onclick=runSummary;
   P.forEach(([x,y],i)=>mk('circle',{cx:x,cy:y,r:i%7===0?3:1.8,fill:i%7===0?'#F59F00':'#1E2761','fill-opacity':i%7===0?.35:.18},net));
 
   const BG=[['none','純色'],['dots','點陣'],['grid','細方格'],['glow','柔光'],['glowdots','柔光＋點陣'],['diag','細斜線'],['topo','等高線'],['net','網絡節點'],['marble','大理石']];
-  const app=$('app'), b=$('bgBtn'); let i=4;
-  try{ const s=localStorage.getItem('jevBg'); const k=BG.findIndex(x=>x[0]===s); if(k>=0) i=k; }catch(_){}
-  const apply=()=>{ BG.forEach(([c])=>app.classList.remove('bg-'+c)); app.classList.add('bg-'+BG[i][0]);
-    b.textContent='背景：'+BG[i][1]; b.title=`背景 ${i+1}/${BG.length}：${BG[i][1]}（點一下換下一種）`; };
-  b.onclick=()=>{ i=(i+1)%BG.length; try{ localStorage.setItem('jevBg',BG[i][0]); }catch(_){} apply(); };
-  apply();
+  const app=$('app'); const i=4;
+  BG.forEach(([c])=>app.classList.remove('bg-'+c)); app.classList.add('bg-'+BG[i][0]);
 })();
 aiHealth(); setInterval(aiHealth,20000);
 playEnter('p11');
