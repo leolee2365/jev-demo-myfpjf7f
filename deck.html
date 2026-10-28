@@ -220,7 +220,7 @@ h2 em{font-style:normal;color:var(--tealT)}
 .c-in{background:#fff;box-shadow:0 8px 26px rgba(30,39,97,.08)}
 .c-in .hd{display:flex;align-items:center;gap:16px;font-size:26px;font-weight:900;color:var(--navy);line-height:1.2}
 .c-in .sb{margin-top:18px;font-size:17px;color:var(--muted)}
-.qpill{margin-top:16px;padding:16px 18px;border-radius:14px;background:var(--soft);font-size:19px;font-weight:500;color:var(--ink2);text-align:center;transition:opacity .4s,transform .4s;position:relative}
+.qpill{margin-top:12px;padding:12px 16px;border-radius:14px;background:var(--soft);font-size:19px;font-weight:500;color:var(--ink2);text-align:center;transition:opacity .4s,transform .4s;position:relative}
 .qpill.sent{opacity:.35;transform:scale(.96)}
 .c-jev{background:var(--teal);color:var(--navy);display:flex;flex-direction:column;align-items:center;text-align:center;transition:box-shadow .3s,transform .3s}
 .c-jev.pulse{box-shadow:0 0 0 10px rgba(3,192,175,.35),0 18px 44px rgba(3,192,175,.4);transform:scale(1.02)}
@@ -243,7 +243,9 @@ h2 em{font-style:normal;color:var(--tealT)}
 .c-val{background:var(--gold);display:flex;flex-direction:column;align-items:center;text-align:center;padding-top:34px}
 .c-val .vt{margin-top:26px;font-size:30px;font-weight:900;color:var(--navy);line-height:1.3}
 .c-val .vp{margin-top:auto;width:100%;display:flex;flex-direction:column;gap:12px;padding-bottom:10px}
-.c-val .vp span{padding:12px;border-radius:999px;background:#fff;color:var(--navy);font-size:19px;font-weight:700}
+.c-val .vp span{padding:12px;border-radius:999px;background:#fff;color:var(--navy);font-size:19px;font-weight:700;transition:background .3s,color .3s,transform .3s}
+.c-val .vp span.on{background:var(--navy);color:#fff;transform:scale(1.06)}
+.flyp.opp{background:var(--gold);color:var(--navy)}
 .concept .arrs{display:grid;grid-template-rows:1fr 1fr;align-items:center;justify-items:center}
 .flyp{position:absolute;z-index:5;padding:10px 18px;border-radius:999px;background:var(--navy);color:#fff;font-size:17px;font-weight:700;box-shadow:0 10px 30px rgba(30,39,97,.35);white-space:nowrap;transition:left .65s cubic-bezier(.4,0,.2,1),top .65s cubic-bezier(.4,0,.2,1),opacity .3s,transform .3s;pointer-events:none}
 
@@ -688,6 +690,7 @@ h2 em{font-style:normal;color:var(--tealT)}
       <div class="qpill" data-q="1">「我的卡好像被盜刷」</div>
       <div class="qpill" data-q="2">「想買房子要借錢」</div>
       <div class="qpill" data-q="3">「我想看刷卡明細」</div>
+      <div class="qpill" data-q="4">「定存到期了，想續存」</div>
     </div>
     <div class="arrow teal a" style="--i:4"></div>
     <div class="cc c-jev a" id="jevBox" style="--i:5">
@@ -1093,10 +1096,10 @@ RESET['p-mot'] = () => {
 };
 
 /* ---------- 06 核心概念：例句飛進 Jev，再分到數位自助或專員 ---------- */
-const ROUTES = [[0, 'chip', 0], [1, 'agent'], [2, 'agent'], [3, 'chip', 4]];          // 第 3 個值 = 自助項目的序號
+const ROUTES = [[0, 'chip', 0], [1, 'agent'], [2, 'agent'], [3, 'chip', 4], [4, 'agent', null, '商機：財富管理']];   // 第 3 個值 = 自助項目的序號; 第 4 個值 = 轉專員後再標示商機
 RESET['p-concept'] = () => {
   document.querySelectorAll('#p-concept .qpill').forEach(q => q.classList.remove('sent'));
-  document.querySelectorAll('#p-concept .ch').forEach(c => c.classList.remove('on'));
+  document.querySelectorAll('#p-concept .ch, #p-concept .c-val .vp span').forEach(c => c.classList.remove('on'));
   document.querySelectorAll('#p-concept .flyp').forEach(f => f.remove());
   document.getElementById('jevBox').classList.remove('pulse'); document.getElementById('autoBox').classList.remove('flash'); document.getElementById('agentBox').classList.remove('flash');
 };
@@ -1104,7 +1107,7 @@ HOOK['p-concept'] = k => {
   if (k < 1 || document.querySelector('#p-concept .qpill.sent')) return;
   const sl = document.getElementById('p-concept'), jev = document.getElementById('jevBox');
   const [jx, jy] = pos(jev); const jc = [jx + jev.offsetWidth / 2, jy + jev.offsetHeight / 2];
-  ROUTES.forEach(([q, kind, name], n) => {
+  ROUTES.forEach(([q, kind, name, opp], n) => {
     later(() => {
       const src = sl.querySelector(`.qpill[data-q="${q}"]`); const [sx, sy] = pos(src);
       const fp = document.createElement('div'); fp.className = 'flyp'; fp.textContent = src.textContent;
@@ -1121,6 +1124,17 @@ HOOK['p-concept'] = k => {
         fp.style.left = tx + tgt.offsetWidth / 2 + 'px'; fp.style.top = ty + tgt.offsetHeight / 2 + 'px';
         later(() => { fp.style.opacity = 0; fp.style.transform = 'translate(-50%,-50%) scale(.6)'; box.classList.add('flash'); if (kind === 'chip') tgt.classList.add('on'); }, 650);
         later(() => { box.classList.remove('flash'); fp.remove(); }, 1150);
+        if (opp){                                       // 專員處理之餘，同一次判斷也看出商機 → 飛到「商機轉介」
+          later(() => {
+            const pill = sl.querySelector('.c-val .vp span'); const [px, py] = pos(pill);
+            const fo = document.createElement('div'); fo.className = 'flyp opp'; fo.textContent = opp;
+            fo.style.left = tx + tgt.offsetWidth / 2 + 'px'; fo.style.top = ty + tgt.offsetHeight / 2 + 'px'; fo.style.transform = 'translate(-50%,-50%)';
+            sl.appendChild(fo);
+            later(() => { fo.style.left = px + pill.offsetWidth / 2 + 'px'; fo.style.top = py + pill.offsetHeight / 2 + 'px'; }, 30);
+            later(() => { fo.style.opacity = 0; fo.style.transform = 'translate(-50%,-50%) scale(.6)'; pill.classList.add('on'); }, 700);
+            later(() => fo.remove(), 1100);
+          }, 1200);
+        }
       }, 1050);
     }, n * 1900 + 200);
   });
