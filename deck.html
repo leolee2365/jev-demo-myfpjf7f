@@ -173,7 +173,7 @@ h2 em{font-style:normal;color:var(--tealT)}
 .calltl .seg.on{color:#fff}
 .calltl .seg.ok.on{background:rgba(3,192,175,.6)}
 .calltl .seg.stuck.on{background:linear-gradient(90deg,rgba(232,116,59,.75),rgba(232,116,59,.95))}
-.calltl .head{position:absolute;top:148px;left:0;width:4px;height:62px;margin-left:-2px;border-radius:2px;background:#fff;box-shadow:0 0 14px rgba(255,255,255,.9);opacity:0;transition:left 7s linear,opacity .3s}
+.calltl .head{position:absolute;top:148px;left:0;width:4px;height:62px;margin-left:-2px;border-radius:2px;background:#fff;box-shadow:0 0 14px rgba(255,255,255,.9);opacity:0;transition:left 3.2s linear,opacity .3s}
 .calltl .lg{position:absolute;left:0;top:216px;display:flex;gap:26px;font-size:14.5px;color:rgba(255,255,255,.6)}
 .calltl .lg i{display:inline-block;width:14px;height:14px;border-radius:4px;vertical-align:-2px;margin-right:6px}
 .calltl .mot2{position:absolute;top:210px;transform:translateX(-50%);padding:6px 16px;border-radius:999px;background:var(--orange);color:#fff;font-size:15px;font-weight:700;white-space:nowrap;opacity:0}
@@ -653,9 +653,9 @@ h2 em{font-style:normal;color:var(--tealT)}
   <div class="kick a" style="--i:0"><span class="pill">PART 1</span>痛點與機會 · HMW</div>
   <div class="tagline a" style="--i:1">HMW</div>
   <div class="stmt">
-    <span class="ln" style="transition-delay:.4s">我們如何幫助客戶提出問題後，</span>
-    <span class="ln" style="transition-delay:.4s">能<em>精準、快速</em>地分類並解決問題，</span>
-    <span class="ln" style="transition-delay:.4s">並從中找出<em class="g">潛在跨售商機</em>。</span>
+    <span class="ln" style="transition-delay:.5s">我們如何幫助客戶提出問題後，</span>
+    <span class="ln" style="transition-delay:1.2s">能<em>精準、快速</em>地分類並解決問題，</span>
+    <span class="ln" style="transition-delay:1.9s">並從中找出<em class="g">潛在跨售商機</em>。</span>
   </div>
   <div class="pillars">
     <div class="pl a" style="--i:30"><i class="ic" data-ic="filter"></i><div><div class="pt">精準分類</div><div class="pd">一句話判斷類別與急迫性</div></div></div>
@@ -1075,7 +1075,7 @@ RESET['p-mot'] = () => {
   const bubs = [...sl.querySelectorAll('.bub')]; bubs.forEach(b => { b.classList.remove('on', 'hot', 'ok'); b.textContent = ''; });
   const hd = document.getElementById('tlHead'); hd.style.transition = 'none'; hd.style.left = '0'; hd.style.opacity = 0; void hd.offsetWidth; hd.style.transition = '';
   document.getElementById('tlT').textContent = '00:00';
-  const SEG = MOT.SEG, SAY = MOT.SAY, KIND = MOT.KIND, T = 365, DUR = 7000;   // 刻意慢，讓人感覺等很久
+  const SEG = MOT.SEG, SAY = MOT.SAY, KIND = MOT.KIND, T = 365, DUR = 3400;
   const start = i => SEG.slice(0, i).reduce((a, b) => a + b, 0) / T * DUR;
   const segs = sl.querySelectorAll('.seg');
   later(() => {
