@@ -510,7 +510,8 @@ h2 em{font-style:normal;color:var(--tealT)}
 #nav button:hover:not(:disabled) svg{stroke:#fff}
 #nav button:disabled{opacity:.35;cursor:default}
 #nav svg{width:20px;height:20px;stroke:var(--navy);fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
-#editbar{position:absolute;left:calc(50% + 68px);bottom:16px;z-index:60;display:flex;gap:8px;align-items:center}
+#editbar{position:absolute;left:calc(50% + 68px);bottom:16px;z-index:60;display:none;gap:8px;align-items:center}   /* 平常隱藏，Ctrl+E 進入編輯才出現 */
+#stage.editing #editbar{display:flex}
 #editbar button{font-family:inherit;font-size:14px;padding:8px 14px;border-radius:999px;border:1.5px solid #C8CDE0;background:rgba(255,255,255,.92);color:var(--navy);cursor:pointer;opacity:.75;transition:opacity .2s}
 #editbar button:hover{opacity:1}
 #editbar button.p{background:var(--navy);border-color:var(--navy);color:#fff;opacity:1}
@@ -846,7 +847,7 @@ h2 em{font-style:normal;color:var(--tealT)}
 <div id="chap"><div class="cn" id="chN">01</div><div class="ct"><div class="ck" id="chK">PART 1</div><h1 id="chT"></h1><p id="chP"></p><div class="ln"></div></div></div>
 <div id="nav"><button id="btnPrev" title="上一步 (←)"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button><button id="btnNext" title="下一步 (→)"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button></div>
 <button id="btnFs" title="全螢幕 (F)"><svg class="o" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><svg class="x" viewBox="0 0 24 24"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg></button>
-<div id="help">← → 翻頁　·　F 全螢幕　·　下方「✎ 編輯文字」可改字</div>
+<div id="help">← → 翻頁　·　F 全螢幕　·　Ctrl+E 編輯文字</div>
 <div id="editbar"><button id="btnEdit" title="修改這份簡報的文字">✎ 編輯文字</button><button id="btnDl" class="hid" title="把修改寫進檔案，下載後覆蓋原檔">⬇ 下載修改後的檔案</button><button id="btnDp" class="hid" title="改動畫跑到一半才出現的文字">⚙ 特效文字</button><button id="btnRv" class="hid">還原全部</button></div>
 <div id="datapanel"><div class="dh">特效才出現的文字<button id="btnDpClose">關閉</button></div><div class="db" id="dpBody"></div></div>
 <div id="edithint">編輯模式：直接點文字修改，Enter 換行；特效後才出現的字按「⚙ 特效文字」改；按「完成」儲存。翻頁請用進度條或底部按鈕。</div>
@@ -1026,6 +1027,7 @@ function prev(){
   else if (cur > 0) show(cur - 1, +slides[cur - 1].dataset.steps, false);
 }
 addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && (e.key === 'e' || e.key === 'E')){ e.preventDefault(); setEditing(!editing); return; }   // Ctrl+E 進出編輯模式
   if (editing) return;                                   // 編輯中: 鍵盤留給打字
   if (['ArrowRight', 'PageDown', ' ', 'Enter'].includes(e.key)){ e.preventDefault(); next(); }
   else if (['ArrowLeft', 'PageUp', 'Backspace'].includes(e.key)){ e.preventDefault(); prev(); }
