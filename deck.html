@@ -1183,11 +1183,11 @@ function introDraw(t){
   /* D. 三個關鍵字 (8.4–10.0) */
   const D = seg(t, 8.4, 8.55) * (1 - seg(t, 9.95, 10.1));
   if (D > 0){
-    const KW = [['分流', '一句話接到對的人'], ['提示', '專員一接起就備好'], ['孿生', '上線前先驗證']];
+    const KW = [['問題自動分類', '一句話判斷類別與急迫性'], ['同質性自動處理', '常見業務傳智慧小豐連結，當場辦好'], ['商機轉介', '問題解決後，順勢轉介理專']];
     iseed = 99; for (let i = 0; i < 40; i++){ const y = irnd() * H, w = 60 + irnd() * 300, x = irnd() * W; c.fillStyle = `rgba(255,255,255,${0.03 + irnd() * 0.05})`; c.fillRect(x + ((t * 60) % 400) - 200, y, w, 1); }
     const i = Math.min(2, Math.floor(seg(t, 8.4, 10.0) * 3)), q = seg(t, 8.4, 10.0) * 3 - i, inq = seg(q, 0, 0.22), outq = 1 - seg(q, 0.85, 1);
     c.globalAlpha = D * inq * outq; c.textAlign = 'center';
-    c.save(); c.translate(W / 2, H / 2); c.scale(1.12 - 0.12 * inq, 1.12 - 0.12 * inq); c.fillStyle = '#fff'; c.font = `900 150px ${IF}`; c.shadowColor = 'rgba(3,192,175,.6)'; c.shadowBlur = 40; c.fillText(KW[i][0], 0, -20); c.shadowBlur = 0; c.restore();
+    c.save(); c.translate(W / 2, H / 2); c.scale(1.12 - 0.12 * inq, 1.12 - 0.12 * inq); c.fillStyle = '#fff'; c.font = `900 108px ${IF}`; c.shadowColor = 'rgba(3,192,175,.6)'; c.shadowBlur = 40; c.fillText(KW[i][0], 0, -20); c.shadowBlur = 0; c.restore();
     c.fillStyle = 'rgba(201,211,242,.85)'; c.font = `500 26px ${IF}`; c.fillText(KW[i][1], W / 2, H / 2 + 92);
     c.globalAlpha = D; c.textAlign = 'left'; c.font = `500 14px ${IF}`; c.fillStyle = 'rgba(255,255,255,.5)'; c.fillText(`0${i + 1}  /  03`, 120, 150);
     for (let k = 0; k < 3; k++){ c.fillStyle = k <= i ? '#03C0AF' : 'rgba(255,255,255,.2)'; c.fillRect(120 + k * 26, 170, 18, 3); }
