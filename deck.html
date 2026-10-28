@@ -1081,26 +1081,14 @@ const IF = '"Noto Sans TC","Microsoft JhengHei",sans-serif';
 let iseed = 7; const irnd = () => ((iseed = (iseed * 1664525 + 1013904223) >>> 0) / 4294967296);
 const clamp01 = v => Math.max(0, Math.min(1, v)), seg = (t, a, b) => clamp01((t - a) / (b - a)), ease = p => 1 - Math.pow(1 - clamp01(p), 3);
 const PHONE = new Path2D(ICONS.phone.match(/d="([^"]+)"/)[1]);
-const CUR_PTS = [0.28, 0.34, 0.31, 0.47, 0.55, 0.66, 0.76];            // 現況: 客戶總耗時一路漲到 6 分 5 秒 (8 分 = 1.0)
-const FIN_PTS = [0.28, 0.30, 0.31, 0.36, 0.42, 0.47, 0.50];            // 導入後: 4 分 0 秒
 let IP = [], ISC = [];
 function introInit(){
   iseed = 7;
   IP = Array.from({ length: 150 }, () => { const a = irnd() * Math.PI * 2; return { a, r: 560 + irnd() * 420, s: 0.5 + irnd() * 0.9, d: irnd() * 1.1 }; });
-  ISC = Array.from({ length: 24 }, (_, i) => ({                        // 24 個推演情境: 曲線越來越低, 參數各自不同
-    pts: CUR_PTS.map((v, k) => v - (k / 6) * (0.08 + i / 24 * 0.22) + (irnd() - 0.5) * 0.07),
-    p: [Math.round(44 + irnd() * 20), Math.round(8 + irnd() * 28), +(0.70 + irnd() * 0.25).toFixed(2)] }));
-}
-const CH = { x: 740, y: 210, w: 740, h: 430 };                           // 圖表區
-const cx = k => CH.x + k / 6 * CH.w, cy = v => CH.y + (1 - v) * CH.h;
-function line(c, pts, prog, color, width, glow){
-  const n = pts.length - 1, L = prog * n; if (L <= 0) return null;
-  c.beginPath(); c.moveTo(cx(0), cy(pts[0]));
-  for (let k = 1; k <= Math.floor(L); k++) c.lineTo(cx(k), cy(pts[k]));
-  const k = Math.floor(L), fr = L - k; let ex = cx(k), ey = cy(pts[k]);
-  if (k < n && fr > 0){ ex = cx(k) + (cx(k + 1) - cx(k)) * fr; ey = cy(pts[k]) + (cy(pts[k + 1]) - cy(pts[k])) * fr; c.lineTo(ex, ey); }
-  c.strokeStyle = color; c.lineWidth = width; c.lineJoin = 'round'; c.lineCap = 'round';
-  if (glow){ c.shadowColor = color; c.shadowBlur = 18; } c.stroke(); c.shadowBlur = 0; return [ex, ey];
+  ISC = Array.from({ length: 24 }, (_, i) => ({                        // 24 個推演情境: 參數各自不同, 排隊與等待整體往下
+    p: [Math.round(44 + irnd() * 20), Math.round(8 + irnd() * 28), +(0.70 + irnd() * 0.25).toFixed(2)],
+    q: Math.max(0, Math.min(16, Math.round(15 - i / 24 * 13 + (irnd() - 0.5) * 6))),
+    au: Math.round(2 + irnd() * 8), w: Math.max(0, Math.round(48 - i / 24 * 44 + (irnd() - 0.5) * 16)) }));
 }
 const mmss2 = s => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
 function introDraw(t){
@@ -1121,48 +1109,67 @@ function introDraw(t){
     c.globalAlpha = A * seg(t, 1.0, 1.5); c.fillStyle = 'rgba(255,255,255,.75)'; c.font = `500 20px ${IF}`; c.textAlign = 'center'; c.fillText('每 天 5,000 通 進 線 ・ 每 一 通 都 在 等', W / 2, H / 2 + 150);
     c.globalAlpha = 1;
   }
-  /* B+C. 現況 → 數位孿生推演 (2.2–8.4) */
+  /* B+C. 現況 → 數位孿生推演 (2.2–8.4)：虛擬客服中心看板 */
   const BC = seg(t, 2.2, 2.5) * (1 - seg(t, 8.3, 8.6));
   if (BC > 0){
-    c.globalAlpha = BC; const twin = seg(t, 4.6, 4.9), fin = seg(t, 7.0, 7.8);
-    // 左: 標籤
+    c.globalAlpha = BC; const twin = seg(t, 4.6, 4.9), fin = seg(t, 6.9, 7.5);
+    // 左: 標籤 + 計時器
     c.textAlign = 'left'; c.font = `700 15px ${IF}`;
     c.fillStyle = `rgba(249,159,107,${1 - twin})`; c.fillText('現 況', 120, 230);
     c.fillStyle = `rgba(3,192,175,${twin})`; c.fillText('DIGITAL TWIN ・ 推 演 情 境', 120, 230);
-    // 左: 計時器
     const tv = 365 * ease(seg(t, 2.4, 4.0));
     c.font = `900 96px ${IF}`;
     if (fin < 0.3){ c.fillStyle = '#fff'; c.fillText(mmss2(tv), 118, 300); }
     else { c.fillStyle = 'rgba(255,255,255,.35)'; c.fillText('06:05', 118, 300); const w = c.measureText('06:05').width; c.strokeStyle = '#D9363E'; c.lineWidth = 5; c.beginPath(); c.moveTo(118, 300); c.lineTo(118 + w, 300); c.stroke();
-      c.globalAlpha = BC * seg(t, 7.3, 7.7); c.fillStyle = '#03C0AF'; c.fillText('04:00', 118 + w + 30, 300); c.globalAlpha = BC; }
+      c.globalAlpha = BC * seg(t, 7.1, 7.5); c.fillStyle = '#03C0AF'; c.fillText('04:00', 118 + w + 30, 300); c.globalAlpha = BC; }
     c.font = `500 18px ${IF}`; c.fillStyle = 'rgba(255,255,255,.6)'; c.fillText(fin > 0.3 ? '客戶平均總耗時' : '客戶平均總耗時（現況）', 120, 356);
-    // 左: 排隊人數 → 拉桿
-    if (twin < 1){ c.globalAlpha = BC * (1 - twin); c.font = `700 30px ${IF}`; c.fillStyle = '#F59F6B'; c.fillText(`排隊 ${Math.round(14 * ease(seg(t, 2.6, 4.0)))} 人`, 120, 420); c.font = `500 17px ${IF}`; c.fillStyle = 'rgba(255,255,255,.55)'; c.fillText('語音選單 → 按 0 總機 → 排隊等真人', 120, 462); c.globalAlpha = BC; }
+    // 情境資料
+    const k = Math.min(23, Math.floor(seg(t, 4.8, 7.0) * 24)), kf = seg(t, 4.8, 7.0) * 24 - k, S0 = ISC[k], S1 = ISC[Math.min(23, k + 1)];
+    const FINP = [52, 15, 0.82]; let vals, Q, AU, WS;
+    if (twin === 0){ Q = Math.round(14 * ease(seg(t, 2.6, 4.0))); AU = 0; WS = 14; vals = [52, 0, 0]; }
+    else if (fin > 0){ const e = ease(fin); vals = [0, 1, 2].map(i => S0.p[i] + (FINP[i] - S0.p[i]) * e); Q = Math.round(S0.q + (1 - S0.q) * e); AU = Math.round(S0.au + (9 - S0.au) * e); WS = Math.round(S0.w * (1 - e)); }
+    else { vals = [0, 1, 2].map(i => S0.p[i] + (S1.p[i] - S0.p[i]) * kf); Q = Math.round(S0.q + (S1.q - S0.q) * kf); AU = S0.au; WS = S0.w; }
+    // 左: 排隊人數 (現況) → 拉桿 (推演)
+    if (twin < 1){ c.globalAlpha = BC * (1 - twin); c.font = `700 30px ${IF}`; c.fillStyle = '#F59F6B'; c.fillText(`排隊 ${Q} 人`, 120, 420); c.font = `500 17px ${IF}`; c.fillStyle = 'rgba(255,255,255,.55)'; c.fillText('語音選單 → 按 0 總機 → 排隊等真人', 120, 462); c.globalAlpha = BC; }
     if (twin > 0){
-      const k = Math.min(23, Math.floor(seg(t, 4.8, 7.0) * 24)), kf = seg(t, 4.8, 7.0) * 24 - k;
-      const pa = ISC[k].p, pb = ISC[Math.min(23, k + 1)].p, FINP = [52, 15, 0.82];
-      const vals = [0, 1, 2].map(i => fin > 0 ? pa[i] + (FINP[i] - pa[i]) * ease(fin) : pa[i] + (pb[i] - pa[i]) * kf);
       const S = [['尖峰客服人數', 40, 70, v => `${Math.round(v)} 人`], ['可導引線上自助', 0, 40, v => `${Math.round(v)}%`], ['直接分流門檻', 0.6, 1.0, v => v.toFixed(2)]];
       S.forEach(([lb, lo, hi, fmt], i) => { const y = 420 + i * 72, q = clamp01((vals[i] - lo) / (hi - lo)); c.globalAlpha = BC * twin;
         c.font = `500 16px ${IF}`; c.fillStyle = 'rgba(255,255,255,.7)'; c.textAlign = 'left'; c.fillText(lb, 120, y); c.textAlign = 'right'; c.font = `700 18px ${IF}`; c.fillStyle = fin > 0 ? '#03C0AF' : '#fff'; c.fillText(fmt(vals[i]), 600, y);
         c.strokeStyle = 'rgba(255,255,255,.18)'; c.lineWidth = 6; c.lineCap = 'round'; c.beginPath(); c.moveTo(120, y + 26); c.lineTo(600, y + 26); c.stroke();
         c.strokeStyle = '#03C0AF'; c.beginPath(); c.moveTo(120, y + 26); c.lineTo(120 + 480 * q, y + 26); c.stroke();
         c.fillStyle = '#fff'; c.shadowColor = 'rgba(0,0,0,.4)'; c.shadowBlur = 8; c.beginPath(); c.arc(120 + 480 * q, y + 26, 10, 0, 7); c.fill(); c.shadowBlur = 0; });
-      c.globalAlpha = BC * twin; c.textAlign = 'right'; c.font = `900 54px ${IF}`; c.fillStyle = fin > 0 ? '#03C0AF' : '#fff'; c.fillText(String(fin > 0 ? 24 : k + 1).padStart(2, '0'), CH.x + CH.w, 180);
-      c.font = `500 14px ${IF}`; c.fillStyle = 'rgba(255,255,255,.5)'; c.fillText('情 境', CH.x + CH.w - 80, 180);
+      c.globalAlpha = BC;
     }
-    // 右: 圖表
-    c.textAlign = 'right'; c.font = `500 13px ${IF}`;
-    for (let i = 0; i <= 4; i++){ const y = cy(i / 4); c.strokeStyle = 'rgba(255,255,255,.08)'; c.lineWidth = 1; c.beginPath(); c.moveTo(CH.x, y); c.lineTo(CH.x + CH.w, y); c.stroke(); c.fillStyle = 'rgba(255,255,255,.4)'; c.fillText(`${i * 2} 分`, CH.x - 14, y); }
-    c.setLineDash([6, 8]); c.strokeStyle = 'rgba(3,192,175,.6)'; c.lineWidth = 1.5; c.beginPath(); c.moveTo(CH.x, cy(0.5)); c.lineTo(CH.x + CH.w, cy(0.5)); c.stroke(); c.setLineDash([]);
-    c.textAlign = 'left'; c.fillStyle = 'rgba(3,192,175,.9)'; c.fillText('目標 4 分', CH.x + 8, cy(0.5) - 14);
-    c.font = `500 14px ${IF}`; c.fillStyle = 'rgba(255,255,255,.45)'; c.fillText('客戶平均總耗時 ・ 尖峰時段 →', CH.x, CH.y - 30);
-    if (twin > 0){ ISC.forEach((s, i) => { const q = seg(t, 4.8 + i * (2.2 / 24), 4.8 + (i + 1) * (2.2 / 24)); if (q > 0) line(c, s.pts, q, `rgba(201,211,242,${0.28 * (1 - fin * 0.6)})`, 1.5); }); }
-    const curEnd = line(c, CUR_PTS, ease(seg(t, 2.4, 4.3)), fin > 0 ? 'rgba(249,159,107,.45)' : '#F59F6B', 3.5, fin === 0);
-    if (curEnd && seg(t, 2.4, 4.3) >= 1 && fin === 0){ c.fillStyle = '#F59F6B'; c.beginPath(); c.arc(curEnd[0], curEnd[1], 6, 0, 7); c.fill(); c.font = `700 18px ${IF}`; c.textAlign = 'right'; c.fillText('6 分 5 秒', curEnd[0] - 14, curEnd[1] - 22); }
-    if (fin > 0){ const e = line(c, FIN_PTS, ease(fin), '#03C0AF', 4.5, true);
-      if (fin >= 1 && e){ const q = seg(t, 7.8, 8.1); c.globalAlpha = BC * q; c.fillStyle = '#03C0AF'; c.beginPath(); c.arc(e[0], e[1], 7, 0, 7); c.fill();
-        const txt = '✓ 4 分 0 秒 ・ 最佳門檻 0.82'; c.font = `700 17px ${IF}`; const w = c.measureText(txt).width + 36; c.fillStyle = '#03C0AF'; c.beginPath(); c.roundRect(e[0] - w, e[1] - 62, w, 38, 19); c.fill(); c.fillStyle = '#0E1440'; c.textAlign = 'right'; c.fillText(txt, e[0] - 18, e[1] - 43); } }
+    // 右: 客服中心看板
+    const BX = 700, BY = 200, BW = 780, BH = 450;
+    c.setLineDash(twin > 0 ? [8, 8] : []); c.strokeStyle = twin > 0 ? `rgba(3,192,175,${0.35 + 0.45 * twin})` : 'rgba(255,255,255,.16)'; c.lineWidth = 1.5;
+    c.beginPath(); c.roundRect(BX, BY, BW, BH, 18); c.stroke(); c.setLineDash([]);
+    c.fillStyle = twin > 0 ? `rgba(3,192,175,${0.045 * twin})` : 'rgba(255,255,255,.03)'; c.fill();
+    c.textAlign = 'left'; c.font = `700 14px ${IF}`; c.fillStyle = twin > 0 ? '#03C0AF' : 'rgba(255,255,255,.55)';
+    c.fillText(twin > 0 ? 'S I M U L A T I O N ・ 虛擬客服中心' : '客服中心 ・ 尖峰時段', BX + 26, BY + 30);
+    if (twin > 0){ c.textAlign = 'right'; c.font = `900 44px ${IF}`; c.fillStyle = fin > 0 ? '#03C0AF' : '#fff'; c.fillText(String(fin > 0 ? 24 : k + 1).padStart(2, '0'), BX + BW - 26, BY + 34); c.font = `500 13px ${IF}`; c.fillStyle = 'rgba(255,255,255,.5)'; c.fillText('情 境', BX + BW - 92, BY + 34); }
+    // 專員席位 (每 4 人一個席位圖示)
+    const nA = Math.max(10, Math.min(16, Math.round(vals[0] / 4))), busy = twin === 0 ? nA : Math.min(nA, Math.round(nA * Math.min(1, (Q + 2) / 10)));
+    c.textAlign = 'left'; c.font = `500 14px ${IF}`; c.fillStyle = 'rgba(255,255,255,.5)'; c.fillText(`專員 ${Math.round(vals[0])} 人`, BX + 26, BY + 72);
+    for (let i = 0; i < nA; i++){ const x = BX + 36 + (i % 8) * 60, y = BY + 110 + Math.floor(i / 8) * 54, on = i < busy;
+      c.fillStyle = on ? (twin > 0 && fin > 0.5 ? 'rgba(3,192,175,.9)' : '#F59F6B') : 'rgba(255,255,255,.14)'; c.beginPath(); c.roundRect(x - 16, y - 16, 32, 32, 9); c.fill();
+      c.fillStyle = on ? '#0E1440' : 'rgba(255,255,255,.35)'; c.beginPath(); c.arc(x, y - 4, 5, 0, 7); c.fill(); c.beginPath(); c.roundRect(x - 8, y + 3, 16, 9, 4); c.fill(); }
+    // 排隊客戶
+    c.font = `500 14px ${IF}`; c.fillStyle = 'rgba(255,255,255,.5)'; c.fillText(`排隊 ${Q} 人`, BX + 26, BY + 236);
+    for (let i = 0; i < Q; i++){ const x = BX + 40 + (i % 16) * 32, y = BY + 272 + Math.floor(i / 16) * 32; const pulse = 0.75 + 0.25 * Math.sin(t * 4 + i);
+      c.fillStyle = `rgba(249,159,107,${twin > 0 && fin > 0.5 ? 0.5 : pulse})`; c.beginPath(); c.arc(x, y, 8, 0, 7); c.fill(); }
+    if (Q === 0 && fin > 0.5){ c.fillStyle = '#03C0AF'; c.font = `700 18px ${IF}`; c.fillText('沒有人在等', BX + 40, BY + 272); }
+    // 線上自助 (推演才有)
+    if (twin > 0){ c.globalAlpha = BC * twin; const ax = BX + BW - 190;
+      c.fillStyle = 'rgba(3,192,175,.15)'; c.strokeStyle = '#03C0AF'; c.lineWidth = 1.5; c.beginPath(); c.roundRect(ax, BY + 62, 164, 30, 15); c.fill(); c.stroke();
+      c.textAlign = 'center'; c.font = `700 14px ${IF}`; c.fillStyle = '#03C0AF'; c.fillText(`⚡ 線上自助 ${AU} 通`, ax + 82, BY + 77);
+      for (let i = 0; i < AU; i++){ const x = ax + 20 + (i % 5) * 32, y = BY + 118 + Math.floor(i / 5) * 32; c.fillStyle = '#03C0AF'; c.shadowColor = '#03C0AF'; c.shadowBlur = 10; c.beginPath(); c.arc(x, y, 7, 0, 7); c.fill(); c.shadowBlur = 0; }
+      c.globalAlpha = BC; }
+    // 底部結果列
+    c.textAlign = 'left'; c.font = `700 17px ${IF}`;
+    if (fin >= 1){ const q = seg(t, 7.5, 7.8); c.globalAlpha = BC * q; const txt = '✓ 尖峰平均等待 0 秒 ・ 總耗時 4 分 0 秒 ・ 最佳門檻 0.82'; const w = c.measureText(txt).width + 40;
+      c.fillStyle = '#03C0AF'; c.beginPath(); c.roundRect(BX + 26, BY + BH - 64, w, 40, 20); c.fill(); c.fillStyle = '#0E1440'; c.fillText(txt, BX + 46, BY + BH - 44); c.globalAlpha = BC; }
+    else { c.fillStyle = twin > 0 ? 'rgba(255,255,255,.85)' : '#F59F6B'; c.fillText(twin > 0 ? `情境 ${String(k + 1).padStart(2, '0')} ・ 尖峰平均等待 ${WS} 秒` : `尖峰平均等待 ${WS} 秒 ・ 總耗時 6 分 5 秒`, BX + 26, BY + BH - 44); }
     c.globalAlpha = 1;
   }
   /* D. 三個關鍵字 (8.4–10.0) */
