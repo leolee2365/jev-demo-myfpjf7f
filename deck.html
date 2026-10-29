@@ -1191,19 +1191,20 @@ function introDraw(t){
       c.globalAlpha = BC; }
     // 底部結果列
     c.textAlign = 'left'; c.font = `700 17px ${IF}`;
-    if (fin >= 1 && opp === 0){ const q = seg(t, 9.1, 9.3); c.globalAlpha = BC * q; const txt = '✓ 尖峰平均等待 0 秒 ・ 總耗時 4 分 0 秒 ・ 最佳門檻 0.82'; const w = c.measureText(txt).width + 40;
+    if (fin >= 1){ const q = seg(t, 9.1, 9.3); c.globalAlpha = BC * q; const txt = '✓ 尖峰平均等待 0 秒 ・ 總耗時 4 分 0 秒 ・ 最佳門檻 0.82'; const w = c.measureText(txt).width + 40;
       c.fillStyle = 'rgba(3,192,175,.10)'; c.beginPath(); c.roundRect(BX + 26, BY + BH - 64, w, 40, 20); c.fill(); c.strokeStyle = 'rgba(3,192,175,.6)'; c.lineWidth = 1; c.stroke(); c.fillStyle = '#fff'; c.fillText(txt, BX + 46, BY + BH - 44); c.globalAlpha = BC; }
-    else if (opp === 0){ c.fillStyle = twin > 0 ? 'rgba(255,255,255,.85)' : (f1 > 0 ? '#03C0AF' : '#F59F6B');
+    else { c.fillStyle = twin > 0 ? 'rgba(255,255,255,.85)' : (f1 > 0 ? '#03C0AF' : '#F59F6B');
       c.fillText(twin > 0 ? `情境 ${String(k + 1).padStart(2, '0')} ・ 尖峰平均等待 ${WS} 秒` : (f1 > 0 ? `尖峰平均等待 ${WS} 秒 ・ 總耗時 ${Math.floor(tv / 60)} 分 ${Math.round(tv % 60)} 秒` : `尖峰平均等待 ${WS} 秒 ・ 總耗時 6 分 5 秒`), BX + 26, BY + BH - 44); }
     // 結尾: 大金色區塊從遠處飛到畫面中央
-    if (opp > 0){ const q = ease(seg(t, 9.3, 10.1)), G = '#D9B36A';                 // 商機: 香檳金細框面板, 淡入上浮 (看板底部)
-      c.save(); c.globalAlpha = BC * q; c.translate(BX + 26, BY + BH - 74 + (1 - q) * 18);
-      const w = 470; c.fillStyle = 'rgba(217,179,106,.08)'; c.shadowColor = 'rgba(217,179,106,.35)'; c.shadowBlur = 24; c.beginPath(); c.roundRect(0, 0, w, 52, 10); c.fill(); c.shadowBlur = 0;
-      c.strokeStyle = 'rgba(217,179,106,.7)'; c.lineWidth = 1; c.stroke();
-      c.fillStyle = G; c.fillRect(0, 10, 3, 32);
-      c.textAlign = 'left'; c.fillStyle = G; c.font = `600 11px ${IF}`; c.fillText('O P P O R T U N I T Y', 20, 17);
-      c.fillStyle = '#fff'; c.font = `600 20px ${IF}`; c.fillText('商機轉介', 20, 38);
-      c.fillStyle = 'rgba(255,255,255,.6)'; c.font = `400 14px ${IF}`; c.fillText('專員有空了，問題解決後順勢轉介理專', 120, 38); c.restore(); }
+    if (opp > 0){ const G = '#D9B36A', ql = ease(seg(t, 9.3, 10.0)), qt = ease(seg(t, 9.8, 10.4)), y0 = BY + BH + 34;   // 商機: 看板下方一道金線掃過, 文字再浮現
+      c.save(); c.globalAlpha = BC;
+      const lg = c.createLinearGradient(BX, 0, BX + BW, 0); lg.addColorStop(0, 'rgba(217,179,106,0)'); lg.addColorStop(0.15, G); lg.addColorStop(0.85, G); lg.addColorStop(1, 'rgba(217,179,106,0)');
+      c.strokeStyle = lg; c.lineWidth = 1; c.beginPath(); c.moveTo(BX, y0); c.lineTo(BX + BW * ql, y0); c.stroke();
+      c.globalAlpha = BC * qt; c.translate(0, (1 - qt) * 10);
+      c.textAlign = 'left'; c.fillStyle = G; c.font = `600 11px ${IF}`; c.fillText('O P P O R T U N I T Y', BX + 2, y0 + 30);
+      c.fillStyle = '#fff'; c.font = `600 26px ${IF}`; c.fillText('商機轉介', BX, y0 + 64);
+      c.textAlign = 'right'; c.fillStyle = 'rgba(255,255,255,.62)'; c.font = `400 16px ${IF}`; c.fillText('專員有空了 ・ 問題解決後順勢轉介理專', BX + BW, y0 + 62);
+      c.restore(); }
     c.globalAlpha = 1;
   }
   /* E. 標題 (10.0+) */
