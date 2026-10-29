@@ -522,7 +522,7 @@ body{font-family:var(--font)}
 <header class="topbar">
   <div class="brand"><span class="motto">留住客戶 ・ 創造營收</span>客服營運數位孿生平台</div>
   <nav class="nav" id="nav"></nav>
-  <div class="tools"><span class="aibadge" id="aiBadge" title="本機 Demo AI 服務 → API"><i></i>規則模式</span><button type="button" class="jbtn" id="jBtn" data-ovl="ovlJudge"><i id="jDot"></i>評審參與<span id="jCount"></span></button><a class="bgbtn" id="backDeck" href="deck.html" title="回到簡報（deck.html）">← 回到簡報</a><button type="button" class="icon" id="fsBtn" title="全螢幕（F）">⛶</button></div>
+  <div class="tools"><span class="aibadge" id="aiBadge" title="本機 Demo AI 服務 → API"><i></i>規則模式</span><button type="button" class="jbtn" id="jBtn" data-ovl="ovlJudge"><i id="jDot"></i>評審參與<span id="jCount"></span></button><a class="bgbtn" id="backDeck" href="deck.html" title="回到簡報" onclick="if(window.parent!==window){parent.postMessage({type:'backDeck'},'*');return false;}">← 回到簡報</a><button type="button" class="icon" id="fsBtn" title="全螢幕（F）">⛶</button></div>
 </header>
 
 <main class="stage">
@@ -1505,7 +1505,7 @@ document.addEventListener('keydown',e=>{
   else if(/^[1-4]$/.test(e.key)) go(STEPS[+e.key-1].pages[0]);
   else if(e.key==='f'||e.key==='F') toggleFS();
 });
-function toggleFS(){if(document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();}
+function toggleFS(){if(window.parent!==window){parent.postMessage({type:'fs'},'*');return;} if(document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();}
 $('fsBtn').onclick=toggleFS;
 function fit(){S=Math.min(innerWidth/1600,innerHeight/900); app.style.setProperty('--s',S);}
 addEventListener('resize',fit);
@@ -1517,11 +1517,11 @@ const QS_URL=new URLSearchParams(location.search);
 const TOPIC=QS_URL.get('topic')||'jev-twin-demo-3esef92xcajm';
 const TIER_ID={'私人銀行':'A123456789','貴賓理財':'F123456784','一般客戶':'B200000004','新開戶客戶':'E100000005'};
 const JUDGES=[]; let jRecent=[];
-function askUrl(){ const u=new URL('ask.html',location.href); if(QS_URL.get('topic')) u.searchParams.set('topic',TOPIC); return u.href; }
+function askUrl(){ const u=new URL('ask.html',document.baseURI); if(QS_URL.get('topic')) u.searchParams.set('topic',TOPIC); return u.href; }
 function renderJudgePanel(){
   const url=askUrl(); $('jUrl').textContent=url;
   const box=$('qrBox');
-  if(location.protocol==='file:') box.innerHTML='<div class="dim" style="padding:20px;text-align:center">上傳到 GitHub Pages 後<br>才能產生手機可掃的 QR code</div>';
+  if(new URL(document.baseURI).protocol==='file:') box.innerHTML='<div class="dim" style="padding:20px;text-align:center">上傳到 GitHub Pages 後<br>才能產生手機可掃的 QR code</div>';
   else if(typeof qrcode==='function'){ const q=qrcode(0,'M'); q.addData(url); q.make(); box.innerHTML=q.createSvgTag(8,2); }
   else box.innerHTML='<div class="dim" style="padding:20px;text-align:center">QR code 元件載入失敗<br>請改用下方網址</div>';
   $('jList').innerHTML=JUDGES.length?JUDGES.slice().reverse().map(j=>`<div><b>${esc(j.name)}</b>（${esc(j.tier)}）：「${esc(j.text)}」→ ${j.cat} · ${PNAME[j.lvl]}</div>`).join(''):'<div class="dim">還沒有評審來電</div>';
