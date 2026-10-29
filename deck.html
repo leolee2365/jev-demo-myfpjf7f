@@ -1091,6 +1091,7 @@ function introInit(){
     au: Math.round(2 + irnd() * 8), w: Math.max(0, Math.round(48 - i / 24 * 44 + (irnd() - 0.5) * 16)),
     d: [60 + irnd() * 35, 3000 + irnd() * 4000, 3 + irnd() * 14, 60 + irnd() * 38, 150 + irnd() * 120, 200 + irnd() * 220] }));
 }
+const mixc = (a, b, p) => { const h = x => [parseInt(x.slice(1, 3), 16), parseInt(x.slice(3, 5), 16), parseInt(x.slice(5, 7), 16)]; const A = h(a), B = h(b); return `rgb(${A.map((v, i) => Math.round(v + (B[i] - v) * p)).join(',')})`; };
 const mmss2 = s => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
 function introDraw(t){
   const c = ictx, W = 1600, H = 900; c.setTransform(2, 0, 0, 2, 0, 0); c.clearRect(0, 0, W, H);
@@ -1128,7 +1129,7 @@ function introDraw(t){
     const tv = twin === 0 ? 365 * ease(seg(t, 2.4, 4.0)) - 65 * red1 : 300 - 60 * red2;
     // 左: 標籤
     c.textAlign = 'left'; c.font = `700 15px ${IF}`;
-    c.fillStyle = `rgba(249,159,107,${1 - f1})`; c.fillText('現 況', 120, 230);
+    c.fillStyle = `rgba(224,78,78,${1 - f1})`; c.fillText('現 況', 120, 230);
     c.fillStyle = `rgba(3,192,175,${f1 * (1 - twin)})`; c.fillText('加 上 兩 個 功 能', 120, 230);
     c.fillStyle = `rgba(3,192,175,${twin * (1 - opp)})`; c.fillText('DIGITAL TWIN ・ 參 數 調 整', 120, 230);
     c.fillStyle = `rgba(217,179,106,${opp})`; c.fillText('OPPORTUNITY ・ 商 機 轉 介', 120, 230);
@@ -1139,7 +1140,7 @@ function introDraw(t){
       c.globalAlpha = BC * seg(t, 8.8, 9.1); c.fillStyle = '#03C0AF'; c.fillText('04:00', 118 + w + 30, 300); c.globalAlpha = BC; }
     c.font = `500 18px ${IF}`; c.fillStyle = 'rgba(255,255,255,.6)'; c.fillText(fin > 0.3 ? '客戶平均總耗時' : (f1 > 0 ? '客戶平均總耗時（上線後）' : '客戶平均總耗時（現況）'), 120, 356);
     // 左: 現況說明 → 兩個功能膠囊
-    if (f1 < 1){ c.globalAlpha = BC * (1 - f1); c.font = `700 30px ${IF}`; c.fillStyle = '#F59F6B'; c.fillText(`排隊 ${Q} 人`, 120, 420); c.font = `500 17px ${IF}`; c.fillStyle = 'rgba(255,255,255,.55)'; c.fillText('語音選單 → 按 0 總機 → 排隊等真人', 120, 462); c.globalAlpha = BC; }
+    if (f1 < 1){ c.globalAlpha = BC * (1 - f1); c.font = `700 30px ${IF}`; c.fillStyle = '#E04E4E'; c.fillText(`排隊 ${Q} 人`, 120, 420); c.font = `500 17px ${IF}`; c.fillStyle = 'rgba(255,255,255,.55)'; c.fillText('語音選單 → 按 0 總機 → 排隊等真人', 120, 462); c.globalAlpha = BC; }
     const pill = (y, a, txt, sub, col) => { if (a <= 0) return; c.save(); c.globalAlpha = BC * a; c.translate(0, (1 - a) * 14);
       c.font = `600 18px ${IF}`; const w = c.measureText(txt).width + 72; c.fillStyle = 'rgba(3,192,175,.10)'; c.beginPath(); c.roundRect(120, y - 21, w, 42, 21); c.fill(); c.strokeStyle = 'rgba(3,192,175,.6)'; c.lineWidth = 1; c.stroke();
       c.fillStyle = col; c.font = `700 15px ${IF}`; c.textAlign = 'left'; c.fillText('✓', 142, y + 1); c.fillStyle = '#fff'; c.font = `600 18px ${IF}`; c.fillText(txt, 164, y + 1);
@@ -1175,14 +1176,15 @@ function introDraw(t){
     const nA = Math.max(10, Math.min(16, Math.round(vals[0] / 4))), busy = Math.min(nA, Math.round(nA * Math.min(1, (Q + 2) / 10)));
     c.textAlign = 'left'; c.font = `500 14px ${IF}`; c.fillStyle = 'rgba(255,255,255,.5)'; c.fillText(`專員 ${Math.round(vals[0])} 人`, BX + 26, BY + 72);
     for (let i = 0; i < nA; i++){ const x = BX + 36 + (i % 8) * 60, y = BY + 110 + Math.floor(i / 8) * 54, on = i < busy, gold = opp > 0 && !on && (i % 3 === 1);
-      c.fillStyle = on ? (fin > 0.5 ? 'rgba(3,192,175,.85)' : '#E8945C') : (gold ? 'rgba(217,179,106,.12)' : 'rgba(255,255,255,.12)'); c.beginPath(); c.roundRect(x - 16, y - 16, 32, 32, 9); c.fill();
+      const calm = twin === 0 ? red1 * 0.35 : 0.35 + 0.65 * red2;                 // 0 = 壅塞(紅) → 1 = 舒緩(綠)
+      c.fillStyle = on ? mixc('#E04E4E', '#34D399', calm) : (gold ? 'rgba(217,179,106,.12)' : 'rgba(255,255,255,.12)'); c.beginPath(); c.roundRect(x - 16, y - 16, 32, 32, 9); c.fill();
       if (gold){ c.globalAlpha = BC * opp; c.strokeStyle = '#D9B36A'; c.lineWidth = 1.2; c.beginPath(); c.roundRect(x - 16, y - 16, 32, 32, 9); c.stroke(); c.globalAlpha = BC; }
       c.fillStyle = on ? '#0E1440' : (gold ? '#D9B36A' : 'rgba(255,255,255,.35)'); c.beginPath(); c.arc(x, y - 4, 5, 0, 7); c.fill(); c.beginPath(); c.roundRect(x - 8, y + 3, 16, 9, 4); c.fill(); }
     // 排隊客戶
     c.font = `500 14px ${IF}`; c.fillStyle = 'rgba(255,255,255,.5)'; c.fillText(`排隊 ${Q} 人`, BX + 26, BY + 236);
     for (let i = 0; i < Q; i++){ const x = BX + 40 + (i % 16) * 32, y = BY + 272 + Math.floor(i / 16) * 32; const pulse = 0.75 + 0.25 * Math.sin(t * 4 + i);
-      c.fillStyle = `rgba(249,159,107,${fin > 0.5 ? 0.5 : pulse})`; c.beginPath(); c.arc(x, y, 8, 0, 7); c.fill(); }
-    if (Q === 0 && fin > 0.5){ c.fillStyle = '#03C0AF'; c.font = `700 18px ${IF}`; c.fillText('沒有人在等', BX + 40, BY + 272); }
+      c.fillStyle = `rgba(224,78,78,${fin > 0.5 ? 0.5 : pulse})`; c.beginPath(); c.arc(x, y, 8, 0, 7); c.fill(); }
+    if (Q === 0 && fin > 0.5){ c.fillStyle = '#34D399'; c.font = `700 18px ${IF}`; c.fillText('沒有人在等', BX + 40, BY + 272); }
     // 線上自助
     if (live > 0){ c.globalAlpha = BC * live; const ax = BX + BW - 190;
       c.fillStyle = 'rgba(3,192,175,.15)'; c.strokeStyle = '#03C0AF'; c.lineWidth = 1.5; c.beginPath(); c.roundRect(ax, BY + 62, 164, 30, 15); c.fill(); c.stroke();
@@ -1193,7 +1195,7 @@ function introDraw(t){
     c.textAlign = 'left'; c.font = `700 17px ${IF}`;
     if (fin >= 1){ const q = seg(t, 9.1, 9.3); c.globalAlpha = BC * q; const txt = '✓ 尖峰平均等待 0 秒 ・ 總耗時 4 分 0 秒 ・ 最佳門檻 0.82'; const w = c.measureText(txt).width + 40;
       c.fillStyle = 'rgba(3,192,175,.10)'; c.beginPath(); c.roundRect(BX + 26, BY + BH - 64, w, 40, 20); c.fill(); c.strokeStyle = 'rgba(3,192,175,.6)'; c.lineWidth = 1; c.stroke(); c.fillStyle = '#fff'; c.fillText(txt, BX + 46, BY + BH - 44); c.globalAlpha = BC; }
-    else { c.fillStyle = twin > 0 ? 'rgba(255,255,255,.85)' : (f1 > 0 ? '#03C0AF' : '#F59F6B');
+    else { c.fillStyle = twin > 0 ? 'rgba(255,255,255,.85)' : (f1 > 0 ? '#03C0AF' : '#E04E4E');
       c.fillText(twin > 0 ? `情境 ${String(k + 1).padStart(2, '0')} ・ 尖峰平均等待 ${WS} 秒` : (f1 > 0 ? `尖峰平均等待 ${WS} 秒 ・ 總耗時 ${Math.floor(tv / 60)} 分 ${Math.round(tv % 60)} 秒` : `尖峰平均等待 ${WS} 秒 ・ 總耗時 6 分 5 秒`), BX + 26, BY + BH - 44); }
     // 結尾: 大金色區塊從遠處飛到畫面中央
     if (opp > 0){ const G = '#D9B36A', ql = ease(seg(t, 9.3, 10.0)), qt = ease(seg(t, 9.8, 10.4)), y0 = BY + BH + 34;   // 商機: 看板下方一道金線掃過, 文字再浮現
