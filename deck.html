@@ -1028,7 +1028,7 @@ function chapGo(){
 function next(){
   if (chapBusy) return;
   if (chapGo()) return;
-  if (slides[cur].id === 'p-intro' && INTRO.on && !INTRO.skipped && (performance.now() - INTRO.t0) / 1000 < 13.0){ INTRO.skipped = true; return; }
+  if (slides[cur].id === 'p-intro' && INTRO.on && !INTRO.skipped && (performance.now() - INTRO.t0) / 1000 < 13.6){ INTRO.skipped = true; return; }
   const s = slides[cur];
   if (step < +s.dataset.steps){ step++; applyStep(s, step); history.replaceState(null, '', `#${cur + 1}.${step}`); }
   else if (cur === slides.length - 1) location.href = 'index.html';     // 最後一頁再按 → 直接接 Demo (同資料夾的 index.html)
@@ -1111,7 +1111,7 @@ function introDraw(t){
     c.globalAlpha = 1;
   }
   /* B. 現況 (2.2–4.6) → C1. 加上兩個功能、人潮減少 (4.6–6.6) → C2. 參數調整、人潮更少 (6.6–9.2) → C3. 創造商機 (9.3–11.0) */
-  const BC = seg(t, 2.2, 2.5) * (1 - seg(t, 10.9, 11.2));
+  const BC = seg(t, 2.2, 2.5) * (1 - seg(t, 11.5, 11.8));
   if (BC > 0){
     c.globalAlpha = BC;
     const f1 = seg(t, 4.6, 5.0), f2 = seg(t, 5.4, 5.8), red1 = ease(seg(t, 5.0, 6.5));          // 兩個功能浮現, 人潮第一波減少
@@ -1146,6 +1146,7 @@ function introDraw(t){
       if (sub){ c.fillStyle = 'rgba(255,255,255,.6)'; c.font = `500 14px ${IF}`; c.fillText(sub, 120 + w + 14, y + 1); } c.restore(); };
     pill(408, f1, '問題自動分類', '新增功能', '#03C0AF');
     pill(462, f2, '同質性問題自動處理', '新增功能', '#03C0AF');
+    pill(516, twin, '數位孿生模擬', '調整參數，推演不同情境', '#03C0AF');
     // 左: 儀表板 (參數調整)
     if (twin > 0){
       const D0 = ISC[k].d, D1 = ISC[Math.min(23, k + 1)].d, DF = [88, 5000, 5.3, 99.8, 240, 332];
@@ -1154,7 +1155,7 @@ function introDraw(t){
                  ['Jev 準確度', `${Math.round(dv[0])}%`], ['每日進線', `${Math.round(dv[1]).toLocaleString()} 通`], ['轉錯窗口比例', `${dv[2].toFixed(1)}%`],
                  ['20 秒內接聽率', `${dv[3].toFixed(1)}%`], ['平均總耗時', mmss2(dv[4])], ['每日轉接', `${Math.round(dv[5])} 次`]];
       c.globalAlpha = BC * twin;
-      T.forEach(([lb, v], i) => { const x = 120 + (i % 3) * 170, y = 512 + Math.floor(i / 3) * 74;
+      T.forEach(([lb, v], i) => { const x = 120 + (i % 3) * 170, y = 566 + Math.floor(i / 3) * 74;
         c.fillStyle = fin > 0 ? 'rgba(3,192,175,.10)' : 'rgba(255,255,255,.05)'; c.strokeStyle = fin > 0 ? 'rgba(3,192,175,.55)' : 'rgba(255,255,255,.12)'; c.lineWidth = 1; c.beginPath(); c.roundRect(x, y, 156, 62, 10); c.fill(); c.stroke();
         c.textAlign = 'left'; c.font = `500 12px ${IF}`; c.fillStyle = 'rgba(255,255,255,.5)'; c.fillText(lb, x + 12, y + 16);
         c.font = `700 21px ${IF}`; c.fillStyle = fin > 0 ? '#03C0AF' : '#fff'; c.fillText(v, x + 12, y + 42);
@@ -1190,16 +1191,21 @@ function introDraw(t){
       c.globalAlpha = BC; }
     // 底部結果列
     c.textAlign = 'left'; c.font = `700 17px ${IF}`;
-    if (opp > 0){ c.globalAlpha = BC * opp; const txt = '＄ 創造商機 ・ 專員有空了，問題解決後順勢轉介理專'; const w = c.measureText(txt).width + 40;
-      c.fillStyle = '#F59F00'; c.shadowColor = '#F59F00'; c.shadowBlur = 20; c.beginPath(); c.roundRect(BX + 26, BY + BH - 64, w, 40, 20); c.fill(); c.shadowBlur = 0; c.fillStyle = '#0E1440'; c.fillText(txt, BX + 46, BY + BH - 44); c.globalAlpha = BC; }
-    else if (fin >= 1){ const q = seg(t, 9.1, 9.3); c.globalAlpha = BC * q; const txt = '✓ 尖峰平均等待 0 秒 ・ 總耗時 4 分 0 秒 ・ 最佳門檻 0.82'; const w = c.measureText(txt).width + 40;
+    if (fin >= 1){ const q = seg(t, 9.1, 9.3); c.globalAlpha = BC * q; const txt = '✓ 尖峰平均等待 0 秒 ・ 總耗時 4 分 0 秒 ・ 最佳門檻 0.82'; const w = c.measureText(txt).width + 40;
       c.fillStyle = '#03C0AF'; c.beginPath(); c.roundRect(BX + 26, BY + BH - 64, w, 40, 20); c.fill(); c.fillStyle = '#0E1440'; c.fillText(txt, BX + 46, BY + BH - 44); c.globalAlpha = BC; }
     else { c.fillStyle = twin > 0 ? 'rgba(255,255,255,.85)' : (f1 > 0 ? '#03C0AF' : '#F59F6B');
       c.fillText(twin > 0 ? `情境 ${String(k + 1).padStart(2, '0')} ・ 尖峰平均等待 ${WS} 秒` : (f1 > 0 ? `尖峰平均等待 ${WS} 秒 ・ 總耗時 ${Math.floor(tv / 60)} 分 ${Math.round(tv % 60)} 秒` : `尖峰平均等待 ${WS} 秒 ・ 總耗時 6 分 5 秒`), BX + 26, BY + BH - 44); }
+    // 結尾: 大金色區塊從遠處飛到畫面中央
+    if (opp > 0){ const q = ease(seg(t, 9.3, 10.0)), sc = 0.15 + 0.85 * q;
+      c.globalAlpha = BC * q * 0.55; c.fillStyle = '#0E1440'; c.fillRect(0, 0, W, H);
+      c.save(); c.globalAlpha = BC * Math.min(1, q * 2); c.translate(W / 2, H / 2 + (1 - q) * 160); c.scale(sc, sc);
+      c.fillStyle = '#F59F00'; c.shadowColor = '#F59F00'; c.shadowBlur = 60; c.beginPath(); c.roundRect(-430, -120, 860, 240, 32); c.fill(); c.shadowBlur = 0;
+      c.textAlign = 'center'; c.fillStyle = '#0E1440'; c.font = `900 76px ${IF}`; c.fillText('＄ 創造商機', 0, -22);
+      c.font = `500 24px ${IF}`; c.fillStyle = 'rgba(14,20,64,.8)'; c.fillText('專員有空了 → 問題解決後順勢轉介理專 → 創造營收', 0, 50); c.restore(); }
     c.globalAlpha = 1;
   }
   /* E. 標題 (10.0+) */
-  const E = seg(t, 11.2, 12.0);
+  const E = seg(t, 11.8, 12.6);
   if (E > 0){
     c.globalAlpha = E * 0.35; c.strokeStyle = '#3B4A8C'; c.lineWidth = 1;
     for (let i = -8; i <= 8; i++){ c.beginPath(); c.moveTo(W / 2 + i * 120, H); c.lineTo(W / 2 + i * 26, 600); c.stroke(); }
@@ -1209,10 +1215,10 @@ function introDraw(t){
 }
 function introLoop(now){
   if (!INTRO.on) return;
-  let t = (now - INTRO.t0) / 1000; if (INTRO.skipped) t = Math.max(t, 13.8) ;
+  let t = (now - INTRO.t0) / 1000; if (INTRO.skipped) t = Math.max(t, 14.4) ;
   introDraw(t);
   const cw = document.getElementById('coverWrap');
-  if (t >= 11.2 && !cw.classList.contains('on')){ cw.classList.add('on'); cw.querySelectorAll('.a').forEach(el => { el.style.animation = 'none'; void el.offsetWidth; el.style.animation = ''; }); }
+  if (t >= 11.8 && !cw.classList.contains('on')){ cw.classList.add('on'); cw.querySelectorAll('.a').forEach(el => { el.style.animation = 'none'; void el.offsetWidth; el.style.animation = ''; }); }
   INTRO.raf = requestAnimationFrame(introLoop);
 }
 RESET['p-intro'] = () => { document.getElementById('coverWrap').classList.remove('on'); introInit(); INTRO.on = true; INTRO.skipped = false; INTRO.t0 = performance.now(); cancelAnimationFrame(INTRO.raf); INTRO.raf = requestAnimationFrame(introLoop); };
