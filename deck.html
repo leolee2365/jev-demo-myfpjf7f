@@ -1167,8 +1167,8 @@ function introDraw(t){
       if (sub){ c.fillStyle = 'rgba(255,255,255,.45)'; c.font = `500 13px ${IF}`; c.fillText(sub, 120 + w + 14, y + 1); } c.restore(); };
     pill(408, f1, '問題自動分類', '新增功能', '#03C0AF');
     pill(462, f2, '同質性問題自動處理', '新增功能', '#03C0AF');
-    const dash = seg(t, 6.5, 7.4);                      // 膠囊與儀表板用 0.9 秒淡入上浮
-    pill(516, ease(dash), '數位孿生模擬', '調整參數，推演不同情境', '#03C0AF');
+    const f3 = seg(t, 6.2, 6.6), dash = seg(t, 6.8, 7.6);   // 第三顆膠囊跟前兩顆同節奏接連出現；儀表板晚 0.6 秒再自己淡入
+    pill(516, f3, '數位孿生模擬', '調整參數，推演不同情境', '#03C0AF');
     // 左: 儀表板 (參數調整)
     if (dash > 0){
       const D0 = ISC[k].d, D1 = ISC[Math.min(23, k + 1)].d, DF = [88, 5000, 5.3, 99.8, 240, 332];
