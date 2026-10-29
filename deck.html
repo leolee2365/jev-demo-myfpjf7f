@@ -514,8 +514,8 @@ h2 em{font-style:normal;color:var(--tealT)}
 .fair i svg{width:13px;height:13px;stroke:#fff;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
 
 /* ---------- 全頁飄動光點 (疊在內容上方、不擋滑鼠) ---------- */
-#ambCv{position:absolute;inset:0;width:1600px;height:900px;z-index:5;pointer-events:none}
-.slide.dark h2,.slide.dark .stmt{animation:glowd 4s ease-in-out infinite}
+#ambCv{position:absolute;inset:0;width:1600px;height:900px;z-index:42;pointer-events:none}   /* 在章節頁 (40) 之上、按鈕 (60) 之下 */
+.slide.dark h2,.slide.dark .stmt,#chap h1{animation:glowd 4s ease-in-out infinite}
 @keyframes glowd{0%,100%{text-shadow:0 0 0 rgba(3,192,175,0)}50%{text-shadow:0 0 22px rgba(3,192,175,.45)}}
 
 /* ---------- 章節過場 ---------- */
@@ -1257,8 +1257,8 @@ let AP = []; iseed = 11; AP = Array.from({ length: 60 }, () => ({ x: irnd() * 16
 const AMB_T0 = performance.now();
 function ambLoop(now){
   const s = slides[cur], t = (now - AMB_T0) / 1000, c = actx; c.setTransform(2, 0, 0, 2, 0, 0); c.clearRect(0, 0, 1600, 900);
-  if (s && s.id !== 'p-intro' && !chapPending){
-    const dark = s.classList.contains('dark');
+  if (s && (s.id !== 'p-intro' || chapPending)){
+    const dark = chapPending || s.classList.contains('dark');
     AP.forEach(p => { const x = ((p.x + p.vx * t) % 1600 + 1600) % 1600, y = ((p.y + p.vy * t) % 900 + 900) % 900, a = 0.25 + 0.75 * (0.5 + 0.5 * Math.sin(t * p.sp + p.ph));
       c.globalAlpha = a * (dark ? 0.6 : 0.28); c.fillStyle = dark ? (p.teal ? '#03C0AF' : '#DDE6FF') : (p.teal ? '#03C0AF' : '#1E2761'); c.shadowColor = dark ? (p.teal ? '#03C0AF' : '#fff') : 'rgba(0,0,0,0)'; c.shadowBlur = dark ? (p.teal ? 10 : 6) : 0;
       c.beginPath(); c.arc(x, y, p.r, 0, 7); c.fill(); });
