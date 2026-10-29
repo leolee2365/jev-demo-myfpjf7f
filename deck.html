@@ -91,6 +91,12 @@ h2 em{font-style:normal;color:var(--tealT)}
 .intro .coverwrap{position:absolute;inset:0;opacity:0;transition:opacity 1s;pointer-events:none;color:#fff;display:flex;align-items:center;justify-content:center;text-align:center}
 .coverwrap .cc{margin-top:-60px}
 .coverwrap .ek{font-size:19px;font-weight:700;letter-spacing:.3em;color:var(--teal)}
+.intro .coverwrap.on h1{background:linear-gradient(100deg,#fff 0%,#fff 40%,#BFF5EE 50%,#fff 60%,#fff 100%);background-size:260% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none;
+  animation:shine 6s linear infinite,glowp 3.6s ease-in-out infinite}
+@keyframes shine{from{background-position:130% 0}to{background-position:-130% 0}}
+@keyframes glowp{0%,100%{filter:drop-shadow(0 0 14px rgba(3,192,175,.45))}50%{filter:drop-shadow(0 0 30px rgba(3,192,175,.85))}}
+.intro .coverwrap.on .slogan{animation:slogp 3.6s ease-in-out infinite}
+@keyframes slogp{0%,100%{box-shadow:0 0 0 rgba(3,192,175,0)}50%{box-shadow:0 0 26px rgba(3,192,175,.35)}}
 .coverwrap h1{margin:18px 0 0;font-size:84px;font-weight:900;line-height:1.15;letter-spacing:.02em;text-shadow:0 0 36px rgba(3,192,175,.55)}
 .coverwrap .ds{margin:22px auto 0;font-size:23px;line-height:1.7;color:rgba(255,255,255,.78);max-width:900px}
 .coverwrap .slogan{display:inline-block;margin-top:48px;padding:14px 40px;border-radius:999px;border:1.5px solid rgba(3,192,175,.7);background:rgba(3,192,175,.10);font-size:26px;font-weight:700;letter-spacing:.18em}
@@ -1028,7 +1034,7 @@ function chapGo(){
 function next(){
   if (chapBusy) return;
   if (chapGo()) return;
-  if (slides[cur].id === 'p-intro' && INTRO.on && !INTRO.skipped && (performance.now() - INTRO.t0) / 1000 < 13.6){ INTRO.skipped = true; return; }
+  if (slides[cur].id === 'p-intro' && INTRO.on && !INTRO.skipped && (performance.now() - INTRO.t0) / 1000 < 13.6){ INTRO.skipped = true; INTRO.t0 = performance.now() - 14400; return; }   // 跳到結尾後時間繼續走, 光點才會飄
   const s = slides[cur];
   if (step < +s.dataset.steps){ step++; applyStep(s, step); history.replaceState(null, '', `#${cur + 1}.${step}`); }
   else if (cur === slides.length - 1) location.href = 'index.html';     // 最後一頁再按 → 直接接 Demo (同資料夾的 index.html)
@@ -1081,10 +1087,12 @@ const IF = '"Noto Sans TC","Microsoft JhengHei",sans-serif';
 let iseed = 7; const irnd = () => ((iseed = (iseed * 1664525 + 1013904223) >>> 0) / 4294967296);
 const clamp01 = v => Math.max(0, Math.min(1, v)), seg = (t, a, b) => clamp01((t - a) / (b - a)), ease = p => 1 - Math.pow(1 - clamp01(p), 3);
 const PHONE = new Path2D(ICONS.phone.match(/d="([^"]+)"/)[1]);
-let IP = [], ISC = [];
+let IP = [], ISC = [], EP = [], ES = [];
 function introInit(){
   iseed = 7;
   IP = Array.from({ length: 150 }, () => { const a = irnd() * Math.PI * 2; return { a, r: 560 + irnd() * 420, s: 0.5 + irnd() * 0.9, d: irnd() * 1.1 }; });
+  EP = Array.from({ length: 70 }, () => ({ x: irnd() * 1600, y: irnd() * 900, vx: (irnd() - 0.5) * 6, vy: -4 - irnd() * 10, r: 0.8 + irnd() * 1.8, ph: irnd() * 6.28, sp: 0.6 + irnd() * 1.2, teal: irnd() < 0.35 }));
+  ES = Array.from({ length: 7 }, (_, i) => ({ x: 360 + irnd() * 880, y: 300 + irnd() * 130, t0: i * 0.9 + irnd(), life: 1.6 + irnd() }));
   ISC = Array.from({ length: 24 }, (_, i) => ({                        // 24 個推演情境: 參數各自不同, 排隊與等待整體往下
     p: [Math.round(44 + irnd() * 20), Math.round(8 + irnd() * 28), +(0.70 + irnd() * 0.25).toFixed(2)],
     q: Math.max(0, Math.min(16, Math.round(15 - i / 24 * 13 + (irnd() - 0.5) * 6))),
@@ -1215,12 +1223,21 @@ function introDraw(t){
     c.globalAlpha = E * 0.35; c.strokeStyle = '#3B4A8C'; c.lineWidth = 1;
     for (let i = -8; i <= 8; i++){ c.beginPath(); c.moveTo(W / 2 + i * 120, H); c.lineTo(W / 2 + i * 26, 600); c.stroke(); }
     for (let k = 1; k <= 6; k++){ const y = 600 + Math.pow(k / 6, 1.8) * 300; c.beginPath(); c.moveTo(0, y); c.lineTo(W, y); c.stroke(); }
+    // 飄動的光點 (緩慢上升、閃爍)
+    const te = t - 11.8;
+    EP.forEach(p => { const x = ((p.x + p.vx * te) % 1600 + 1600) % 1600, y = ((p.y + p.vy * te) % 900 + 900) % 900, a = 0.25 + 0.75 * (0.5 + 0.5 * Math.sin(te * p.sp + p.ph));
+      c.globalAlpha = E * a * 0.7; c.fillStyle = p.teal ? '#03C0AF' : '#DDE6FF'; c.shadowColor = p.teal ? '#03C0AF' : '#fff'; c.shadowBlur = p.teal ? 10 : 6; c.beginPath(); c.arc(x, y, p.r, 0, 7); c.fill(); });
+    c.shadowBlur = 0;
+    // 標題附近的小星光
+    ES.forEach(s => { const cyc = ((te - s.t0) % (s.life + 2.4) + (s.life + 2.4)) % (s.life + 2.4); if (cyc > s.life) return; const q = Math.sin(cyc / s.life * Math.PI), r = 6 + 8 * q;
+      c.globalAlpha = E * q * 0.9; c.strokeStyle = '#fff'; c.lineWidth = 1.2; c.shadowColor = '#9FE6DE'; c.shadowBlur = 12;
+      c.beginPath(); c.moveTo(s.x - r, s.y); c.lineTo(s.x + r, s.y); c.moveTo(s.x, s.y - r); c.lineTo(s.x, s.y + r); c.stroke(); c.shadowBlur = 0; });
     c.globalAlpha = 1;
   }
 }
 function introLoop(now){
   if (!INTRO.on) return;
-  let t = (now - INTRO.t0) / 1000; if (INTRO.skipped) t = Math.max(t, 14.4) ;
+  let t = (now - INTRO.t0) / 1000;
   introDraw(t);
   const cw = document.getElementById('coverWrap');
   if (t >= 11.8 && !cw.classList.contains('on')){ cw.classList.add('on'); cw.querySelectorAll('.a').forEach(el => { el.style.animation = 'none'; void el.offsetWidth; el.style.animation = ''; }); }
