@@ -1167,7 +1167,8 @@ function introDraw(t){
       if (sub){ c.fillStyle = 'rgba(255,255,255,.45)'; c.font = `500 13px ${IF}`; c.fillText(sub, 120 + w + 14, y + 1); } c.restore(); };
     pill(408, f1, '問題自動分類', '新增功能', '#03C0AF');
     pill(462, f2, '同質性問題自動處理', '新增功能', '#03C0AF');
-    pill(516, twin, '數位孿生模擬', '調整參數，推演不同情境', '#03C0AF');
+    const dash = seg(t, 6.6, 7.4);                      // 膠囊與儀表板用 0.8 秒淡入上浮
+    pill(516, ease(dash), '數位孿生模擬', '調整參數，推演不同情境', '#03C0AF');
     // 左: 儀表板 (參數調整)
     if (twin > 0){
       const D0 = ISC[k].d, D1 = ISC[Math.min(23, k + 1)].d, DF = [88, 5000, 5.3, 99.8, 240, 332];
@@ -1175,8 +1176,7 @@ function introDraw(t){
       const T = [['尖峰客服人數', `${Math.round(vals[0])} 人`], ['可導引線上自助', `${Math.round(vals[1])}%`], ['直接分流門檻', vals[2].toFixed(2)],
                  ['Jev 準確度', `${Math.round(dv[0])}%`], ['每日進線', `${Math.round(dv[1]).toLocaleString()} 通`], ['轉錯窗口比例', `${dv[2].toFixed(1)}%`],
                  ['20 秒內接聽率', `${dv[3].toFixed(1)}%`], ['平均總耗時', mmss2(dv[4])], ['每日轉接', `${Math.round(dv[5])} 次`]];
-      c.globalAlpha = BC * twin;
-      T.forEach(([lb, v], i) => { const x = 120 + (i % 3) * 170, y = 566 + Math.floor(i / 3) * 74;
+      T.forEach(([lb, v], i) => { const di = ease(seg(dash, i * 0.06, 0.6 + i * 0.06)); c.globalAlpha = BC * di; const x = 120 + (i % 3) * 170, y = 566 + Math.floor(i / 3) * 74 + (1 - di) * 12;   // 九格依序淡入上浮
         c.fillStyle = fin > 0 ? 'rgba(3,192,175,.10)' : 'rgba(255,255,255,.05)'; c.strokeStyle = fin > 0 ? 'rgba(3,192,175,.55)' : 'rgba(255,255,255,.12)'; c.lineWidth = 1; c.beginPath(); c.roundRect(x, y, 156, 62, 10); c.fill(); c.stroke();
         c.textAlign = 'left'; c.font = `500 12px ${IF}`; c.fillStyle = 'rgba(255,255,255,.5)'; c.fillText(lb, x + 12, y + 16);
         c.font = `700 21px ${IF}`; c.fillStyle = fin > 0 ? '#03C0AF' : '#fff'; c.fillText(v, x + 12, y + 42);
