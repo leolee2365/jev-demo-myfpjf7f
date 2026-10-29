@@ -632,7 +632,7 @@ body{font-family:var(--font)}
 
 <!-- 4-1 -->
 <section class="page" id="p41">
-  <div class="ph"><div class="phk"><span class="no">4-1</span>04｜數位孿生推演</div><h2>上線前先推演：等待變短，<em>客戶就留得住</em></h2><div class="vtags"><span class="vtag keep">🛡 留住客戶</span><span class="vtag earn">＄ 創造營收</span></div></div>
+  <div class="ph"><div class="phk"><span class="no">4-1</span>04｜數位孿生推演</div><h2>模擬不同情境：人力怎麼排，<em>客戶才留得住</em></h2><div class="vtags"><span class="vtag keep">🛡 留住客戶</span><span class="vtag earn">＄ 創造營收</span></div></div>
   <div class="pb grid2 p41">
     <div class="card" style="--d:.05s">
       <div class="ch">推演參數（拉動即時重算）</div>
@@ -673,7 +673,7 @@ body{font-family:var(--font)}
     <li><b>排隊</b>：以尖峰小時（占全日 12%）的進線量，用 Erlang C 計算平均等待時間和 20 秒內接聽率。</li>
     <li><b>文字客服</b>：答非所問的客戶平均多來回 2 輪，其中 40% 最後轉真人。導入後答錯率 = 分錯窗口比例 + 5%（知識庫本身沒有答案）。</li>
     <li><b>時間換算</b>：一年以 250 個工作天計算。省下的專員時間用在複雜問題與新人輔導，不換算成人力或成本。</li>
-    <li><b>資料基礎</b>：客服中心通話結束後已有案件分類紀錄；上線後用這些紀錄（案件量、處理時長、轉接、重複來電、複雜度）校正以上參數，並驗證實際成效。</li>
+    <li><b>資料基礎</b>：客服中心通話結束後已有案件分類紀錄；每天用這些紀錄（案件量、處理時長、轉接、重複來電、複雜度）校正以上參數，讓模擬持續貼近現場。</li>
   </ul></div></div>
 <div class="ovl" id="ovlCurve"><div class="card"><button type="button" class="icon x" data-close>✕</button><div class="ch">門檻怎麼設最省時間？</div>
   <div class="muted small">門檻太低，分錯變多；太高，反問和轉人工變多。曲線最低點就是最佳門檻。</div>
@@ -1334,7 +1334,7 @@ function recompute(){
   const custHrs=((isFinite(A.cust)&&isFinite(B.cust)?(A.cust-B.cust)*P.vPhone:0)+(TA.cust-TB.cust)*P.vText)*250/3600;
   const dWait=isFinite(A.q.asa)&&isFinite(B.q.asa)?Math.max(0,A.q.asa-B.q.asa):null;
   $('hero').innerHTML=`<div><div class="big">${dWait===null?'不再爆線':fmt(dWait,0)}</div><div class="u">${dWait===null?'尖峰時段接得起來':'秒：尖峰平均等待縮短'}</div></div><div><div class="big">${fmt(Math.max(0,A.transfers-B.transfers))}</div><div class="u">次：每日少轉接</div></div><div><div class="big">${fmt(Math.max(0,custHrs),0)}</div><div class="u">小時：每年客戶少花的等待與溝通時間</div></div>`;
-  $('heroNote').textContent=`效益以服務品質衡量，不以減少人力為目標；省下的專員時間用在複雜問題與新人輔導。Jev 模型費用每則約 500 token，一年約 ${fmt(jevCost*1e4,0)} 元。所有數字為假設值，上線後以通話結束的案件分類紀錄校正。`;
+  $('heroNote').textContent=`效益以服務品質衡量，不以減少人力為目標；省下的專員時間用在複雜問題與新人輔導。Jev 模型費用每則約 500 token，一年約 ${fmt(jevCost*1e4,0)} 元。所有數字為假設值，以通話結束的案件分類紀錄持續校正。`;
   const kp=(k,va,vb,better,f)=>{const d=vb-va;const good=better==='low'?d<0:d>0;const pct=va&&isFinite(va)&&isFinite(vb)?Math.abs(d/va*100):null;
     return `<div class="kpi"><div class="k">${k}</div><div class="v"${good?'':' style="color:var(--red)"'}>${f(vb)}</div><div class="c">現況 ${f(va)}</div><div class="d${good?'':' bad'}">${pct===null?'':(good?'改善 ':'惡化 ')+pct.toFixed(0)+'%'}</div></div>`;};
   $('kpis').innerHTML=kp('電話：客戶平均總耗時',A.cust,B.cust,'low',fmtSec)+kp('電話：尖峰平均等待',A.q.asa,B.q.asa,'low',fmtSec)+kp('電話：轉錯窗口比例',A.mis,B.mis,'low',v=>(v*100).toFixed(1)+'%')+kp('文字：每日轉真人',TA.escN,TB.escN,'low',v=>fmt(v)+' 則')+kp('電話：每日線上自助',A.autoN,B.autoN,'high',v=>fmt(v)+' 通');
@@ -1437,7 +1437,7 @@ function capText(i){
     case 5: {const q=[...QS.q].sort((x,y)=>x.lvl-y.lvl||x.arr-y.arr);const pos=q.findIndex(c=>c.mine);const ag=QS.agents.find(a=>a.busy&&a.busy.mine);
       if(pos<0&&!ag&&QS.mineAuto) return `${who}的「${routeOf(L.r,L.cur).s.id}」已傳智慧小豐連結線上辦理，沒有進入排隊；專員留給真正需要人的客戶。`;
       return pos>=0?`主管看見全中心：${who}目前排在第 ${pos+1} 位（${PNAME[q[pos].lvl]}）；專員空下來，一律先接等級最高的客戶。`:ag?`${who}已由專員 ${ag.id} 接起。`:'主管看見全中心：誰最急、誰等最久、哪位專員空著；按「把剛才的客戶加入排隊」看他排在哪裡。';}
-    case 6: return '上線前先推演：用同樣的進線量，比較導入前後的客戶等待、轉錯窗口與線上自助的件數；數字皆為假設值。';
+    case 6: return '模擬不同情境：用同樣的進線量，調整各時段人力與自助比例，比較客戶等待、轉錯窗口與線上自助的件數；數字皆為假設值。';
     case 7: return '左邊是現況的語音選單與總機，右邊是一句話分流；紅點代表轉錯窗口、要重新排隊。';
   }
 }
@@ -1465,7 +1465,7 @@ function renderNav(){
 const CAPVAL=['不用等、不轉錯 → 留住客戶','急件不漏、簡單的線上自助 → 留住客戶・創造營收','簡單的自助、複雜的優先接 → 留住客戶','客戶不用重講 → 留住客戶','問題解決後順勢轉介 → 創造營收','急件與貴賓永遠先接 → 留住客戶','等待變短 → 留住客戶・創造營收','少轉錯、少流失 → 留住客戶'];
 function updateChrome(){ renderNav(); $('capNo').textContent=NOS[SC]; $('capTxt').textContent=capText(SC); $('capVal').textContent=CAPVAL[SC]; $('progBar').style.width=((SC+1)/PAGES.length*100)+'%'; }
 // 換章節時先播全螢幕章節頁（約 1.3 秒），同章節內直接換頁
-const CH_SUB=['客戶說一句話，系統在背後判斷','電話接通的那一刻，專員看見什麼','主管看見全中心的即時排隊','上線前，先在電腦裡推演一遍'];
+const CH_SUB=['客戶說一句話，系統在背後判斷','電話接通的那一刻，專員看見什麼','主管看見全中心的即時排隊','不同情境，先在電腦裡推演一遍'];
 let CH_BUSY=false;
 function go(i){
   i=Math.max(0,Math.min(PAGES.length-1,i)); if(i===SC||CH_BUSY) return;
