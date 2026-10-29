@@ -1110,112 +1110,96 @@ function introDraw(t){
     c.globalAlpha = A * seg(t, 1.0, 1.5); c.fillStyle = 'rgba(255,255,255,.75)'; c.font = `500 20px ${IF}`; c.textAlign = 'center'; c.fillText('每 天 5,000 通 進 線 ・ 每 一 通 都 在 等', W / 2, H / 2 + 150);
     c.globalAlpha = 1;
   }
-  /* B+C. 現況 → 數位孿生推演 (2.2–8.4)：虛擬客服中心看板 */
-  const BC = seg(t, 2.2, 2.5) * (1 - seg(t, 8.3, 8.6));
+  /* B. 現況 (2.2–4.6) → C1. 加上兩個功能、人潮減少 (4.6–6.6) → C2. 參數調整、人潮更少 (6.6–9.2) → C3. 創造商機 (9.3–11.0) */
+  const BC = seg(t, 2.2, 2.5) * (1 - seg(t, 10.9, 11.2));
   if (BC > 0){
-    c.globalAlpha = BC; const twin = seg(t, 4.6, 4.9), fin = seg(t, 6.9, 7.5);
-    // 左: 標籤 + 計時器
+    c.globalAlpha = BC;
+    const f1 = seg(t, 4.6, 5.0), f2 = seg(t, 5.4, 5.8), red1 = ease(seg(t, 5.0, 6.5));          // 兩個功能浮現, 人潮第一波減少
+    const twin = seg(t, 6.6, 6.9), fin = seg(t, 8.6, 9.1), opp = seg(t, 9.3, 9.7);              // 參數調整, 鎖定結果, 創造商機
+    const k = Math.min(23, Math.floor(seg(t, 6.8, 8.6) * 24)), kf = seg(t, 6.8, 8.6) * 24 - k, S0 = ISC[k], S1 = ISC[Math.min(23, k + 1)];
+    const FINP = [52, 15, 0.82];
+    let vals = [52, 0, 0];
+    if (twin > 0) vals = fin > 0 ? [0, 1, 2].map(i => S0.p[i] + (FINP[i] - S0.p[i]) * ease(fin)) : [0, 1, 2].map(i => S0.p[i] + (S1.p[i] - S0.p[i]) * kf);
+    // 排隊人數: 現況漲到 14 → 功能上線後減到 8 → 參數調整後減到 1；線上自助: 0 → 6 → 9
+    const red2 = ease(seg(t, 6.8, 8.8));
+    const Q = twin === 0 ? Math.round(14 * ease(seg(t, 2.6, 4.0)) - 6 * red1) : Math.max(0, Math.round(8 - 7 * red2 + (fin > 0 ? 0 : Math.sin(t * 9 + k) * 0.9)));
+    const AU = twin === 0 ? Math.round(6 * red1) : Math.round(6 + 3 * red2);
+    const WS = twin === 0 ? Math.round(14 - 8 * red1) : Math.max(0, Math.round(6 - 6 * red2));
+    const tv = twin === 0 ? 365 * ease(seg(t, 2.4, 4.0)) - 65 * red1 : 300 - 60 * red2;
+    // 左: 標籤
     c.textAlign = 'left'; c.font = `700 15px ${IF}`;
-    c.fillStyle = `rgba(249,159,107,${1 - twin})`; c.fillText('現 況', 120, 230);
-    c.fillStyle = `rgba(3,192,175,${twin})`; c.fillText('DIGITAL TWIN ・ 推 演 情 境', 120, 230);
-    const tv = 365 * ease(seg(t, 2.4, 4.0));
+    c.fillStyle = `rgba(249,159,107,${1 - f1})`; c.fillText('現 況', 120, 230);
+    c.fillStyle = `rgba(3,192,175,${f1 * (1 - twin)})`; c.fillText('加 上 兩 個 功 能', 120, 230);
+    c.fillStyle = `rgba(3,192,175,${twin * (1 - opp)})`; c.fillText('DIGITAL TWIN ・ 參 數 調 整', 120, 230);
+    c.fillStyle = `rgba(245,159,0,${opp})`; c.fillText('＄ 創 造 商 機', 120, 230);
+    // 左: 計時器
     c.font = `900 96px ${IF}`;
-    if (fin < 0.3){ c.fillStyle = '#fff'; c.fillText(mmss2(tv), 118, 300); }
+    if (fin < 0.3){ c.fillStyle = twin > 0 || f1 > 0 ? '#fff' : '#fff'; c.fillText(mmss2(tv), 118, 300); }
     else { c.fillStyle = 'rgba(255,255,255,.35)'; c.fillText('06:05', 118, 300); const w = c.measureText('06:05').width; c.strokeStyle = '#D9363E'; c.lineWidth = 5; c.beginPath(); c.moveTo(118, 300); c.lineTo(118 + w, 300); c.stroke();
-      c.globalAlpha = BC * seg(t, 7.1, 7.5); c.fillStyle = '#03C0AF'; c.fillText('04:00', 118 + w + 30, 300); c.globalAlpha = BC; }
-    c.font = `500 18px ${IF}`; c.fillStyle = 'rgba(255,255,255,.6)'; c.fillText(fin > 0.3 ? '客戶平均總耗時' : '客戶平均總耗時（現況）', 120, 356);
-    // 情境資料
-    const k = Math.min(23, Math.floor(seg(t, 4.8, 7.0) * 24)), kf = seg(t, 4.8, 7.0) * 24 - k, S0 = ISC[k], S1 = ISC[Math.min(23, k + 1)];
-    const FINP = [52, 15, 0.82]; let vals, Q, AU, WS;
-    if (twin === 0){ Q = Math.round(14 * ease(seg(t, 2.6, 4.0))); AU = 0; WS = 14; vals = [52, 0, 0]; }
-    else if (fin > 0){ const e = ease(fin); vals = [0, 1, 2].map(i => S0.p[i] + (FINP[i] - S0.p[i]) * e); Q = Math.round(S0.q + (1 - S0.q) * e); AU = Math.round(S0.au + (9 - S0.au) * e); WS = Math.round(S0.w * (1 - e)); }
-    else { vals = [0, 1, 2].map(i => S0.p[i] + (S1.p[i] - S0.p[i]) * kf); Q = Math.round(S0.q + (S1.q - S0.q) * kf); AU = S0.au; WS = S0.w; }
-    // 左: 排隊人數 (現況) → 拉桿 (推演)
-    if (twin < 1){ c.globalAlpha = BC * (1 - twin); c.font = `700 30px ${IF}`; c.fillStyle = '#F59F6B'; c.fillText(`排隊 ${Q} 人`, 120, 420); c.font = `500 17px ${IF}`; c.fillStyle = 'rgba(255,255,255,.55)'; c.fillText('語音選單 → 按 0 總機 → 排隊等真人', 120, 462); c.globalAlpha = BC; }
-    if (twin > 0){                                     // 儀表板: 九格參數隨情境跳動, 最後鎖定在推演結果 (青綠)
+      c.globalAlpha = BC * seg(t, 8.8, 9.1); c.fillStyle = '#03C0AF'; c.fillText('04:00', 118 + w + 30, 300); c.globalAlpha = BC; }
+    c.font = `500 18px ${IF}`; c.fillStyle = 'rgba(255,255,255,.6)'; c.fillText(fin > 0.3 ? '客戶平均總耗時' : (f1 > 0 ? '客戶平均總耗時（上線後）' : '客戶平均總耗時（現況）'), 120, 356);
+    // 左: 現況說明 → 兩個功能膠囊
+    if (f1 < 1){ c.globalAlpha = BC * (1 - f1); c.font = `700 30px ${IF}`; c.fillStyle = '#F59F6B'; c.fillText(`排隊 ${Q} 人`, 120, 420); c.font = `500 17px ${IF}`; c.fillStyle = 'rgba(255,255,255,.55)'; c.fillText('語音選單 → 按 0 總機 → 排隊等真人', 120, 462); c.globalAlpha = BC; }
+    const pill = (y, a, txt, sub, col) => { if (a <= 0) return; c.save(); c.globalAlpha = BC * a; c.translate(0, (1 - a) * 14);
+      c.font = `700 19px ${IF}`; const w = c.measureText(txt).width + 70; c.fillStyle = col; c.shadowColor = col; c.shadowBlur = 16; c.beginPath(); c.roundRect(120, y - 22, w, 44, 22); c.fill(); c.shadowBlur = 0;
+      c.fillStyle = '#0E1440'; c.textAlign = 'left'; c.fillText('✓  ' + txt, 142, y + 1);
+      if (sub){ c.fillStyle = 'rgba(255,255,255,.6)'; c.font = `500 14px ${IF}`; c.fillText(sub, 120 + w + 14, y + 1); } c.restore(); };
+    pill(408, f1, '問題自動分類', '新增功能', '#03C0AF');
+    pill(462, f2, '同質性問題自動處理', '新增功能', '#03C0AF');
+    // 左: 儀表板 (參數調整)
+    if (twin > 0){
       const D0 = ISC[k].d, D1 = ISC[Math.min(23, k + 1)].d, DF = [88, 5000, 5.3, 99.8, 240, 332];
-      const dv = [0, 1, 2, 3, 4, 5].map(i => fin > 0 ? D0[i] + (DF[i] - D0[i]) * ease(fin) : D0[i] + (D1[i] - D0[i]) * kf + (fin > 0 ? 0 : Math.sin(t * 37 + i * 1.7) * (D1[i] - D0[i]) * 0.15));
+      const dv = [0, 1, 2, 3, 4, 5].map(i => fin > 0 ? D0[i] + (DF[i] - D0[i]) * ease(fin) : D0[i] + (D1[i] - D0[i]) * kf + Math.sin(t * 37 + i * 1.7) * (D1[i] - D0[i]) * 0.15);
       const T = [['尖峰客服人數', `${Math.round(vals[0])} 人`], ['可導引線上自助', `${Math.round(vals[1])}%`], ['直接分流門檻', vals[2].toFixed(2)],
                  ['Jev 準確度', `${Math.round(dv[0])}%`], ['每日進線', `${Math.round(dv[1]).toLocaleString()} 通`], ['轉錯窗口比例', `${dv[2].toFixed(1)}%`],
                  ['20 秒內接聽率', `${dv[3].toFixed(1)}%`], ['平均總耗時', mmss2(dv[4])], ['每日轉接', `${Math.round(dv[5])} 次`]];
       c.globalAlpha = BC * twin;
-      T.forEach(([lb, v], i) => { const x = 120 + (i % 3) * 170, y = 400 + Math.floor(i / 3) * 86;
-        c.fillStyle = fin > 0 ? 'rgba(3,192,175,.10)' : 'rgba(255,255,255,.05)'; c.strokeStyle = fin > 0 ? 'rgba(3,192,175,.55)' : 'rgba(255,255,255,.12)'; c.lineWidth = 1; c.beginPath(); c.roundRect(x, y, 156, 70, 10); c.fill(); c.stroke();
-        c.textAlign = 'left'; c.font = `500 12px ${IF}`; c.fillStyle = 'rgba(255,255,255,.5)'; c.fillText(lb, x + 12, y + 18);
-        c.font = `700 22px ${IF}`; c.fillStyle = fin > 0 ? '#03C0AF' : '#fff'; c.fillText(v, x + 12, y + 46);
-        // 右下小火花線 (隨機抖動, 鎖定後變平)
+      T.forEach(([lb, v], i) => { const x = 120 + (i % 3) * 170, y = 512 + Math.floor(i / 3) * 74;
+        c.fillStyle = fin > 0 ? 'rgba(3,192,175,.10)' : 'rgba(255,255,255,.05)'; c.strokeStyle = fin > 0 ? 'rgba(3,192,175,.55)' : 'rgba(255,255,255,.12)'; c.lineWidth = 1; c.beginPath(); c.roundRect(x, y, 156, 62, 10); c.fill(); c.stroke();
+        c.textAlign = 'left'; c.font = `500 12px ${IF}`; c.fillStyle = 'rgba(255,255,255,.5)'; c.fillText(lb, x + 12, y + 16);
+        c.font = `700 21px ${IF}`; c.fillStyle = fin > 0 ? '#03C0AF' : '#fff'; c.fillText(v, x + 12, y + 42);
         c.strokeStyle = fin > 0 ? 'rgba(3,192,175,.7)' : 'rgba(255,255,255,.3)'; c.lineWidth = 1.2; c.beginPath();
-        for (let j = 0; j < 9; j++){ const sx = x + 100 + j * 6, sy = y + 52 + (fin > 0 ? 0 : Math.sin(t * 23 + i * 3 + j * 1.3) * 6); j ? c.lineTo(sx, sy) : c.moveTo(sx, sy); } c.stroke(); });
+        for (let j = 0; j < 9; j++){ const sx = x + 100 + j * 6, sy = y + 46 + (fin > 0 ? 0 : Math.sin(t * 23 + i * 3 + j * 1.3) * 6); j ? c.lineTo(sx, sy) : c.moveTo(sx, sy); } c.stroke(); });
       c.globalAlpha = BC;
     }
     // 右: 客服中心看板
-    const BX = 700, BY = 200, BW = 780, BH = 450;
-    c.setLineDash(twin > 0 ? [8, 8] : []); c.strokeStyle = twin > 0 ? `rgba(3,192,175,${0.35 + 0.45 * twin})` : 'rgba(255,255,255,.16)'; c.lineWidth = 1.5;
+    const BX = 700, BY = 200, BW = 780, BH = 450, live = Math.max(f1, twin);
+    c.setLineDash(live > 0 ? [8, 8] : []); c.strokeStyle = live > 0 ? `rgba(3,192,175,${0.35 + 0.45 * live})` : 'rgba(255,255,255,.16)'; c.lineWidth = 1.5;
     c.beginPath(); c.roundRect(BX, BY, BW, BH, 18); c.stroke(); c.setLineDash([]);
-    c.fillStyle = twin > 0 ? `rgba(3,192,175,${0.045 * twin})` : 'rgba(255,255,255,.03)'; c.fill();
-    c.textAlign = 'left'; c.font = `700 14px ${IF}`; c.fillStyle = twin > 0 ? '#03C0AF' : 'rgba(255,255,255,.55)';
-    c.fillText(twin > 0 ? 'S I M U L A T I O N ・ 虛擬客服中心' : '客服中心 ・ 尖峰時段', BX + 26, BY + 30);
+    c.fillStyle = live > 0 ? `rgba(3,192,175,${0.045 * live})` : 'rgba(255,255,255,.03)'; c.fill();
+    c.textAlign = 'left'; c.font = `700 14px ${IF}`; c.fillStyle = live > 0 ? '#03C0AF' : 'rgba(255,255,255,.55)';
+    c.fillText(twin > 0 ? 'S I M U L A T I O N ・ 虛擬客服中心' : (f1 > 0 ? '客服中心 ・ 功能上線後' : '客服中心 ・ 尖峰時段'), BX + 26, BY + 30);
     if (twin > 0){ c.textAlign = 'right'; c.font = `900 44px ${IF}`; c.fillStyle = fin > 0 ? '#03C0AF' : '#fff'; c.fillText(String(fin > 0 ? 24 : k + 1).padStart(2, '0'), BX + BW - 26, BY + 34); c.font = `500 13px ${IF}`; c.fillStyle = 'rgba(255,255,255,.5)'; c.fillText('情 境', BX + BW - 92, BY + 34); }
-    // 專員席位 (每 4 人一個席位圖示)
-    const nA = Math.max(10, Math.min(16, Math.round(vals[0] / 4))), busy = twin === 0 ? nA : Math.min(nA, Math.round(nA * Math.min(1, (Q + 2) / 10)));
+    // 專員席位
+    const nA = Math.max(10, Math.min(16, Math.round(vals[0] / 4))), busy = Math.min(nA, Math.round(nA * Math.min(1, (Q + 2) / 10)));
     c.textAlign = 'left'; c.font = `500 14px ${IF}`; c.fillStyle = 'rgba(255,255,255,.5)'; c.fillText(`專員 ${Math.round(vals[0])} 人`, BX + 26, BY + 72);
-    for (let i = 0; i < nA; i++){ const x = BX + 36 + (i % 8) * 60, y = BY + 110 + Math.floor(i / 8) * 54, on = i < busy;
-      c.fillStyle = on ? (twin > 0 && fin > 0.5 ? 'rgba(3,192,175,.9)' : '#F59F6B') : 'rgba(255,255,255,.14)'; c.beginPath(); c.roundRect(x - 16, y - 16, 32, 32, 9); c.fill();
-      c.fillStyle = on ? '#0E1440' : 'rgba(255,255,255,.35)'; c.beginPath(); c.arc(x, y - 4, 5, 0, 7); c.fill(); c.beginPath(); c.roundRect(x - 8, y + 3, 16, 9, 4); c.fill(); }
+    for (let i = 0; i < nA; i++){ const x = BX + 36 + (i % 8) * 60, y = BY + 110 + Math.floor(i / 8) * 54, on = i < busy, gold = opp > 0 && !on && (i % 3 === 1);
+      c.fillStyle = gold ? '#F59F00' : on ? (fin > 0.5 ? 'rgba(3,192,175,.9)' : '#F59F6B') : 'rgba(255,255,255,.14)'; c.beginPath(); c.roundRect(x - 16, y - 16, 32, 32, 9); c.fill();
+      c.fillStyle = on || gold ? '#0E1440' : 'rgba(255,255,255,.35)'; c.beginPath(); c.arc(x, y - 4, 5, 0, 7); c.fill(); c.beginPath(); c.roundRect(x - 8, y + 3, 16, 9, 4); c.fill();
+      if (gold){ c.globalAlpha = BC * opp; c.fillStyle = '#F59F00'; c.font = `900 13px ${IF}`; c.textAlign = 'center'; c.fillText('$', x + 16, y - 14); c.textAlign = 'left'; c.globalAlpha = BC; } }
     // 排隊客戶
     c.font = `500 14px ${IF}`; c.fillStyle = 'rgba(255,255,255,.5)'; c.fillText(`排隊 ${Q} 人`, BX + 26, BY + 236);
     for (let i = 0; i < Q; i++){ const x = BX + 40 + (i % 16) * 32, y = BY + 272 + Math.floor(i / 16) * 32; const pulse = 0.75 + 0.25 * Math.sin(t * 4 + i);
-      c.fillStyle = `rgba(249,159,107,${twin > 0 && fin > 0.5 ? 0.5 : pulse})`; c.beginPath(); c.arc(x, y, 8, 0, 7); c.fill(); }
+      c.fillStyle = `rgba(249,159,107,${fin > 0.5 ? 0.5 : pulse})`; c.beginPath(); c.arc(x, y, 8, 0, 7); c.fill(); }
     if (Q === 0 && fin > 0.5){ c.fillStyle = '#03C0AF'; c.font = `700 18px ${IF}`; c.fillText('沒有人在等', BX + 40, BY + 272); }
-    // 線上自助 (推演才有)
-    if (twin > 0){ c.globalAlpha = BC * twin; const ax = BX + BW - 190;
+    // 線上自助
+    if (live > 0){ c.globalAlpha = BC * live; const ax = BX + BW - 190;
       c.fillStyle = 'rgba(3,192,175,.15)'; c.strokeStyle = '#03C0AF'; c.lineWidth = 1.5; c.beginPath(); c.roundRect(ax, BY + 62, 164, 30, 15); c.fill(); c.stroke();
       c.textAlign = 'center'; c.font = `700 14px ${IF}`; c.fillStyle = '#03C0AF'; c.fillText(`⚡ 線上自助 ${AU} 通`, ax + 82, BY + 77);
       for (let i = 0; i < AU; i++){ const x = ax + 20 + (i % 5) * 32, y = BY + 118 + Math.floor(i / 5) * 32; c.fillStyle = '#03C0AF'; c.shadowColor = '#03C0AF'; c.shadowBlur = 10; c.beginPath(); c.arc(x, y, 7, 0, 7); c.fill(); c.shadowBlur = 0; }
       c.globalAlpha = BC; }
     // 底部結果列
     c.textAlign = 'left'; c.font = `700 17px ${IF}`;
-    if (fin >= 1){ const q = seg(t, 7.5, 7.8); c.globalAlpha = BC * q; const txt = '✓ 尖峰平均等待 0 秒 ・ 總耗時 4 分 0 秒 ・ 最佳門檻 0.82'; const w = c.measureText(txt).width + 40;
+    if (opp > 0){ c.globalAlpha = BC * opp; const txt = '＄ 創造商機 ・ 專員有空了，問題解決後順勢轉介理專'; const w = c.measureText(txt).width + 40;
+      c.fillStyle = '#F59F00'; c.shadowColor = '#F59F00'; c.shadowBlur = 20; c.beginPath(); c.roundRect(BX + 26, BY + BH - 64, w, 40, 20); c.fill(); c.shadowBlur = 0; c.fillStyle = '#0E1440'; c.fillText(txt, BX + 46, BY + BH - 44); c.globalAlpha = BC; }
+    else if (fin >= 1){ const q = seg(t, 9.1, 9.3); c.globalAlpha = BC * q; const txt = '✓ 尖峰平均等待 0 秒 ・ 總耗時 4 分 0 秒 ・ 最佳門檻 0.82'; const w = c.measureText(txt).width + 40;
       c.fillStyle = '#03C0AF'; c.beginPath(); c.roundRect(BX + 26, BY + BH - 64, w, 40, 20); c.fill(); c.fillStyle = '#0E1440'; c.fillText(txt, BX + 46, BY + BH - 44); c.globalAlpha = BC; }
-    else { c.fillStyle = twin > 0 ? 'rgba(255,255,255,.85)' : '#F59F6B'; c.fillText(twin > 0 ? `情境 ${String(k + 1).padStart(2, '0')} ・ 尖峰平均等待 ${WS} 秒` : `尖峰平均等待 ${WS} 秒 ・ 總耗時 6 分 5 秒`, BX + 26, BY + BH - 44); }
-    c.globalAlpha = 1;
-  }
-  /* D. 流程圖 (8.4–11.6)：一句話 → 自動分類 → 同質性自動處理(亮) / 異質性專員 → 商機轉介(亮) */
-  const D = seg(t, 8.4, 8.6) * (1 - seg(t, 11.4, 11.7));
-  if (D > 0){
-    const d = t - 8.4, pulse = 0.5 + 0.5 * Math.sin(t * 5);
-    const N = { A: [230, 450, 210, 84], B: [600, 450, 260, 96], C: [1010, 320, 290, 96], Dn: [1010, 580, 290, 96], E: [1380, 580, 230, 96] };   // [cx, cy, w, h]
-    const bez = (a, b) => [a[0] + a[2] / 2, a[1], (a[0] + a[2] / 2 + b[0] - b[2] / 2) / 2, a[1], (a[0] + a[2] / 2 + b[0] - b[2] / 2) / 2, b[1], b[0] - b[2] / 2, b[1]];
-    const bpt = (p, q) => { const u = 1 - q; return [u*u*u*p[0] + 3*u*u*q*p[2] + 3*u*q*q*p[4] + q*q*q*p[6], u*u*u*p[1] + 3*u*u*q*p[3] + 3*u*q*q*p[5] + q*q*q*p[7]]; };
-    const edge = (a, b, prog, col) => { if (prog <= 0) return; const p = bez(a, b), L = Math.hypot(p[6] - p[0], p[7] - p[1]) * 1.3;
-      c.save(); c.setLineDash([L, L]); c.lineDashOffset = L * (1 - prog); c.strokeStyle = col; c.lineWidth = 2.5; c.beginPath(); c.moveTo(p[0], p[1]); c.bezierCurveTo(p[2], p[3], p[4], p[5], p[6], p[7]); c.stroke(); c.restore(); };
-    const token = (a, b, q, col) => { if (q <= 0 || q >= 1) return; const [x, y] = bpt(bez(a, b), q); c.fillStyle = col; c.shadowColor = col; c.shadowBlur = 18; c.beginPath(); c.arc(x, y, 8, 0, 7); c.fill(); c.shadowBlur = 0; };
-    const node = (n, alpha, title, sub, on, col) => { if (alpha <= 0) return; const [x, y, w, h] = n; c.save(); c.globalAlpha = D * alpha;
-      c.translate(x, y); c.scale(0.92 + 0.08 * alpha, 0.92 + 0.08 * alpha);
-      if (on){ c.shadowColor = col; c.shadowBlur = 28 + 18 * pulse; c.fillStyle = col; } else { c.fillStyle = 'rgba(255,255,255,.06)'; }
-      c.strokeStyle = on ? col : 'rgba(255,255,255,.35)'; c.lineWidth = on ? 0 : 1.5; c.beginPath(); c.roundRect(-w / 2, -h / 2, w, h, 16); c.fill(); if (!on) c.stroke(); c.shadowBlur = 0;
-      c.textAlign = 'center'; c.fillStyle = on ? '#0E1440' : '#fff'; c.font = `900 ${sub ? 24 : 22}px ${IF}`; c.fillText(title, 0, sub ? -12 : 0);
-      if (sub){ c.fillStyle = on ? 'rgba(14,20,64,.75)' : 'rgba(201,211,242,.8)'; c.font = `500 14px ${IF}`; c.fillText(sub, 0, 18); } c.restore(); };
-    const TEAL = '#03C0AF', GOLD = '#F59F00', LINE = 'rgba(201,211,242,.45)';
-    // 連線與光點
-    edge(N.A, N.B, seg(d, 0.35, 0.75), LINE); token(N.A, N.B, seg(d, 0.45, 0.95), '#fff');
-    edge(N.B, N.C, seg(d, 1.25, 1.7), LINE); token(N.B, N.C, seg(d, 1.3, 1.9), TEAL);
-    edge(N.B, N.Dn, seg(d, 1.25, 1.7), LINE); token(N.B, N.Dn, seg(d, 1.3, 1.9), '#fff');
-    edge(N.Dn, N.E, seg(d, 2.1, 2.5), LINE); token(N.Dn, N.E, seg(d, 2.15, 2.65), GOLD);
-    // 節點
-    node(N.A, seg(d, 0, 0.35), '客戶一句話', null, false);
-    node(N.B, seg(d, 0.6, 0.95), '問題自動分類', 'Jev・類別＋急迫性', seg(d, 0.95, 1.3) > 0 && d < 1.3, TEAL);
-    node(N.C, seg(d, 1.6, 1.95), '同質性 → 自動處理', '傳智慧小豐連結，當場辦好', d >= 1.9, TEAL);
-    node(N.Dn, seg(d, 1.6, 1.95), '異質性 → 專員處理', '接聽前帶出資料與建議', false);
-    node(N.E, seg(d, 2.3, 2.65), '商機轉介', '問題解決後，順勢轉介理專', d >= 2.65, GOLD);
-    // 發亮節點旁的小標
-    c.globalAlpha = D * seg(d, 2.0, 2.3); c.textAlign = 'left'; c.font = `700 15px ${IF}`; c.fillStyle = TEAL; c.fillText('⚡ 減少進線、立即解決', N.C[0] + N.C[2] / 2 + 18, N.C[1]);
-    c.globalAlpha = D * seg(d, 2.75, 3.05); c.fillStyle = GOLD; c.textAlign = 'center'; c.fillText('＄ 創造營收', N.E[0], N.E[1] + N.E[3] / 2 + 26);
-    c.globalAlpha = D; c.textAlign = 'left'; c.font = `700 15px ${IF}`; c.fillStyle = 'rgba(255,255,255,.5)'; c.fillText('一 句 話 進 來 之 後', 120, 230);
+    else { c.fillStyle = twin > 0 ? 'rgba(255,255,255,.85)' : (f1 > 0 ? '#03C0AF' : '#F59F6B');
+      c.fillText(twin > 0 ? `情境 ${String(k + 1).padStart(2, '0')} ・ 尖峰平均等待 ${WS} 秒` : (f1 > 0 ? `尖峰平均等待 ${WS} 秒 ・ 總耗時 ${Math.floor(tv / 60)} 分 ${Math.round(tv % 60)} 秒` : `尖峰平均等待 ${WS} 秒 ・ 總耗時 6 分 5 秒`), BX + 26, BY + BH - 44); }
     c.globalAlpha = 1;
   }
   /* E. 標題 (10.0+) */
-  const E = seg(t, 11.4, 12.2);
+  const E = seg(t, 11.2, 12.0);
   if (E > 0){
     c.globalAlpha = E * 0.35; c.strokeStyle = '#3B4A8C'; c.lineWidth = 1;
     for (let i = -8; i <= 8; i++){ c.beginPath(); c.moveTo(W / 2 + i * 120, H); c.lineTo(W / 2 + i * 26, 600); c.stroke(); }
@@ -1228,7 +1212,7 @@ function introLoop(now){
   let t = (now - INTRO.t0) / 1000; if (INTRO.skipped) t = Math.max(t, 13.8) ;
   introDraw(t);
   const cw = document.getElementById('coverWrap');
-  if (t >= 11.4 && !cw.classList.contains('on')){ cw.classList.add('on'); cw.querySelectorAll('.a').forEach(el => { el.style.animation = 'none'; void el.offsetWidth; el.style.animation = ''; }); }
+  if (t >= 11.2 && !cw.classList.contains('on')){ cw.classList.add('on'); cw.querySelectorAll('.a').forEach(el => { el.style.animation = 'none'; void el.offsetWidth; el.style.animation = ''; }); }
   INTRO.raf = requestAnimationFrame(introLoop);
 }
 RESET['p-intro'] = () => { document.getElementById('coverWrap').classList.remove('on'); introInit(); INTRO.on = true; INTRO.skipped = false; INTRO.t0 = performance.now(); cancelAnimationFrame(INTRO.raf); INTRO.raf = requestAnimationFrame(introLoop); };
