@@ -1131,7 +1131,7 @@ function introDraw(t){
     c.fillStyle = `rgba(249,159,107,${1 - f1})`; c.fillText('現 況', 120, 230);
     c.fillStyle = `rgba(3,192,175,${f1 * (1 - twin)})`; c.fillText('加 上 兩 個 功 能', 120, 230);
     c.fillStyle = `rgba(3,192,175,${twin * (1 - opp)})`; c.fillText('DIGITAL TWIN ・ 參 數 調 整', 120, 230);
-    c.fillStyle = `rgba(245,159,0,${opp})`; c.fillText('＄ 創 造 商 機', 120, 230);
+    c.fillStyle = `rgba(217,179,106,${opp})`; c.fillText('OPPORTUNITY ・ 商 機 轉 介', 120, 230);
     // 左: 計時器
     c.font = `900 96px ${IF}`;
     if (fin < 0.3){ c.fillStyle = twin > 0 || f1 > 0 ? '#fff' : '#fff'; c.fillText(mmss2(tv), 118, 300); }
@@ -1141,9 +1141,9 @@ function introDraw(t){
     // 左: 現況說明 → 兩個功能膠囊
     if (f1 < 1){ c.globalAlpha = BC * (1 - f1); c.font = `700 30px ${IF}`; c.fillStyle = '#F59F6B'; c.fillText(`排隊 ${Q} 人`, 120, 420); c.font = `500 17px ${IF}`; c.fillStyle = 'rgba(255,255,255,.55)'; c.fillText('語音選單 → 按 0 總機 → 排隊等真人', 120, 462); c.globalAlpha = BC; }
     const pill = (y, a, txt, sub, col) => { if (a <= 0) return; c.save(); c.globalAlpha = BC * a; c.translate(0, (1 - a) * 14);
-      c.font = `700 19px ${IF}`; const w = c.measureText(txt).width + 70; c.fillStyle = col; c.shadowColor = col; c.shadowBlur = 16; c.beginPath(); c.roundRect(120, y - 22, w, 44, 22); c.fill(); c.shadowBlur = 0;
-      c.fillStyle = '#0E1440'; c.textAlign = 'left'; c.fillText('✓  ' + txt, 142, y + 1);
-      if (sub){ c.fillStyle = 'rgba(255,255,255,.6)'; c.font = `500 14px ${IF}`; c.fillText(sub, 120 + w + 14, y + 1); } c.restore(); };
+      c.font = `600 18px ${IF}`; const w = c.measureText(txt).width + 72; c.fillStyle = 'rgba(3,192,175,.10)'; c.beginPath(); c.roundRect(120, y - 21, w, 42, 21); c.fill(); c.strokeStyle = 'rgba(3,192,175,.6)'; c.lineWidth = 1; c.stroke();
+      c.fillStyle = col; c.font = `700 15px ${IF}`; c.textAlign = 'left'; c.fillText('✓', 142, y + 1); c.fillStyle = '#fff'; c.font = `600 18px ${IF}`; c.fillText(txt, 164, y + 1);
+      if (sub){ c.fillStyle = 'rgba(255,255,255,.45)'; c.font = `500 13px ${IF}`; c.fillText(sub, 120 + w + 14, y + 1); } c.restore(); };
     pill(408, f1, '問題自動分類', '新增功能', '#03C0AF');
     pill(462, f2, '同質性問題自動處理', '新增功能', '#03C0AF');
     pill(516, twin, '數位孿生模擬', '調整參數，推演不同情境', '#03C0AF');
@@ -1175,9 +1175,9 @@ function introDraw(t){
     const nA = Math.max(10, Math.min(16, Math.round(vals[0] / 4))), busy = Math.min(nA, Math.round(nA * Math.min(1, (Q + 2) / 10)));
     c.textAlign = 'left'; c.font = `500 14px ${IF}`; c.fillStyle = 'rgba(255,255,255,.5)'; c.fillText(`專員 ${Math.round(vals[0])} 人`, BX + 26, BY + 72);
     for (let i = 0; i < nA; i++){ const x = BX + 36 + (i % 8) * 60, y = BY + 110 + Math.floor(i / 8) * 54, on = i < busy, gold = opp > 0 && !on && (i % 3 === 1);
-      c.fillStyle = gold ? '#F59F00' : on ? (fin > 0.5 ? 'rgba(3,192,175,.9)' : '#F59F6B') : 'rgba(255,255,255,.14)'; c.beginPath(); c.roundRect(x - 16, y - 16, 32, 32, 9); c.fill();
-      c.fillStyle = on || gold ? '#0E1440' : 'rgba(255,255,255,.35)'; c.beginPath(); c.arc(x, y - 4, 5, 0, 7); c.fill(); c.beginPath(); c.roundRect(x - 8, y + 3, 16, 9, 4); c.fill();
-      if (gold){ c.globalAlpha = BC * opp; c.fillStyle = '#F59F00'; c.font = `900 13px ${IF}`; c.textAlign = 'center'; c.fillText('$', x + 16, y - 14); c.textAlign = 'left'; c.globalAlpha = BC; } }
+      c.fillStyle = on ? (fin > 0.5 ? 'rgba(3,192,175,.85)' : '#E8945C') : (gold ? 'rgba(217,179,106,.12)' : 'rgba(255,255,255,.12)'); c.beginPath(); c.roundRect(x - 16, y - 16, 32, 32, 9); c.fill();
+      if (gold){ c.globalAlpha = BC * opp; c.strokeStyle = '#D9B36A'; c.lineWidth = 1.2; c.beginPath(); c.roundRect(x - 16, y - 16, 32, 32, 9); c.stroke(); c.globalAlpha = BC; }
+      c.fillStyle = on ? '#0E1440' : (gold ? '#D9B36A' : 'rgba(255,255,255,.35)'); c.beginPath(); c.arc(x, y - 4, 5, 0, 7); c.fill(); c.beginPath(); c.roundRect(x - 8, y + 3, 16, 9, 4); c.fill(); }
     // 排隊客戶
     c.font = `500 14px ${IF}`; c.fillStyle = 'rgba(255,255,255,.5)'; c.fillText(`排隊 ${Q} 人`, BX + 26, BY + 236);
     for (let i = 0; i < Q; i++){ const x = BX + 40 + (i % 16) * 32, y = BY + 272 + Math.floor(i / 16) * 32; const pulse = 0.75 + 0.25 * Math.sin(t * 4 + i);
@@ -1192,14 +1192,18 @@ function introDraw(t){
     // 底部結果列
     c.textAlign = 'left'; c.font = `700 17px ${IF}`;
     if (fin >= 1 && opp === 0){ const q = seg(t, 9.1, 9.3); c.globalAlpha = BC * q; const txt = '✓ 尖峰平均等待 0 秒 ・ 總耗時 4 分 0 秒 ・ 最佳門檻 0.82'; const w = c.measureText(txt).width + 40;
-      c.fillStyle = '#03C0AF'; c.beginPath(); c.roundRect(BX + 26, BY + BH - 64, w, 40, 20); c.fill(); c.fillStyle = '#0E1440'; c.fillText(txt, BX + 46, BY + BH - 44); c.globalAlpha = BC; }
+      c.fillStyle = 'rgba(3,192,175,.10)'; c.beginPath(); c.roundRect(BX + 26, BY + BH - 64, w, 40, 20); c.fill(); c.strokeStyle = 'rgba(3,192,175,.6)'; c.lineWidth = 1; c.stroke(); c.fillStyle = '#fff'; c.fillText(txt, BX + 46, BY + BH - 44); c.globalAlpha = BC; }
     else if (opp === 0){ c.fillStyle = twin > 0 ? 'rgba(255,255,255,.85)' : (f1 > 0 ? '#03C0AF' : '#F59F6B');
       c.fillText(twin > 0 ? `情境 ${String(k + 1).padStart(2, '0')} ・ 尖峰平均等待 ${WS} 秒` : (f1 > 0 ? `尖峰平均等待 ${WS} 秒 ・ 總耗時 ${Math.floor(tv / 60)} 分 ${Math.round(tv % 60)} 秒` : `尖峰平均等待 ${WS} 秒 ・ 總耗時 6 分 5 秒`), BX + 26, BY + BH - 44); }
     // 結尾: 大金色區塊從遠處飛到畫面中央
-    if (opp > 0){ const q = ease(seg(t, 9.3, 10.0)), sc = 0.2 + 0.8 * q;              // 金色區塊從遠處飛到看板底部 (原本結果列的位置)
-      c.save(); c.globalAlpha = BC * Math.min(1, q * 2); c.translate(BX + 26 + 200 + (1 - q) * 260, BY + BH - 44 - (1 - q) * 120); c.scale(sc, sc);
-      c.fillStyle = '#F59F00'; c.shadowColor = '#F59F00'; c.shadowBlur = 40; c.beginPath(); c.roundRect(-200, -30, 400, 60, 30); c.fill(); c.shadowBlur = 0;
-      c.textAlign = 'center'; c.fillStyle = '#0E1440'; c.font = `900 32px ${IF}`; c.fillText('＄ 創造商機', 0, 2); c.restore(); }
+    if (opp > 0){ const q = ease(seg(t, 9.3, 10.1)), G = '#D9B36A';                 // 商機: 香檳金細框面板, 淡入上浮 (看板底部)
+      c.save(); c.globalAlpha = BC * q; c.translate(BX + 26, BY + BH - 74 + (1 - q) * 18);
+      const w = 470; c.fillStyle = 'rgba(217,179,106,.08)'; c.shadowColor = 'rgba(217,179,106,.35)'; c.shadowBlur = 24; c.beginPath(); c.roundRect(0, 0, w, 52, 10); c.fill(); c.shadowBlur = 0;
+      c.strokeStyle = 'rgba(217,179,106,.7)'; c.lineWidth = 1; c.stroke();
+      c.fillStyle = G; c.fillRect(0, 10, 3, 32);
+      c.textAlign = 'left'; c.fillStyle = G; c.font = `600 11px ${IF}`; c.fillText('O P P O R T U N I T Y', 20, 17);
+      c.fillStyle = '#fff'; c.font = `600 20px ${IF}`; c.fillText('商機轉介', 20, 38);
+      c.fillStyle = 'rgba(255,255,255,.6)'; c.font = `400 14px ${IF}`; c.fillText('專員有空了，問題解決後順勢轉介理專', 120, 38); c.restore(); }
     c.globalAlpha = 1;
   }
   /* E. 標題 (10.0+) */
