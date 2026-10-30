@@ -283,6 +283,8 @@ button{font:inherit;cursor:pointer}
 /* 底部字幕 */
 .cap{position:absolute;left:40px;right:40px;bottom:22px;height:52px;display:flex;align-items:center;gap:16px;padding:0 10px 0 20px;background:var(--card);border-radius:14px;box-shadow:0 1px 2px rgba(30,45,70,.05),0 6px 18px rgba(30,45,70,.05)}
 .cap .no{font-weight:800;color:#fff;background:var(--navy);border-radius:999px;padding:2px 12px;font-size:14px}
+.cap{right:92px;padding-right:20px}   /* 讓出右下角給全螢幕鈕 */
+.cap #prevBtn,.cap #nextBtn{display:none}   /* 翻頁鈕隱藏，用鍵盤或點畫面 */
 #capTxt{margin:0;flex:1;font-size:17px;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .prog{position:absolute;left:0;right:0;bottom:0;height:3px;background:var(--line)}
 .prog i{display:block;height:100%;background:var(--accent);transition:width .45s}
@@ -384,6 +386,8 @@ button{font:inherit;cursor:pointer}
 .bgbtn:hover{background:#EEF0F7;color:var(--navy)}
 .bgbtn:hover{border-color:var(--navy);color:var(--navy)}
 .tools{width:420px}.brand{width:240px}
+#fsBtn{position:absolute;right:24px;bottom:16px;z-index:60;width:44px;height:44px;border-radius:50%;border:1.5px solid #C8CDE0;background:rgba(255,255,255,.9);color:var(--navy);font-size:18px;opacity:.55;transition:opacity .3s,background .2s,border-color .2s}
+#fsBtn:hover{opacity:1;background:var(--navy);border-color:var(--navy);color:#fff}
 .jbtn,.aibadge{white-space:nowrap}
 .inrow input{background:rgba(255,255,255,.45)}
 .inrow input:focus{background:rgba(255,255,255,.85)}
@@ -1505,6 +1509,7 @@ document.addEventListener('keydown',e=>{
   else if(/^[1-4]$/.test(e.key)) go(STEPS[+e.key-1].pages[0]);
   else if(e.key==='f'||e.key==='F') toggleFS();
 });
+document.getElementById('app').appendChild(document.getElementById('fsBtn'));   // 移出 header，定位到右下角
 function toggleFS(){if(window.parent!==window){parent.postMessage({type:'fs'},'*');return;} if(document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();}
 $('fsBtn').onclick=toggleFS;
 function fit(){S=Math.min(innerWidth/1600,innerHeight/900); app.style.setProperty('--s',S);}

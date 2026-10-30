@@ -535,7 +535,7 @@ h2 em{font-style:normal;color:var(--tealT)}
 #chap .ln{margin-top:34px;width:140px;height:5px;border-radius:5px;background:#03C0AF;transform-origin:left}
 
 /* ---------- 講稿 / 導覽 ---------- */
-#nav{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);z-index:60;display:flex;gap:12px;opacity:.55;transition:opacity .3s}
+#nav{display:none}   /* 翻頁鈕隱藏，用鍵盤或點畫面；只留右下全螢幕鈕 */
 #nav:hover{opacity:1}
 #nav button{width:44px;height:44px;border-radius:50%;border:1.5px solid #C8CDE0;background:rgba(255,255,255,.9);cursor:pointer;display:grid;place-items:center;padding:0;transition:background .2s,border-color .2s}
 #nav button:hover:not(:disabled){background:var(--navy);border-color:var(--navy)}
@@ -881,7 +881,7 @@ h2 em{font-style:normal;color:var(--tealT)}
 <div id="chap"><div class="cn" id="chN">01</div><div class="ct"><div class="ck" id="chK">PART 1</div><h1 id="chT"></h1><p id="chP"></p><div class="ln"></div></div></div>
 <div id="nav"><button id="btnPrev" title="上一步 (←)"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button><button id="btnNext" title="下一步 (→)"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button></div>
 <button id="btnFs" title="全螢幕 (F)"><svg class="o" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><svg class="x" viewBox="0 0 24 24"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg></button>
-<div id="help">← → 翻頁　·　F 全螢幕　·　Ctrl+E 編輯文字</div>
+<div id="help">← → 或點畫面翻頁　·　F 全螢幕　·　Ctrl+E 編輯文字</div>
 <div id="editbar"><button id="btnEdit" title="修改這份簡報的文字">✎ 編輯文字</button><button id="btnDl" class="hid" title="把修改寫進檔案，下載後覆蓋原檔">⬇ 下載修改後的檔案</button><button id="btnDp" class="hid" title="改動畫跑到一半才出現的文字">⚙ 特效文字</button><button id="btnRv" class="hid">還原全部</button></div>
 <div id="datapanel"><div class="dh">特效才出現的文字<button id="btnDpClose">關閉</button></div><div class="db" id="dpBody"></div></div>
 <div id="edithint">編輯模式：直接點文字修改，Enter 換行；特效後才出現的字按「⚙ 特效文字」改；按「完成」儲存。翻頁請用進度條或底部按鈕。</div>
@@ -1551,6 +1551,7 @@ stage.addEventListener('paste', e => {
 const demoFrame = document.getElementById('demoFrame');
 function loadDemo(){
   if (demoFrame.dataset.loaded) return;
+  if (!document.getElementById('demoSrc')){ setTimeout(loadDemo, 50); return; }   // 區塊在主程式後面，直接以 #12 開啟時要等它解析完
   const base = new URL('.', location.href).href;                          // 讓 Demo 裡的 ask.html、QR code 仍指到同資料夾
   const src = document.getElementById('demoSrc').textContent.replace(/<\\\/script/g, '</script').replace('<head>', `<head><base href="${base}">`);
   demoFrame.srcdoc = src; demoFrame.dataset.loaded = '1';
@@ -1854,6 +1855,8 @@ button{font:inherit;cursor:pointer}
 /* 底部字幕 */
 .cap{position:absolute;left:40px;right:40px;bottom:22px;height:52px;display:flex;align-items:center;gap:16px;padding:0 10px 0 20px;background:var(--card);border-radius:14px;box-shadow:0 1px 2px rgba(30,45,70,.05),0 6px 18px rgba(30,45,70,.05)}
 .cap .no{font-weight:800;color:#fff;background:var(--navy);border-radius:999px;padding:2px 12px;font-size:14px}
+.cap{right:92px;padding-right:20px}   /* 讓出右下角給全螢幕鈕 */
+.cap #prevBtn,.cap #nextBtn{display:none}   /* 翻頁鈕隱藏，用鍵盤或點畫面 */
 #capTxt{margin:0;flex:1;font-size:17px;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .prog{position:absolute;left:0;right:0;bottom:0;height:3px;background:var(--line)}
 .prog i{display:block;height:100%;background:var(--accent);transition:width .45s}
@@ -1955,6 +1958,8 @@ button{font:inherit;cursor:pointer}
 .bgbtn:hover{background:#EEF0F7;color:var(--navy)}
 .bgbtn:hover{border-color:var(--navy);color:var(--navy)}
 .tools{width:420px}.brand{width:240px}
+#fsBtn{position:absolute;right:24px;bottom:16px;z-index:60;width:44px;height:44px;border-radius:50%;border:1.5px solid #C8CDE0;background:rgba(255,255,255,.9);color:var(--navy);font-size:18px;opacity:.55;transition:opacity .3s,background .2s,border-color .2s}
+#fsBtn:hover{opacity:1;background:var(--navy);border-color:var(--navy);color:#fff}
 .jbtn,.aibadge{white-space:nowrap}
 .inrow input{background:rgba(255,255,255,.45)}
 .inrow input:focus{background:rgba(255,255,255,.85)}
@@ -3076,6 +3081,7 @@ document.addEventListener('keydown',e=>{
   else if(/^[1-4]$/.test(e.key)) go(STEPS[+e.key-1].pages[0]);
   else if(e.key==='f'||e.key==='F') toggleFS();
 });
+document.getElementById('app').appendChild(document.getElementById('fsBtn'));   // 移出 header，定位到右下角
 function toggleFS(){if(window.parent!==window){parent.postMessage({type:'fs'},'*');return;} if(document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();}
 $('fsBtn').onclick=toggleFS;
 function fit(){S=Math.min(innerWidth/1600,innerHeight/900); app.style.setProperty('--s',S);}
