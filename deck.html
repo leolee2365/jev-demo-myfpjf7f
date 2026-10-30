@@ -531,6 +531,19 @@ h2 em{font-style:normal;color:var(--tealT)}
 #penTip{position:absolute;left:24px;bottom:16px;z-index:71;display:none;padding:8px 14px;border-radius:999px;background:#03C0AF;color:#0E1440;font-size:14px;font-weight:700;pointer-events:none}
 #stage.pen #penTip{display:block}
 
+/* ---------- 結尾頁 ---------- */
+.endpage{padding:0;display:flex;align-items:center;justify-content:center;text-align:center;color:#fff}
+.endpage .gridCv{position:absolute;inset:0;width:1600px;height:900px}
+.endpage .ec{position:relative;margin-top:-60px}
+.endpage .ek{font-size:19px;font-weight:700;letter-spacing:.3em;color:var(--teal)}
+.endpage h1{margin:18px 0 0;font-size:72px;font-weight:900;line-height:1.25;letter-spacing:.02em;
+  background:linear-gradient(100deg,#fff 0%,#fff 40%,#BFF5EE 50%,#fff 60%,#fff 100%);background-size:260% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 6s linear infinite,glowp 3.6s ease-in-out infinite}
+.endpage .ds{margin:26px auto 0;font-size:23px;line-height:1.7;color:rgba(255,255,255,.78)}
+.endpage .slogan{display:inline-block;margin-top:44px;padding:14px 40px;border-radius:999px;border:1.5px solid rgba(3,192,175,.7);background:rgba(3,192,175,.10);font-size:26px;font-weight:700;letter-spacing:.18em;animation:slogp 3.6s ease-in-out infinite}
+.endpage .team2{position:absolute;left:0;right:0;bottom:92px;display:flex;justify-content:center;align-items:center;gap:34px;font-size:16.5px;color:rgba(255,255,255,.88)}
+.endpage .team2 b{color:var(--teal);margin-right:8px;font-weight:700}
+.endpage .team2 .date{background:var(--teal);color:var(--navy);padding:5px 16px;border-radius:999px;font-weight:700}
+
 /* ---------- 章節過場 ---------- */
 #chap{position:absolute;inset:0;z-index:40;pointer-events:none;color:#fff;overflow:hidden;opacity:0;transition:opacity .35s ease;will-change:opacity;
   background:radial-gradient(900px 500px at 85% 15%,rgba(3,192,175,.28),transparent 70%),linear-gradient(125deg,#1E2761 0%,#24306B 55%,#1A4B6E 100%)}
@@ -885,6 +898,20 @@ h2 em{font-style:normal;color:var(--tealT)}
   <iframe id="demoFrame" title="Jev Demo" allow="fullscreen" allowfullscreen></iframe>
 </section>
 
+<!-- ================= 13 結尾 ================= -->
+<section class="slide dark endpage" id="p-end" data-part="0" data-steps="0">
+  <canvas class="gridCv" id="endGrid"></canvas>
+  <div class="ec">
+    <div class="ek a" style="--i:0">THANK YOU ・ Q &amp; A</div>
+    <h1 class="a" style="--i:1">一句話接到對的人，<br>每一通電話都是機會</h1>
+    <div class="ds a" style="--i:2">Jev 分類 × 數位孿生模擬　客服營運數位孿生平台</div>
+    <div class="slogan a" style="--i:4">提升客戶滿意 ・ 挖掘潛在商機 ・ 即時監控模擬</div>
+  </div>
+  <div class="team2 a" style="--i:6">
+    <span><b>訪談組</b>蕭信隆、黃榆萱、古雅萍</span><span><b>簡報組</b>吳奕寰、李律昕、林俊佑</span><span><b>報告組</b>李柏儀、陳昆鴻、張法仁</span><span class="date">2026/11/04</span>
+  </div>
+</section>
+
 <canvas id="ambCv"></canvas>
 <canvas id="penCv"></canvas><div id="penDot"></div><div id="penTip">✎ 簡報筆　拖曳畫線 · Delete 清除 · Ctrl+P 關閉</div>
 <div id="chap"><div class="cn" id="chN">01</div><div class="ct"><div class="ck" id="chK">PART 1</div><h1 id="chT"></h1><p id="chP"></p><div class="ln"></div></div></div>
@@ -1013,7 +1040,7 @@ slides.forEach((s, i) => {
     pg.querySelectorAll('.st').forEach((el, k) => { el.title = '跳到 PART ' + (k + 1); el.onclick = ev => { ev.stopPropagation(); if (editing) commitEdits(); const idx = slides.findIndex(x => +x.dataset.part === k + 1); if (idx >= 0) show(idx, 0, false); }; });
     s.appendChild(pg);
   }
-  if (s.classList.contains('intro') || s.classList.contains('cover') || s.classList.contains('demopage')) return;
+  if (s.classList.contains('intro') || s.classList.contains('cover') || s.classList.contains('demopage') || s.classList.contains('endpage')) return;
   const ft = document.createElement('div'); ft.className = 'foot';
   ft.innerHTML = `<span>${FOOT.t}</span><span><b>${String(i + 1).padStart(2, '0')}</b> / ${slides.length}</span>`;
   s.appendChild(ft);
@@ -1092,7 +1119,7 @@ const btnFs = document.getElementById('btnFs');
 btnFs.onclick = () => { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); btnFs.blur(); };
 function updNav(){
   btnPrev.disabled = cur === 0 && step === 0;
-  const last = cur === slides.length - 2 && step >= +slides[cur].dataset.steps;
+  const last = slides[cur] && slides[cur].id === 'p-thanks' && step >= +slides[cur].dataset.steps;
   btnNext.disabled = cur === slides.length - 1; btnNext.title = last ? '進入 Demo' : '下一步 (→)';
 }
 const _rs = history.replaceState.bind(history);
@@ -1577,6 +1604,14 @@ addEventListener('message', e => {
   else if (d.type === 'pen') setPen(!PEN.on);
 });
 const demoLink = document.querySelector('#p-thanks a.demo'); if (demoLink){ demoLink.setAttribute('href', '#demo'); demoLink.onclick = ev => { ev.preventDefault(); show(slides.length - 1); }; }
+
+/* ---------- 結尾頁: 透視網格 ---------- */
+(function(){ const cv = document.getElementById('endGrid'), g = cv.getContext('2d'); cv.width = 3200; cv.height = 1800; g.setTransform(2, 0, 0, 2, 0, 0);
+  g.globalAlpha = 0.35; g.strokeStyle = '#3B4A8C'; g.lineWidth = 1; const W = 1600, H = 900;
+  for (let i = -8; i <= 8; i++){ g.beginPath(); g.moveTo(W / 2 + i * 120, H); g.lineTo(W / 2 + i * 26, 600); g.stroke(); }
+  for (let k = 1; k <= 6; k++){ const y = 600 + Math.pow(k / 6, 1.8) * 300; g.beginPath(); g.moveTo(0, y); g.lineTo(W, y); g.stroke(); } })();
+// Demo 最後一頁再按 → : 進結尾頁
+addEventListener('message', e => { if ((e.data || {}).type === 'endDeck') show(slides.findIndex(s => s.id === 'p-end'), 0, false); });
 
 /* ---------- 簡報筆 ---------- */
 const PEN = { on: false, down: false, last: null };
@@ -3071,6 +3106,7 @@ function updateChrome(){ renderNav(); $('capNo').textContent=NOS[SC]; $('capTxt'
 const CH_SUB=['客戶說一句話，系統在背後判斷','電話接通的那一刻，專員看見什麼','主管看見全中心的即時排隊','不同情境，先在電腦裡推演一遍'];
 let CH_BUSY=false;
 function go(i){
+  if(i>=PAGES.length&&window.parent!==window&&!CH_BUSY){ parent.postMessage({type:'endDeck'},'*'); return; }   // 內嵌在簡報裡：最後一頁再按 → 進簡報的結尾頁
   i=Math.max(0,Math.min(PAGES.length-1,i)); if(i===SC||CH_BUSY) return;
   const from=STEPS.findIndex(s=>s.pages.includes(SC)), to=STEPS.findIndex(s=>s.pages.includes(i));
   if(from===to||document.body.classList.contains('nochap')) return goNow(i);
