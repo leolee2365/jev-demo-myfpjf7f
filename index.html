@@ -1473,6 +1473,7 @@ const CH_SUB=['客戶說一句話，系統在背後判斷','電話接通的那�
 let CH_BUSY=false;
 function go(i){
   if(i>=PAGES.length&&window.parent!==window&&!CH_BUSY){ parent.postMessage({type:'endDeck'},'*'); return; }   // 內嵌在簡報裡：最後一頁再按 → 進簡報的結尾頁
+  if(i<0&&window.parent!==window&&!CH_BUSY){ parent.postMessage({type:'backDeck'},'*'); return; }           // 第一頁再按 ← 回到簡報
   i=Math.max(0,Math.min(PAGES.length-1,i)); if(i===SC||CH_BUSY) return;
   const from=STEPS.findIndex(s=>s.pages.includes(SC)), to=STEPS.findIndex(s=>s.pages.includes(i));
   if(from===to||document.body.classList.contains('nochap')) return goNow(i);
