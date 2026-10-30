@@ -543,6 +543,11 @@ h2 em{font-style:normal;color:var(--tealT)}
 .endpage .team2{position:absolute;left:0;right:0;bottom:92px;display:flex;justify-content:center;align-items:center;gap:34px;font-size:16.5px;color:rgba(255,255,255,.88)}
 .endpage .team2 b{color:var(--teal);margin-right:8px;font-weight:700}
 .endpage .team2 .date{background:var(--teal);color:var(--navy);padding:5px 16px;border-radius:999px;font-weight:700}
+.slide.endpage.on h1{animation:tileIn .6s cubic-bezier(.2,.7,.2,1) both,shine 6s linear infinite,glowp 3.6s ease-in-out infinite}
+.slide.endpage.on .slogan,.intro .coverwrap.on .slogan{animation:tileIn .6s .4s cubic-bezier(.2,.7,.2,1) both,slogp 3.6s ease-in-out infinite,slogt 3.6s ease-in-out infinite}
+.slide.endpage.on .ek,.slide.endpage.on .ds{animation:tileIn .6s cubic-bezier(.2,.7,.2,1) both,txtg 4s ease-in-out infinite}
+@keyframes slogt{0%,100%{text-shadow:0 0 0 rgba(3,192,175,0)}50%{text-shadow:0 0 14px rgba(3,192,175,.9),0 0 28px rgba(3,192,175,.5)}}
+@keyframes txtg{0%,100%{text-shadow:0 0 0 rgba(255,255,255,0)}50%{text-shadow:0 0 12px rgba(255,255,255,.55)}}
 
 /* ---------- 章節過場 ---------- */
 #chap{position:absolute;inset:0;z-index:40;pointer-events:none;color:#fff;overflow:hidden;opacity:0;transition:opacity .35s ease;will-change:opacity;
