@@ -735,7 +735,7 @@ h2 em{font-style:normal;color:var(--tealT)}
       <div class="dnote"><i></i>尖峰 14:00–15:30 每月約 1,000 通（每日約 50 通），佔 17%</div>
     </div>
     <div class="dk">
-      <div class="dt a" style="--i:4"><div class="l">每案平均處理時間 AHT</div><div class="v">約 5 分鐘</div><div class="s">平均 268 秒（257–276 秒，逐月微升）</div></div>
+      <div class="dt a" style="--i:4"><div class="l">每案平均處理時間 AHT（專員通話）</div><div class="v">約 5 分鐘</div><div class="s">平均 268 秒，不含語音選單與等候（257–276 秒，逐月微升）</div></div>
       <div class="dt a" style="--i:5"><div class="l">自助通路占比（IVR／網銀／智慧小豐）</div><div class="v">56%</div><div class="s">2026 年 1–9 月</div></div>
       <div class="dt a" style="--i:6"><div class="l">可標準化、具自助化潛力案件</div><div class="v">48.5%</div><div class="s">以 IVR 活動鍵統計，可能高估</div></div>
     </div>
@@ -949,7 +949,7 @@ h2 em{font-style:normal;color:var(--tealT)}
   <div class="recal"><div class="cap f" data-s="1">客服主管可以直接問</div><div class="pillr a" style="--i:8">↻ 每天用實際案件紀錄校正參數，模擬持續貼近現場</div></div>
   <div class="qa3">
     <div class="card q3 f" data-s="1"><i class="ic sm" data-ic="target"></i><div><div class="t">分流門檻設多少最省時間？</div><div class="d">推演出最佳門檻約 0.80</div></div></div>
-    <div class="card q3 f" data-s="1"><i class="ic sm gold" data-ic="warn"></i><div><div class="t">尖峰時段要排幾位客服？</div><div class="d">只剩 3 人時現況要等近 15 分；導入後約 3 分半</div></div></div>
+    <div class="card q3 f" data-s="1"><i class="ic sm gold" data-ic="warn"></i><div><div class="t">尖峰時段要排幾位客服？</div><div class="d">進線暴增 3 倍時現況要等逾 1 分；導入後約 16 秒</div></div></div>
     <div class="card q3 f" data-s="1"><i class="ic sm" data-ic="flash"></i><div><div class="t">哪些流程改自動化最省時間？</div><div class="d">拉高自助比例，即時重算等待與自助件數</div></div></div>
   </div>
 </section>
@@ -966,7 +966,7 @@ h2 em{font-style:normal;color:var(--tealT)}
       <div class="deltas">
         <div class="delta f" data-s="1"><b>75 小時</b><span>每月省下的專員處理時間<br>全自助 900 通 × 268 秒 ＋ 自助加人工約 2,000 通 × 268 秒 × 5%</span></div>
         <div class="delta f" data-s="1" style="transition-delay:.2s"><b>−27%</b><span>電話平均總耗時<br>6 分 4 秒 → 4 分 25 秒</span></div>
-        <div class="delta f" data-s="1" style="transition-delay:.4s"><b>−76%</b><span>尖峰平均等待（只剩 3 人）<br>14 分 45 秒 → 3 分 29 秒</span></div>
+        <div class="delta f" data-s="1" style="transition-delay:.4s"><b>−78%</b><span>尖峰平均等待（進線暴增 3 倍）<br>1 分 12 秒 → 16 秒</span></div>
       </div>
     </div>
     <div class="card tbl a" style="--i:3" id="tbl">
@@ -974,13 +974,13 @@ h2 em{font-style:normal;color:var(--tealT)}
     </div>
   </div>
   <div class="card stress f" data-s="2">
-    <div><div class="sk">壓力測試</div><div class="sh">尖峰人手吃緊<br>客服只剩 3 人</div></div>
+    <div><div class="sk">壓力測試</div><div class="sh">尖峰進線暴增 3 倍<br>客服維持 10 人</div></div>
     <div class="qs">
       <div class="q bad" id="qBad"><div class="ql">現況</div><div class="qt"></div><div class="qr">排隊 <span>0</span> 人</div></div>
-      <div class="q good" id="qGood"><div class="ql">導入 Jev</div><div class="qt"></div><div class="qr">排隊約 2 人　平均等 3 分 29 秒</div></div>
+      <div class="q good" id="qGood"><div class="ql">導入 Jev</div><div class="qt"></div><div class="qr">排隊不到 1 人　平均等 16 秒</div></div>
     </div>
   </div>
-  <div class="fn a" style="--i:4">以客服中心 2026/4–9 實際值推算：每月進線約 6,000 通（÷ 20 個營業日 ≈ 每日 300 通）、AHT 268 秒、可自助化潛力 48.5%；假設其中 30% 可全自助處理（≈ 進線的 15%，每月約 900 通）、其餘 70%（約 2,000 通）自助加人工、整體通話自助服務占比 5%，合計每月省約 75 小時；尖峰人力 10 人（只剩 3 人為壓力情境）、語音選單 60 秒、40% 撥總機等（見 Demo 進階參數），等候、接聽率未提供。客戶端每年少等約 2,100 小時；省下的專員時間用在複雜問題與商機轉介，不以裁減人力論述</div>
+  <div class="fn a" style="--i:4">以客服中心 2026/4–9 實際值推算：每月進線約 6,000 通（÷ 20 個營業日 ≈ 每日 300 通）、AHT 268 秒、可自助化潛力 48.5%；假設其中 30% 可全自助處理（≈ 進線的 15%，每月約 900 通）、其餘 70%（約 2,000 通）自助加人工、整體通話自助服務占比 5%，合計每月省約 75 小時；尖峰人力 10 人（壓力情境：尖峰進線暴增 3 倍、人力不變）、語音選單 60 秒、40% 撥總機等（見 Demo 進階參數），等候、接聽率未提供。客戶端每年少等約 2,100 小時；省下的專員時間用在複雜問題與商機轉介，不以裁減人力論述</div>
 </section>
 
 <!-- ================= 11 謝謝聆聽 ================= -->
@@ -1090,10 +1090,10 @@ const EX = [
 ];
 const MET = [
   ['電話', '客戶平均總耗時', 364, 265, v => `${Math.floor(v / 60)} 分 ${Math.round(v % 60)} 秒`, '秒'],
-  ['只剩 3 人', '尖峰排隊人數', 8, 2, v => `約 ${Math.round(v)} 人`, '人'],
-  ['只剩 3 人', '20 秒內接聽率', 18, 46, v => `${v.toFixed(v >= 99.8 ? 1 : 0)}%`, '%'],
+  ['進線 3 倍', '尖峰排隊人數', 2, 0.4, v => v < 1 ? '不到 1 人' : `約 ${Math.round(v)} 人`, '人'],
+  ['進線 3 倍', '20 秒內接聽率', 60, 85, v => `${v.toFixed(v >= 99.8 ? 1 : 0)}%`, '%'],
 ];
-const RES = { hero: 900, boom: '平均等 14 分 45 秒' };
+const RES = { hero: 900, boom: '平均等 1 分 12 秒' };
 
 // 「特效文字」面板的項目：群組 / 鍵 / 標籤 / 讀 / 寫 / 改完要做的事
 const DATA = [];
@@ -1335,7 +1335,7 @@ function introDraw(t){
     if (fin < 0.3){ c.fillStyle = twin > 0 || f1 > 0 ? '#fff' : '#fff'; c.fillText(mmss2(tv), 118, 300); }
     else { c.fillStyle = 'rgba(255,255,255,.35)'; c.fillText('06:04', 118, 300); const w = c.measureText('06:04').width; c.strokeStyle = '#D9363E'; c.lineWidth = 5; c.beginPath(); c.moveTo(118, 300); c.lineTo(118 + w, 300); c.stroke();
       c.globalAlpha = BC * seg(t, 8.8, 9.1); c.fillStyle = '#03C0AF'; c.fillText('04:25', 118 + w + 30, 300); c.globalAlpha = BC; }
-    c.font = `500 18px ${IF}`; c.fillStyle = 'rgba(255,255,255,.6)'; c.fillText(fin > 0.3 ? '客戶平均總耗時' : (f1 > 0 ? '客戶平均總耗時（導入後）' : '客戶平均總耗時（現況）'), 120, 356);
+    c.font = `500 18px ${IF}`; c.fillStyle = 'rgba(255,255,255,.6)'; c.fillText(fin > 0.3 ? '客戶平均總耗時（語音選單＋等候＋通話）' : (f1 > 0 ? '客戶平均總耗時（導入後）' : '客戶平均總耗時（現況：語音選單＋等候＋通話）'), 120, 356);
     // 左: 現況說明 → 兩個功能膠囊
     if (f1 < 1){ c.globalAlpha = BC * (1 - f1); c.font = `700 30px ${IF}`; c.fillStyle = '#E04E4E'; c.fillText(`排隊 ${Q} 人`, 120, 420); c.font = `500 17px ${IF}`; c.fillStyle = 'rgba(255,255,255,.55)'; c.fillText('語音選單 → 按 0 總機 → 排隊等真人', 120, 462); c.globalAlpha = BC; }
     const pill = (y, a, txt, sub, col) => { if (a <= 0) return; c.save(); c.globalAlpha = BC * a; c.translate(0, (1 - a) * 14);
@@ -1629,9 +1629,9 @@ HOOK['p-res'] = k => {
     const bt = document.querySelector('#qBad .qt'), gt = document.querySelector('#qGood .qt'), bn = document.querySelector('#qBad .qr span');
     let n = 0;
     every(() => {
-      n++; if (bt.children.length < 8) bt.appendChild(document.createElement('i'));
-      if (n <= 8) bn.textContent = n; if (n === 8) document.getElementById('qBad').classList.add('boom');
-      if (n > 8) document.querySelector('#qBad .qr').textContent = `排隊約 8 人　${RES.boom}`;
+      n++; if (bt.children.length < 2) bt.appendChild(document.createElement('i'));
+      if (n <= 2) bn.textContent = n; if (n === 2) document.getElementById('qBad').classList.add('boom');
+      if (n > 2) document.querySelector('#qBad .qr').textContent = `排隊約 2 人　${RES.boom}`;
       if (gt.children.length < 2) gt.appendChild(document.createElement('i')); else if (n % 2) gt.removeChild(gt.firstChild);
     }, 160);
   }
@@ -3073,7 +3073,7 @@ $('qAgents').onchange=e=>{qReset(); e.target.blur();};
 const P={};
 const CTRL=[
   {k:'vPhone',l:'每日電話進線',min:50,max:3000,step:10,v:300,f:v=>fmt(v)+' 通',h:'實際值：2026/4–9 每月 5,847–6,106 通（客服中心提供），÷ 20 個營業日 ≈ 每日 300 通'},
-  {k:'agents',l:'尖峰電話客服人數',min:1,max:30,step:1,v:10,f:v=>v+' 人',h:'人力數未提供，為假設值；10 人時尖峰不需排隊，拉到 3 人現況要等近 15 分鐘，2 人會爆線'},
+  {k:'agents',l:'尖峰電話客服人數',min:1,max:30,step:1,v:10,f:v=>v+' 人',h:'人力數未提供，為假設值；10 人時尖峰不需排隊；壓力測試請把每日進線拉到 900 通（3 倍）'},
   {k:'acc',l:'Jev 平均準確度',min:0.6,max:0.98,step:0.01,v:0.88,f:v=>(v*100).toFixed(0)+'%',h:'假設值，待以行內資料實測'},
   {k:'autoShare',l:'可導引線上自助的進線比例',min:0,max:0.6,step:0.01,v:0.15,f:v=>(v*100).toFixed(0)+'%',h:'分期、臨時調額、帳單查詢等智慧小豐可辦的常見業務；假設值，待客服中心數據校正'},
 ];
@@ -3125,8 +3125,8 @@ function recompute(){
   const jevCost=(P.vPhone+P.vText)*500*365/1e6*0.042*32/1e4;
   const custHrs=(isFinite(A.cust)&&isFinite(B.cust)?(A.cust-B.cust)*P.vPhone:0)*250/3600;   // 只算電話 (文字客服未提供資料)
   const dWait=isFinite(A.q.asa)&&isFinite(B.q.asa)?Math.max(0,A.q.asa-B.q.asa):null;
-  const q3a=queue(A.vAgent,A.svc,3),q3b=queue(B.vAgent,B.svc,3),d3=isFinite(q3a.asa)&&isFinite(q3b.asa)?Math.max(0,q3a.asa-q3b.asa):null;   // 人力充足時改看「只剩 3 人」壓力情境
-  const w1=dWait===null?['不再爆線','尖峰時段接得起來']:dWait>=120?[fmt(dWait/60,0),'分：尖峰平均等待縮短']:dWait>=1?[fmt(dWait,0),'秒：尖峰平均等待縮短']:d3===null?['不再爆線','人手只剩 3 人時仍接得起來']:[fmt(d3/60,0),'分：人手只剩 3 人時尖峰少等'];
+  const q3a=queue(A.vAgent*3,A.svc,P.agents),q3b=queue(B.vAgent*3,B.svc,P.agents),d3=isFinite(q3a.asa)&&isFinite(q3b.asa)?Math.max(0,q3a.asa-q3b.asa):null;   // 人力充足時改看「進線暴增 3 倍」壓力情境
+  const w1=dWait===null?['不再爆線','尖峰時段接得起來']:dWait>=120?[fmt(dWait/60,0),'分：尖峰平均等待縮短']:dWait>=1?[fmt(dWait,0),'秒：尖峰平均等待縮短']:d3===null?['不再爆線','進線暴增 3 倍時仍接得起來']:d3>=120?[fmt(d3/60,0),'分：進線暴增 3 倍時尖峰少等']:[fmt(d3,0),'秒：進線暴增 3 倍時尖峰少等'];
   $('hero').innerHTML=`<div><div class="big">${w1[0]}</div><div class="u">${w1[1]}</div></div><div><div class="big">${fmt(Math.max(0,B.autoN))}</div><div class="u">通：每日線上自助辦好</div></div><div><div class="big">${fmt(Math.max(0,custHrs),0)}</div><div class="u">小時：每年客戶少花的等待與溝通時間</div></div>`;
   $('heroNote').textContent=`效益以服務品質衡量，不以減少人力為目標；省下的專員時間用在複雜問題與新人輔導。進線量、尖峰占比、AHT 為客服中心 2026/4–9 實際值（每月約 6,000 通 ÷ 20 個營業日 ≈ 每日 300 通）；人力、等候、接聽率、文字量未提供，為假設值。`;
   const kp=(k,va,vb,better,f)=>{const d=vb-va;const good=better==='low'?d<0:d>0;const pct=va&&isFinite(va)&&isFinite(vb)&&!(f===fmtSec&&Math.abs(va)<1&&Math.abs(vb)<1)?Math.abs(d/va*100):null;   // 秒數型指標兩邊都不到 1 秒就不算改善 %
