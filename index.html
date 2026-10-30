@@ -1333,16 +1333,17 @@ function recompute(){
   const dWait=isFinite(A.q.asa)&&isFinite(B.q.asa)?Math.max(0,A.q.asa-B.q.asa):null;
   const q3a=queue(A.vAgent,A.svc,3),q3b=queue(B.vAgent,B.svc,3),d3=isFinite(q3a.asa)&&isFinite(q3b.asa)?Math.max(0,q3a.asa-q3b.asa):null;   // 人力充足時改看「只剩 3 人」壓力情境
   const w1=dWait===null?['不再爆線','尖峰時段接得起來']:dWait>=120?[fmt(dWait/60,0),'分：尖峰平均等待縮短']:dWait>=1?[fmt(dWait,0),'秒：尖峰平均等待縮短']:d3===null?['不再爆線','人手只剩 3 人時仍接得起來']:[fmt(d3/60,0),'分：人手只剩 3 人時尖峰少等'];
-  $('hero').innerHTML=`<div><div class="big">${w1[0]}</div><div class="u">${w1[1]}</div></div><div><div class="big">${fmt(Math.max(0,A.transfers-B.transfers))}</div><div class="u">次：每日少轉接</div></div><div><div class="big">${fmt(Math.max(0,custHrs),0)}</div><div class="u">小時：每年客戶少花的等待與溝通時間</div></div>`;
+  $('hero').innerHTML=`<div><div class="big">${w1[0]}</div><div class="u">${w1[1]}</div></div><div><div class="big">${fmt(Math.max(0,B.autoN))}</div><div class="u">通：每日線上自助辦好</div></div><div><div class="big">${fmt(Math.max(0,custHrs),0)}</div><div class="u">小時：每年客戶少花的等待與溝通時間</div></div>`;
   $('heroNote').textContent=`效益以服務品質衡量，不以減少人力為目標；省下的專員時間用在複雜問題與新人輔導。進線量、尖峰占比、AHT 為客服中心 2026/4–9 實際值（每月約 6,000 通 ÷ 20 個營業日 ≈ 每日 300 通）；人力、等候、接聽率、文字量未提供，為假設值。`;
   const kp=(k,va,vb,better,f)=>{const d=vb-va;const good=better==='low'?d<0:d>0;const pct=va&&isFinite(va)&&isFinite(vb)&&!(f===fmtSec&&Math.abs(va)<1&&Math.abs(vb)<1)?Math.abs(d/va*100):null;   // 秒數型指標兩邊都不到 1 秒就不算改善 %
-    return `<div class="kpi"><div class="k">${k}</div><div class="v"${good?'':' style="color:var(--red)"'}>${f(vb)}</div><div class="c">現況 ${f(va)}</div><div class="d${good?'':' bad'}">${pct===null?'':(good?'改善 ':'惡化 ')+pct.toFixed(0)+'%'}</div></div>`;};
-  $('kpis').innerHTML=kp('電話：客戶平均總耗時',A.cust,B.cust,'low',fmtSec)+kp('電話：尖峰平均等待',A.q.asa,B.q.asa,'low',fmtSec)+kp('電話：每日轉接',A.transfers,B.transfers,'low',v=>fmt(v)+' 次')+kp('電話：每日線上自助',A.autoN,B.autoN,'high',v=>fmt(v)+' 通');
+    const pctS=pct!==null&&pct>=0.5?pct:null;
+    return `<div class="kpi"><div class="k">${k}</div><div class="v"${good?'':' style="color:var(--red)"'}>${f(vb)}</div><div class="c">現況 ${f(va)}</div><div class="d${good?'':' bad'}">${pctS===null?'':(good?'改善 ':'惡化 ')+pctS.toFixed(0)+'%'}</div></div>`;};
+  $('kpis').innerHTML=kp('電話：客戶平均總耗時',A.cust,B.cust,'low',fmtSec)+kp('電話：尖峰平均等待',A.q.asa,B.q.asa,'low',fmtSec)+kp('電話：20 秒內接聽率',A.q.sl,B.q.sl,'high',v=>(v*100).toFixed(0)+'%')+kp('電話：每日線上自助',A.autoN,B.autoN,'high',v=>fmt(v)+' 通');
   const r=B.r, segs=[['直接分流',r.auto,'var(--accent)'],['反問確認',r.ask,'var(--orange)'],['轉人工分類',r.human,'var(--gray)']];
   $('stack').innerHTML=segs.map(s=>`<div style="flex:0 0 calc(${s[1]*100}% - 2px);background:${s[2]}"></div>`).join('');
   $('stackLegend').innerHTML=segs.map(s=>`<span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${s[2]};margin-right:6px"></span>${s[0]} <b>${(s[1]*100).toFixed(0)}%</b></span>`).join('');
-  $('cnt0').innerHTML=`<div>客戶平均總耗時<b>${fmtSec(A.cust)}</b></div><div>每日轉接<b>${fmt(A.transfers)} 次</b></div>`;
-  $('cnt1').innerHTML=`<div>客戶平均總耗時<b style="color:var(--accent)">${fmtSec(B.cust)}</b></div><div>每日轉接<b style="color:var(--accent)">${fmt(B.transfers)} 次</b></div>`;
+  $('cnt0').innerHTML=`<div>客戶平均總耗時<b>${fmtSec(A.cust)}</b></div><div>每日線上自助<b>${fmt(A.autoN)} 通</b></div>`;
+  $('cnt1').innerHTML=`<div>客戶平均總耗時<b style="color:var(--accent)">${fmtSec(B.cust)}</b></div><div>每日線上自助<b style="color:var(--accent)">${fmt(B.autoN)} 通</b></div>`;
   SIM={A,B}; drawCurve();
   if(LAST&&SC===0) renderP11();
 }
@@ -1437,7 +1438,7 @@ function capText(i){
     case 5: {const q=[...QS.q].sort((x,y)=>x.lvl-y.lvl||x.arr-y.arr);const pos=q.findIndex(c=>c.mine);const ag=QS.agents.find(a=>a.busy&&a.busy.mine);
       if(pos<0&&!ag&&QS.mineAuto) return `${who}的「${routeOf(L.r,L.cur).s.id}」已傳智慧小豐連結線上辦理，沒有進入排隊；專員留給真正需要人的客戶。`;
       return pos>=0?`主管看見全中心：${who}目前排在第 ${pos+1} 位（${PNAME[q[pos].lvl]}）；專員空下來，一律先接等級最高的客戶。`:ag?`${who}已由專員 ${ag.id} 接起。`:'主管看見全中心：誰最急、誰等最久、哪位專員空著；按「把剛才的客戶加入排隊」看他排在哪裡。';}
-    case 6: return '模擬不同情境：用同樣的進線量，調整各時段人力與自助比例，比較客戶等待、轉接與線上自助的件數；數字皆為假設值。';
+    case 6: return '模擬不同情境：用同樣的進線量，調整各時段人力與自助比例，比較客戶等待與線上自助的件數；數字皆為假設值。';
     case 7: return '左邊是現況的語音選單與總機，右邊是一句話分流；青色點代表線上自助、不進專員排隊。';
   }
 }
