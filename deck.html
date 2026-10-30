@@ -523,6 +523,12 @@ h2 em{font-style:normal;color:var(--tealT)}
 .slide.demopage iframe{position:absolute;inset:0;width:1600px;height:900px;border:0;background:#f3f5f8}
 #stage.demoOn #nav,#stage.demoOn #btnFs,#stage.demoOn #help,#stage.demoOn #editbar,#stage.demoOn #edithint{display:none}
 
+/* ---------- 簡報筆 (Ctrl+P) ---------- */
+#penCv{position:absolute;inset:0;width:1600px;height:900px;z-index:70;display:none;cursor:crosshair}
+#stage.pen #penCv{display:block}
+#penTip{position:absolute;left:24px;bottom:16px;z-index:71;display:none;padding:8px 14px;border-radius:999px;background:#E53935;color:#fff;font-size:14px;font-weight:700;pointer-events:none}
+#stage.pen #penTip{display:block}
+
 /* ---------- 章節過場 ---------- */
 #chap{position:absolute;inset:0;z-index:40;pointer-events:none;color:#fff;overflow:hidden;opacity:0;transition:opacity .35s ease;will-change:opacity;
   background:radial-gradient(900px 500px at 85% 15%,rgba(3,192,175,.28),transparent 70%),linear-gradient(125deg,#1E2761 0%,#24306B 55%,#1A4B6E 100%)}
@@ -878,6 +884,7 @@ h2 em{font-style:normal;color:var(--tealT)}
 </section>
 
 <canvas id="ambCv"></canvas>
+<canvas id="penCv"></canvas><div id="penTip">✎ 簡報筆　拖曳畫線 · Delete 清除 · Ctrl+P 關閉</div>
 <div id="chap"><div class="cn" id="chN">01</div><div class="ct"><div class="ck" id="chK">PART 1</div><h1 id="chT"></h1><p id="chP"></p><div class="ln"></div></div></div>
 <div id="nav"><button id="btnPrev" title="上一步 (←)"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button><button id="btnNext" title="下一步 (→)"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button></div>
 <button id="btnFs" title="全螢幕 (F)"><svg class="o" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><svg class="x" viewBox="0 0 24 24"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg></button>
@@ -1065,6 +1072,9 @@ function prev(){
 }
 addEventListener('keydown', e => {
   if ((e.ctrlKey || e.metaKey) && (e.key === 'e' || e.key === 'E')){ e.preventDefault(); setEditing(!editing); return; }   // Ctrl+E 進出編輯模式
+  if ((e.ctrlKey || e.metaKey) && (e.key === 'p' || e.key === 'P')){ e.preventDefault(); setPen(!PEN.on); return; }      // Ctrl+P 簡報筆
+  if (PEN.on && (e.key === 'Delete' || e.key === 'Backspace')){ e.preventDefault(); penClear(); return; }
+  if (PEN.on && e.key === 'Escape'){ setPen(false); return; }
   if (editing) return;                                   // 編輯中: 鍵盤留給打字
   if (['ArrowRight', 'PageDown', ' ', 'Enter'].includes(e.key)){ e.preventDefault(); next(); }
   else if (['ArrowLeft', 'PageUp', 'Backspace'].includes(e.key)){ e.preventDefault(); prev(); }
@@ -1562,8 +1572,22 @@ addEventListener('message', e => {
   const d = e.data || {};
   if (d.type === 'backDeck') show(slides.findIndex(s => s.id === 'p-thanks'), 0, false);
   else if (d.type === 'fs'){ document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); }
+  else if (d.type === 'pen') setPen(!PEN.on);
 });
 const demoLink = document.querySelector('#p-thanks a.demo'); if (demoLink){ demoLink.setAttribute('href', '#demo'); demoLink.onclick = ev => { ev.preventDefault(); show(slides.length - 1); }; }
+
+/* ---------- 簡報筆 ---------- */
+const PEN = { on: false, down: false, last: null };
+const penCv = document.getElementById('penCv'), penCtx = penCv.getContext('2d'); penCv.width = 3200; penCv.height = 1800;
+penCtx.setTransform(2, 0, 0, 2, 0, 0); penCtx.lineCap = 'round'; penCtx.lineJoin = 'round'; penCtx.strokeStyle = '#E53935'; penCtx.lineWidth = 4; penCtx.shadowColor = 'rgba(229,57,53,.5)'; penCtx.shadowBlur = 4;
+function penClear(){ penCtx.save(); penCtx.setTransform(1, 0, 0, 1, 0, 0); penCtx.clearRect(0, 0, penCv.width, penCv.height); penCtx.restore(); }
+function setPen(on){ PEN.on = on; stage.classList.toggle('pen', on); if (!on){ penClear(); PEN.down = false; if (slides[cur] && slides[cur].id === 'p-demo') try { demoFrame.contentWindow.focus(); } catch (e) {} } else window.focus(); }
+const penPos = e => { const r = penCv.getBoundingClientRect(); return [(e.clientX - r.left) / r.width * 1600, (e.clientY - r.top) / r.height * 900]; };
+penCv.addEventListener('pointerdown', e => { e.stopPropagation(); PEN.down = true; PEN.last = penPos(e); penCv.setPointerCapture(e.pointerId); penCtx.beginPath(); penCtx.arc(PEN.last[0], PEN.last[1], 2, 0, 7); penCtx.fillStyle = '#E53935'; penCtx.fill(); });
+penCv.addEventListener('pointermove', e => { if (!PEN.down) return; const p = penPos(e); penCtx.beginPath(); penCtx.moveTo(PEN.last[0], PEN.last[1]); penCtx.lineTo(p[0], p[1]); penCtx.stroke(); PEN.last = p; });
+['pointerup', 'pointercancel'].forEach(ev => penCv.addEventListener(ev, e => { PEN.down = false; }));
+penCv.addEventListener('click', e => e.stopPropagation());          // 畫線時不要翻頁
+const _showPen = show; show = function(...a){ if (PEN.on) penClear(); return _showPen.apply(this, a); };
 
 // 網址 #頁.步 可直接跳到指定位置 (排練用)
 const m = location.hash.match(/^#(\d+)\.?(\d*)/);
@@ -3082,6 +3106,7 @@ document.addEventListener('keydown',e=>{
   else if(e.key==='f'||e.key==='F') toggleFS();
 });
 document.getElementById('app').appendChild(document.getElementById('fsBtn'));   // 移出 header，定位到右下角
+if(window.parent!==window) addEventListener('keydown',e=>{ if((e.ctrlKey||e.metaKey)&&(e.key==='p'||e.key==='P')){ e.preventDefault(); parent.postMessage({type:'pen'},'*'); } }, true);   // 內嵌在簡報裡時，Ctrl+P 交給簡報的簡報筆
 function toggleFS(){if(window.parent!==window){parent.postMessage({type:'fs'},'*');return;} if(document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();}
 $('fsBtn').onclick=toggleFS;
 function fit(){S=Math.min(innerWidth/1600,innerHeight/900); app.style.setProperty('--s',S);}

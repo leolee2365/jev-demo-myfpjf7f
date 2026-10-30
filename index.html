@@ -1510,6 +1510,7 @@ document.addEventListener('keydown',e=>{
   else if(e.key==='f'||e.key==='F') toggleFS();
 });
 document.getElementById('app').appendChild(document.getElementById('fsBtn'));   // 移出 header，定位到右下角
+if(window.parent!==window) addEventListener('keydown',e=>{ if((e.ctrlKey||e.metaKey)&&(e.key==='p'||e.key==='P')){ e.preventDefault(); parent.postMessage({type:'pen'},'*'); } }, true);   // 內嵌在簡報裡時，Ctrl+P 交給簡報的簡報筆
 function toggleFS(){if(window.parent!==window){parent.postMessage({type:'fs'},'*');return;} if(document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();}
 $('fsBtn').onclick=toggleFS;
 function fit(){S=Math.min(innerWidth/1600,innerHeight/900); app.style.setProperty('--s',S);}
