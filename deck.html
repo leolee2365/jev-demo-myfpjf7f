@@ -165,6 +165,29 @@ h2 em{font-style:normal;color:var(--tealT)}
 .bucket.homo .r{color:var(--tealT)}
 .bucket.hetero .r{color:var(--navy)}
 
+/* ---------- 客服中心實際數據 ---------- */
+.dgrid{margin-top:24px;display:grid;grid-template-columns:470px 290px minmax(0,1fr);gap:22px;height:505px}
+.dchart{padding:22px 24px;display:flex;flex-direction:column}
+.dh{font-size:19px;font-weight:900;color:var(--navy)}.dh small{font-weight:500;color:var(--muted);margin-left:8px;font-size:14px}
+.bars4{flex:1;display:grid;grid-template-columns:repeat(6,1fr);align-items:end;gap:14px;margin:34px 0 30px;position:relative}
+.bar4{position:relative;height:var(--h);background:linear-gradient(180deg,#5AD8CC,var(--teal));border-radius:8px 8px 4px 4px;transform-origin:bottom}
+.slide.enter .bar4{animation:grow .8s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--i)*80ms + 500ms)}
+@keyframes grow{from{transform:scaleY(0)}}
+.bar4 .pk{position:absolute;left:0;right:0;bottom:0;height:var(--p);background:var(--gold);border-radius:0 0 4px 4px}
+.bar4 b{position:absolute;left:0;right:0;top:-26px;text-align:center;font-size:14.5px;color:var(--navy)}
+.bar4 i{position:absolute;left:0;right:0;bottom:-28px;text-align:center;font-style:normal;font-size:14px;color:var(--muted)}
+.dnote{font-size:15px;color:var(--ink2);display:flex;align-items:center;gap:8px}.dnote i{width:12px;height:12px;border-radius:3px;background:var(--gold)}
+.dk{display:grid;grid-template-rows:repeat(4,1fr);gap:14px}
+.dt{background:#fff;border-radius:16px;box-shadow:0 8px 26px rgba(30,39,97,.08);padding:12px 18px;display:flex;flex-direction:column;justify-content:center}
+.dt .l{font-size:14px;color:var(--muted)}.dt .v{font-size:31px;font-weight:900;color:var(--tealT);line-height:1.15}.dt .s{font-size:12.5px;color:var(--dim)}
+.dtop{padding:20px 24px;display:flex;flex-direction:column;gap:10px}
+.dtop ol{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:7px}
+.dtop li{display:grid;grid-template-columns:22px minmax(0,1fr) 120px 52px;align-items:center;gap:10px;font-size:14.5px;color:var(--ink2)}
+.dtop li em{font-style:normal;width:22px;height:22px;border-radius:50%;background:var(--soft);color:var(--navy);font-size:12px;font-weight:700;display:grid;place-items:center}
+.dtop li span{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.dtop li span small{color:var(--dim);margin-left:6px}
+.dtop li .pb{height:7px;border-radius:4px;background:#EEF0F7;overflow:hidden}.dtop li .pb i{display:block;height:100%;background:var(--navy);border-radius:4px;width:var(--w)}
+.dtop li b{text-align:right;color:var(--navy)}
+
 /* ---------- 關鍵時刻 ---------- */
 .mot .tagline{margin-top:34px;display:inline-block;padding:8px 22px;border-radius:999px;border:2px solid var(--teal);color:var(--teal);font-size:19px;font-weight:700}
 .mot .stmt{margin-top:22px;font-size:40px;font-weight:700;line-height:1.55;letter-spacing:.01em}
@@ -690,6 +713,53 @@ h2 em{font-style:normal;color:var(--tealT)}
   </div>
 </section>
 
+<!-- ================= 02b 客服中心實際數據 ================= -->
+<section class="slide" id="p-data" data-part="1" data-steps="0">
+  <div class="kick a" style="--i:0"><span class="pill">PART 1</span>痛點與機會 · 客服中心實際數據</div>
+  <h2 class="a" style="--i:1">每天 <em>6,000 通</em>進線，近半有自助潛力</h2>
+  <div class="sub a" style="--i:2">客服中心提供 2026 年 4–9 月營業日月均實際值；人力配置、等候時間、接聽率暫未提供，模型以假設值代入</div>
+  <div class="dgrid">
+    <div class="card dchart a" style="--i:3">
+      <div class="dh">每日進線量<small>營業日月均・通</small></div>
+      <div class="bars4">
+        <div class="bar4" style="--h:93%;--p:16.8%;--i:0"><b>6,047</b><div class="pk"></div><i>4 月</i></div>
+        <div class="bar4" style="--h:94%;--p:17.0%;--i:1"><b>6,104</b><div class="pk"></div><i>5 月</i></div>
+        <div class="bar4" style="--h:91.5%;--p:17.1%;--i:2"><b>5,957</b><div class="pk"></div><i>6 月</i></div>
+        <div class="bar4" style="--h:94%;--p:16.6%;--i:3"><b>6,106</b><div class="pk"></div><i>7 月</i></div>
+        <div class="bar4" style="--h:90%;--p:16.7%;--i:4"><b>5,847</b><div class="pk"></div><i>8 月</i></div>
+        <div class="bar4" style="--h:91.5%;--p:16.7%;--i:5"><b>5,957</b><div class="pk"></div><i>9 月</i></div>
+      </div>
+      <div class="dnote"><i></i>尖峰 14:00–15:30 約 1,000 通，佔全日 17%</div>
+    </div>
+    <div class="dk">
+      <div class="dt a" style="--i:4"><div class="l">每案平均處理時間 AHT</div><div class="v">4 分 30 秒</div><div class="s">257–276 秒，逐月微升</div></div>
+      <div class="dt a" style="--i:5"><div class="l">自助通路占比（IVR／網銀／智慧小豐）</div><div class="v">56%</div><div class="s">2026 年 1–9 月</div></div>
+      <div class="dt a" style="--i:6"><div class="l">可標準化、具自助化潛力案件</div><div class="v">48.5%</div><div class="s">以 IVR 活動鍵統計，可能高估</div></div>
+      <div class="dt a" style="--i:7"><div class="l">客戶滿意度</div><div class="v">99.4%</div><div class="s">2026 年 1–9 月</div></div>
+    </div>
+    <div class="card dtop a" style="--i:8">
+      <div class="dh">前五大進線類別<small>占比</small></div>
+      <div class="dh" style="font-size:15px;color:var(--tealT)">信用卡</div>
+      <ol>
+        <li><em>1</em><span>刷卡記錄查詢<small>查詢/索取</small></span><div class="pb"><i style="--w:100%"></i></div><b>11.1%</b></li>
+        <li><em>2</em><span>帳單明細<small>帳務處理</small></span><div class="pb"><i style="--w:69%"></i></div><b>7.7%</b></li>
+        <li><em>3</em><span>付款入帳／未結帳消費<small>帳務處理</small></span><div class="pb"><i style="--w:49%"></i></div><b>5.4%</b></li>
+        <li><em>4</em><span>掛失／撤掛<small>變更</small></span><div class="pb"><i style="--w:41%"></i></div><b>4.6%</b></li>
+        <li><em>5</em><span>調改利息／違約金／手續費<small>帳務處理</small></span><div class="pb"><i style="--w:41%"></i></div><b>4.5%</b></li>
+      </ol>
+      <div class="dh" style="font-size:15px;color:var(--tealT);margin-top:4px">銀行</div>
+      <ol>
+        <li><em>1</em><span>視訊約定帳號<small>申請項目</small></span><div class="pb"><i style="--w:100%"></i></div><b>6.3%</b></li>
+        <li><em>2</em><span>帳戶各項設定查詢<small>存款-台幣</small></span><div class="pb"><i style="--w:71%"></i></div><b>4.5%</b></li>
+        <li><em>3</em><span>往來明細<small>存款-台幣</small></span><div class="pb"><i style="--w:65%"></i></div><b>4.1%</b></li>
+        <li><em>4</em><span>金融卡設定查詢<small>自動化設備</small></span><div class="pb"><i style="--w:54%"></i></div><b>3.4%</b></li>
+        <li><em>5</em><span>視訊裝置綁定<small>申請項目</small></span><div class="pb"><i style="--w:52%"></i></div><b>3.3%</b></li>
+      </ol>
+    </div>
+  </div>
+  <div class="fn a" style="--i:9">註：可自助化占比以 IVR 活動鍵統計，同一通可能點選多個子項目，比率可能高估；現行商機轉介有「房信貸轉介」「信貸貼標客戶轉介」，件數未提供</div>
+</section>
+
 <!-- ================= 03 關鍵時刻 ================= -->
 <section class="slide dark mot" id="p-mot" data-part="1" data-steps="1">
   <div class="kick a" style="--i:0"><span class="pill">PART 1</span>痛點與機會 · 關鍵時刻</div>
@@ -701,12 +771,12 @@ h2 em{font-style:normal;color:var(--tealT)}
   </div>
   <div class="calltl">
     <div class="bub rowA" data-b="0"></div><div class="bub rowB" data-b="1"></div><div class="bub rowA" data-b="2"></div><div class="bub rowB" data-b="3"></div>
-    <div class="meta"><i class="ic" data-ic="phone"></i>一通電話 <b id="tlT">00:00</b><span class="tot">現況平均總耗時 6 分 5 秒（模擬值）</span></div>
+    <div class="meta"><i class="ic" data-ic="phone"></i>一通電話 <b id="tlT">00:00</b><span class="tot">現況平均總耗時 6 分 33 秒（以客服中心實際進線量、AHT 推算）</span></div>
     <div class="tlbar">
-      <div class="seg stuck" style="width:13.2%">聽語音選單</div>
-      <div class="seg stuck" style="width:6.6%">按 0 總機</div>
-      <div class="seg stuck" style="width:58.3%">排隊等真人</div>
-      <div class="seg ok" style="width:21.9%">真人回應</div>
+      <div class="seg stuck" style="width:12.2%">聽語音選單</div>
+      <div class="seg stuck" style="width:6.1%">按 0 總機</div>
+      <div class="seg stuck" style="width:61.3%">排隊等真人</div>
+      <div class="seg ok" style="width:20.4%">真人回應</div>
     </div>
     <div class="head" id="tlHead"></div>
     <div class="lg"><span><i style="background:rgba(232,116,59,.9)"></i>卡住的時間</span><span><i style="background:rgba(3,192,175,.65)"></i>真正在解決問題的時間</span></div>
@@ -859,13 +929,13 @@ h2 em{font-style:normal;color:var(--tealT)}
   <h2 class="a" style="--i:1">電腦模擬客服中心</h2>
   <div class="sub a" style="--i:2">數位孿生＝用真實的進線資料建一個虛擬客服中心；客服主管改參數、看結果，為不同時段規劃人力與自動化流程</div>
   <div class="twin">
-    <div class="tc in a" style="--i:3"><div class="hd"><i class="ic" data-ic="headset"></i><div><div class="t">真實客服中心</div><div class="s">通話結束的案件紀錄</div></div></div>
-      <ul><li><i><svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-9"/></svg></i>每日進線量與尖峰</li><li><i><svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-9"/></svg></i>案件類別與處理時長</li><li><i><svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-9"/></svg></i>轉接、轉錯次數</li><li><i><svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-9"/></svg></i>7 天內重複來電</li><li><i><svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-9"/></svg></i>客服人數與班表</li></ul></div>
+    <div class="tc in a" style="--i:3"><div class="hd"><i class="ic" data-ic="headset"></i><div><div class="t">真實客服中心</div><div class="s">2026/4–9 實際數據（客服中心提供）</div></div></div>
+      <ul><li><i><svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-9"/></svg></i>每日進線約 6,000 通・尖峰 14:00–15:30 約 1,000 通</li><li><i><svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-9"/></svg></i>AHT 257–276 秒・前五大進線類別</li><li><i><svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-9"/></svg></i>轉接、轉錯次數</li><li><i><svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-9"/></svg></i>7 天內重複來電</li><li><i><svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-9"/></svg></i>客服人數與班表（待提供，暫用假設）</li></ul></div>
     <div class="arrow p a" style="--i:4"></div>
     <div class="tc model a" style="--i:5"><div class="hd"><i class="ic" data-ic="sync"></i><div><div class="t">數位孿生模型</div><div class="s">進線 → Jev 分流 → 自助／排隊 → 專員</div></div></div>
       <div class="params" id="params">
-        <div class="pm" data-v="0.36"><span>每日電話進線</span><div class="tr"><div class="fl"></div><div class="kn"></div></div><b>5,000 通</b></div>
-        <div class="pm" data-v="0.33"><span>尖峰客服人數</span><div class="tr"><div class="fl"></div><div class="kn"></div></div><b>52 人</b></div>
+        <div class="pm" data-v="0.36"><span>每日電話進線</span><div class="tr"><div class="fl"></div><div class="kn"></div></div><b>6,000 通</b></div>
+        <div class="pm" data-v="0.44"><span>尖峰客服人數</span><div class="tr"><div class="fl"></div><div class="kn"></div></div><b>64 人</b></div>
         <div class="pm" data-v="0.76"><span>Jev 準確度</span><div class="tr"><div class="fl"></div><div class="kn"></div></div><b>88%</b></div>
         <div class="pm" data-v="0.27"><span>可導引線上自助</span><div class="tr"><div class="fl"></div><div class="kn"></div></div><b>15%</b></div>
         <div class="pm" data-v="0.66"><span>直接分流門檻</span><div class="tr"><div class="fl"></div><div class="kn"></div></div><b>0.80</b></div>
@@ -876,8 +946,8 @@ h2 em{font-style:normal;color:var(--tealT)}
   </div>
   <div class="recal"><div class="cap f" data-s="1">客服主管可以直接問</div><div class="pillr a" style="--i:8">↻ 每天用實際案件紀錄校正參數，模擬持續貼近現場</div></div>
   <div class="qa3">
-    <div class="card q3 f" data-s="1"><i class="ic sm" data-ic="target"></i><div><div class="t">分流門檻設多少最省時間？</div><div class="d">推演出最佳門檻約 0.82</div></div></div>
-    <div class="card q3 f" data-s="1"><i class="ic sm gold" data-ic="warn"></i><div><div class="t">尖峰時段要排幾位客服？</div><div class="d">46 人會爆線；52 人平均只等 2 秒</div></div></div>
+    <div class="card q3 f" data-s="1"><i class="ic sm" data-ic="target"></i><div><div class="t">分流門檻設多少最省時間？</div><div class="d">推演出最佳門檻約 0.81</div></div></div>
+    <div class="card q3 f" data-s="1"><i class="ic sm gold" data-ic="warn"></i><div><div class="t">尖峰時段要排幾位客服？</div><div class="d">57 人以下現況會爆線；導入後 56 人也只等 2 秒</div></div></div>
     <div class="card q3 f" data-s="1"><i class="ic sm" data-ic="flash"></i><div><div class="t">哪些流程改自動化最省時間？</div><div class="d">拉高自助比例，即時重算等待與轉接</div></div></div>
   </div>
 </section>
@@ -892,8 +962,8 @@ h2 em{font-style:normal;color:var(--tealT)}
       <div class="hv"><span id="heroV">0</span><small>萬小時</small></div>
       <div class="hd">等待與溝通時間合計（假設值）</div>
       <div class="deltas">
-        <div class="delta f" data-s="1"><b>−34%</b><span>電話平均總耗時<br>6 分 5 秒 → 4 分 0 秒</span></div>
-        <div class="delta f" data-s="1" style="transition-delay:.25s"><b>−88%</b><span>每日轉接次數<br>2,700 → 332 次</span></div>
+        <div class="delta f" data-s="1"><b>−32%</b><span>電話平均總耗時<br>6 分 33 秒 → 4 分 27 秒</span></div>
+        <div class="delta f" data-s="1" style="transition-delay:.25s"><b>−88%</b><span>每日轉接次數<br>3,240 → 398 次</span></div>
       </div>
     </div>
     <div class="card tbl a" style="--i:3" id="tbl">
@@ -901,13 +971,13 @@ h2 em{font-style:normal;color:var(--tealT)}
     </div>
   </div>
   <div class="card stress f" data-s="2">
-    <div><div class="sk">壓力測試</div><div class="sh">尖峰人手吃緊<br>客服只有 46 人</div></div>
+    <div><div class="sk">壓力測試</div><div class="sh">尖峰人手吃緊<br>客服只有 56 人</div></div>
     <div class="qs">
       <div class="q bad" id="qBad"><div class="ql">現況</div><div class="qt"></div><div class="qr">排隊 <span>0</span> 人</div></div>
       <div class="q good" id="qGood"><div class="ql">導入 Jev</div><div class="qt"></div><div class="qr">平均只等 2 秒</div></div>
     </div>
   </div>
-  <div class="fn a" style="--i:4">假設值（含 15% 常見業務導引智慧小豐，每日約 600 通），待以行內案件紀錄與 Jev 實測校正；效益以服務品質衡量，不換算人力</div>
+  <div class="fn a" style="--i:4">以客服中心 2026/4–9 實際值推算：每日進線 6,000 通、AHT 270 秒；人力、等候、接聽率未提供，為假設值。保守取 15% 常見業務導引智慧小豐（每日約 720 通；實際可自助化潛力 48.5%）；效益以服務品質衡量，不換算人力</div>
 </section>
 
 <!-- ================= 11 謝謝聆聽 ================= -->
@@ -1001,7 +1071,7 @@ const CHAP = {
   5: ['效益評估', '服務更快、轉接更少，壓力測試不爆線'],
 };
 const FOOT = { t: 'Jev × 數位孿生客服提案' };
-const MOT = { SEG: [48, 24, 213, 80], KIND: ['', '', 'hot', 'ok'],          // 四段秒數 (合計 365 秒 = 6 分 5 秒)
+const MOT = { SEG: [48, 24, 241, 80], KIND: ['', '', 'hot', 'ok'],          // 四段秒數 (合計 393 秒 = 6 分 33 秒，現況模型值)
   SAY: ['「我的問題屬於哪一個分機？」', '「算了，直接按 0 總機好了」', '「到底還要等多久…」', '「終於有人接了，整理不耐煩的情緒，把問題講一次」'] };
 const FLOW = { hint: '按 → 播放客戶來電', wait: '分流結果會出現在這裡' };
 const EX = [
@@ -1016,14 +1086,14 @@ const EX = [
     out: ['k-cx', '轉給對的專員，接聽前帶出資料與建議', '問題解決後才提資產配置諮詢，客戶同意才建轉介單'] },
 ];
 const MET = [
-  ['電話', '客戶平均總耗時', 365, 240, v => `${Math.floor(v / 60)} 分 ${Math.round(v % 60)} 秒`, '秒'],
-  ['電話', '尖峰平均等待', 14, 0, v => `${Math.round(v)} 秒`, '秒'],
+  ['電話', '客戶平均總耗時', 393, 267, v => `${Math.floor(v / 60)} 分 ${Math.round(v % 60)} 秒`, '秒'],
+  ['電話', '尖峰平均等待', 13, 0, v => `${Math.round(v)} 秒`, '秒'],
   ['電話', '轉錯窗口比例', 14.0, 5.3, v => `${v.toFixed(1)}%`, '%'],
-  ['電話', '20 秒內接聽率', 80, 99.8, v => `${v.toFixed(v >= 99.8 ? 1 : 0)}%`, '%'],
+  ['電話', '20 秒內接聽率', 82, 99.8, v => `${v.toFixed(v >= 99.8 ? 1 : 0)}%`, '%'],
   ['文字', '答非所問比例', 35, 11, v => `${Math.round(v)}%`, '%'],
   ['文字', '每日轉真人', 1120, 472, v => `${Math.round(v).toLocaleString()} 則`, '則'],
 ];
-const RES = { hero: 6.6, boom: '爆線' };
+const RES = { hero: 7.5, boom: '爆線' };
 
 // 「特效文字」面板的項目：群組 / 鍵 / 標籤 / 讀 / 寫 / 改完要做的事
 const DATA = [];
@@ -1182,10 +1252,10 @@ function introInit(){
   EP = Array.from({ length: 70 }, () => ({ x: irnd() * 1600, y: irnd() * 900, vx: (irnd() - 0.5) * 6, vy: -4 - irnd() * 10, r: 0.8 + irnd() * 1.8, ph: irnd() * 6.28, sp: 0.6 + irnd() * 1.2, teal: irnd() < 0.35 }));
   ES = Array.from({ length: 7 }, (_, i) => ({ x: 360 + irnd() * 880, y: 300 + irnd() * 130, t0: i * 0.9 + irnd(), life: 1.6 + irnd() }));
   ISC = Array.from({ length: 24 }, (_, i) => ({                        // 24 個推演情境: 參數各自不同, 排隊與等待整體往下
-    p: [Math.round(44 + irnd() * 20), Math.round(8 + irnd() * 28), +(0.70 + irnd() * 0.25).toFixed(2)],
+    p: [Math.round(54 + irnd() * 20), Math.round(8 + irnd() * 28), +(0.70 + irnd() * 0.25).toFixed(2)],
     q: Math.max(0, Math.min(16, Math.round(15 - i / 24 * 13 + (irnd() - 0.5) * 6))),
     au: Math.round(2 + irnd() * 8), w: Math.max(0, Math.round(48 - i / 24 * 44 + (irnd() - 0.5) * 16)),
-    d: [60 + irnd() * 35, 3000 + irnd() * 4000, 3 + irnd() * 14, 60 + irnd() * 38, 150 + irnd() * 120, 200 + irnd() * 220] }));
+    d: [60 + irnd() * 35, 4000 + irnd() * 4000, 3 + irnd() * 14, 60 + irnd() * 38, 200 + irnd() * 130, 250 + irnd() * 260] }));
 }
 const mixc = (a, b, p) => { const h = x => [parseInt(x.slice(1, 3), 16), parseInt(x.slice(3, 5), 16), parseInt(x.slice(5, 7), 16)]; const A = h(a), B = h(b); return `rgb(${A.map((v, i) => Math.round(v + (B[i] - v) * p)).join(',')})`; };
 const mmss2 = s => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
@@ -1201,7 +1271,7 @@ function introDraw(t){
   drawAmbient(c, t, t < 11.8 ? 0.45 : 0.45 + 0.55 * seg(t, 11.8, 12.6));
   c.textBaseline = 'middle';
   /* A. 來電顯示 (0–2.2)：客服中心的來電面板 */
-  const A = 1 - seg(t, 4.5, 4.8);                        // 來電面板多停 2.5 秒
+  const A = 1 - seg(t, 3.2, 3.5);                        // 來電面板停約 3 秒
   if (A > 0){
     c.globalAlpha = A;
     IP.forEach(p => { const q = ease(seg(t - p.d, 0, 1.3)); const r = p.r * (1 - q) + 60 * q; const x = W / 2 + Math.cos(p.a) * r, y = H / 2 + Math.sin(p.a) * r * 0.62;
@@ -1234,10 +1304,10 @@ function introDraw(t){
       c.textAlign = 'left'; c.font = `500 14px ${IF}`; c.fillStyle = 'rgba(255,255,255,.7)'; c.fillText(r[0], CX - CW / 2 + 20, y + 1);
       c.fillStyle = 'rgba(255,255,255,.4)'; c.fillText('等待中', CX - CW / 2 + 200, y + 1);
       c.textAlign = 'right'; c.fillStyle = '#F59F6B'; c.font = `700 14px ${IF}`; c.fillText(r[1], CX + CW / 2 - 20, y + 1); });
-    c.globalAlpha = A * seg(t, 1.4, 1.9); c.fillStyle = 'rgba(255,255,255,.75)'; c.font = `500 20px ${IF}`; c.textAlign = 'center'; c.fillText('每 天 5,000 通 進 線 ・ 每 一 通 都 在 等', W / 2, CY + CHh / 2 + 160);
+    c.globalAlpha = A * seg(t, 1.4, 1.9); c.fillStyle = 'rgba(255,255,255,.75)'; c.font = `500 20px ${IF}`; c.textAlign = 'center'; c.fillText('每 天 約 6,000 通 進 線 ・ 每 一 通 都 在 等', W / 2, CY + CHh / 2 + 160);
     c.globalAlpha = 1;
   }
-  t -= 2.5;                                                // 之後各幕整體延後 2.5 秒
+  t -= 1.2;                                                // 之後各幕整體延後 1.2 秒
   /* B. 現況 (2.2–4.6) → C1. 加上兩個功能、人潮減少 (4.6–6.6) → C2. 參數調整、人潮更少 (6.6–9.2) → C3. 創造商機 (9.3–11.0) */
   const BC = seg(t, 2.2, 2.5) * (1 - seg(t, 11.5, 11.8));
   if (BC > 0){
@@ -1245,15 +1315,15 @@ function introDraw(t){
     const f1 = seg(t, 4.6, 5.0), f2 = seg(t, 5.4, 5.8), red1 = ease(seg(t, 5.0, 6.5));          // 兩個功能浮現, 人潮第一波減少
     const twin = seg(t, 6.6, 6.9), fin = seg(t, 8.6, 9.1), opp = seg(t, 9.3, 9.7);              // 參數調整, 鎖定結果, 創造商機
     const k = Math.min(23, Math.floor(seg(t, 6.8, 8.6) * 24)), kf = seg(t, 6.8, 8.6) * 24 - k, S0 = ISC[k], S1 = ISC[Math.min(23, k + 1)];
-    const FINP = [52, 15, 0.82];
-    let vals = [52, 0, 0];
+    const FINP = [64, 15, 0.81];
+    let vals = [64, 0, 0];
     if (twin > 0) vals = fin > 0 ? [0, 1, 2].map(i => S0.p[i] + (FINP[i] - S0.p[i]) * ease(fin)) : [0, 1, 2].map(i => S0.p[i] + (S1.p[i] - S0.p[i]) * kf);
     // 排隊人數: 現況漲到 14 → 功能上線後減到 8 → 參數調整後減到 1；線上自助: 0 → 6 → 9
     const red2 = ease(seg(t, 6.8, 8.8));
     const Q = twin === 0 ? Math.round(14 * ease(seg(t, 2.6, 4.0)) - 6 * red1) : Math.max(0, Math.round(8 - 7 * red2 + (fin > 0 ? 0 : Math.sin(t * 9 + k) * 0.9)));
     const AU = twin === 0 ? Math.round(6 * red1) : Math.round(6 + 3 * red2);
-    const WS = twin === 0 ? Math.round(14 - 8 * red1) : Math.max(0, Math.round(6 - 6 * red2));
-    const tv = twin === 0 ? 365 * ease(seg(t, 2.4, 4.0)) - 65 * red1 : 300 - 60 * red2;
+    const WS = twin === 0 ? Math.round(13 - 7 * red1) : Math.max(0, Math.round(6 - 6 * red2));
+    const tv = twin === 0 ? 393 * ease(seg(t, 2.4, 4.0)) - 68 * red1 : 325 - 58 * red2;
     // 左: 標籤
     c.textAlign = 'left'; c.font = `700 15px ${IF}`;
     c.fillStyle = `rgba(224,78,78,${1 - f1})`; c.fillText('現 況', 120, 230);
@@ -1263,8 +1333,8 @@ function introDraw(t){
     // 左: 計時器
     c.font = `900 96px ${IF}`;
     if (fin < 0.3){ c.fillStyle = twin > 0 || f1 > 0 ? '#fff' : '#fff'; c.fillText(mmss2(tv), 118, 300); }
-    else { c.fillStyle = 'rgba(255,255,255,.35)'; c.fillText('06:05', 118, 300); const w = c.measureText('06:05').width; c.strokeStyle = '#D9363E'; c.lineWidth = 5; c.beginPath(); c.moveTo(118, 300); c.lineTo(118 + w, 300); c.stroke();
-      c.globalAlpha = BC * seg(t, 8.8, 9.1); c.fillStyle = '#03C0AF'; c.fillText('04:00', 118 + w + 30, 300); c.globalAlpha = BC; }
+    else { c.fillStyle = 'rgba(255,255,255,.35)'; c.fillText('06:33', 118, 300); const w = c.measureText('06:33').width; c.strokeStyle = '#D9363E'; c.lineWidth = 5; c.beginPath(); c.moveTo(118, 300); c.lineTo(118 + w, 300); c.stroke();
+      c.globalAlpha = BC * seg(t, 8.8, 9.1); c.fillStyle = '#03C0AF'; c.fillText('04:27', 118 + w + 30, 300); c.globalAlpha = BC; }
     c.font = `500 18px ${IF}`; c.fillStyle = 'rgba(255,255,255,.6)'; c.fillText(fin > 0.3 ? '客戶平均總耗時' : (f1 > 0 ? '客戶平均總耗時（導入後）' : '客戶平均總耗時（現況）'), 120, 356);
     // 左: 現況說明 → 兩個功能膠囊
     if (f1 < 1){ c.globalAlpha = BC * (1 - f1); c.font = `700 30px ${IF}`; c.fillStyle = '#E04E4E'; c.fillText(`排隊 ${Q} 人`, 120, 420); c.font = `500 17px ${IF}`; c.fillStyle = 'rgba(255,255,255,.55)'; c.fillText('語音選單 → 按 0 總機 → 排隊等真人', 120, 462); c.globalAlpha = BC; }
@@ -1278,7 +1348,7 @@ function introDraw(t){
     pill(516, f3, '數位孿生模擬', '調整參數，推演不同情境', '#03C0AF');
     // 左: 儀表板 (參數調整)
     if (dash > 0){
-      const D0 = ISC[k].d, D1 = ISC[Math.min(23, k + 1)].d, DF = [88, 5000, 5.3, 99.8, 240, 332];
+      const D0 = ISC[k].d, D1 = ISC[Math.min(23, k + 1)].d, DF = [88, 6000, 5.3, 99.8, 267, 398];
       const dv = [0, 1, 2, 3, 4, 5].map(i => fin > 0 ? D0[i] + (DF[i] - D0[i]) * ease(fin) : D0[i] + (D1[i] - D0[i]) * kf + Math.sin(t * 37 + i * 1.7) * (D1[i] - D0[i]) * 0.15);
       const T = [['尖峰客服人數', `${Math.round(vals[0])} 人`], ['可導引線上自助', `${Math.round(vals[1])}%`], ['直接分流門檻', vals[2].toFixed(2)],
                  ['Jev 準確度', `${Math.round(dv[0])}%`], ['每日進線', `${Math.round(dv[1]).toLocaleString()} 通`], ['轉錯窗口比例', `${dv[2].toFixed(1)}%`],
@@ -1320,10 +1390,10 @@ function introDraw(t){
       c.globalAlpha = BC; }
     // 底部結果列
     c.textAlign = 'left'; c.font = `700 17px ${IF}`;
-    if (fin >= 1){ const q = seg(t, 9.1, 9.3); c.globalAlpha = BC * q; const txt = '✓ 尖峰平均等待 0 秒 ・ 總耗時 4 分 0 秒 ・ 最佳門檻 0.82'; const w = c.measureText(txt).width + 40;
+    if (fin >= 1){ const q = seg(t, 9.1, 9.3); c.globalAlpha = BC * q; const txt = '✓ 尖峰平均等待 0 秒 ・ 總耗時 4 分 27 秒 ・ 最佳門檻 0.81'; const w = c.measureText(txt).width + 40;
       c.fillStyle = 'rgba(3,192,175,.10)'; c.beginPath(); c.roundRect(BX + 26, BY + BH - 64, w, 40, 20); c.fill(); c.strokeStyle = 'rgba(3,192,175,.6)'; c.lineWidth = 1; c.stroke(); c.fillStyle = '#fff'; c.fillText(txt, BX + 46, BY + BH - 44); c.globalAlpha = BC; }
     else { c.fillStyle = twin > 0 ? 'rgba(255,255,255,.85)' : (f1 > 0 ? '#03C0AF' : '#E04E4E');
-      c.fillText(twin > 0 ? `情境 ${String(k + 1).padStart(2, '0')} ・ 尖峰平均等待 ${WS} 秒` : (f1 > 0 ? `尖峰平均等待 ${WS} 秒 ・ 總耗時 ${Math.floor(tv / 60)} 分 ${Math.round(tv % 60)} 秒` : `尖峰平均等待 ${WS} 秒 ・ 總耗時 6 分 5 秒`), BX + 26, BY + BH - 44); }
+      c.fillText(twin > 0 ? `情境 ${String(k + 1).padStart(2, '0')} ・ 尖峰平均等待 ${WS} 秒` : (f1 > 0 ? `尖峰平均等待 ${WS} 秒 ・ 總耗時 ${Math.floor(tv / 60)} 分 ${Math.round(tv % 60)} 秒` : `尖峰平均等待 ${WS} 秒 ・ 總耗時 6 分 33 秒`), BX + 26, BY + BH - 44); }
     // 結尾: 大金色區塊從遠處飛到畫面中央
     if (opp > 0){ const G = '#D9B36A', ql = ease(seg(t, 9.3, 10.0)), qt = ease(seg(t, 9.8, 10.4)), y0 = BY + BH + 34;   // 商機: 看板下方一道金線掃過, 文字再浮現
       c.save(); c.globalAlpha = BC;
@@ -1354,7 +1424,7 @@ function introLoop(now){
   if (!INTRO.on) return;
   let t = Math.max(0, (now - INTRO.t0) / 1000);
   introDraw(t);
-  if (INTRO.phase === 'anim' && t >= 14.3){ INTRO.phase = 'done'; show(1); return; }   // 動畫放完 → PART 1 章節頁
+  if (INTRO.phase === 'anim' && t >= 13.0){ INTRO.phase = 'done'; show(1); return; }   // 動畫放完 → PART 1 章節頁
   INTRO.raf = requestAnimationFrame(introLoop);
 }
 // 一般頁面的飄動光點: 深色頁白/青綠, 淺色頁靛藍淡點; 開場頁自己畫所以略過
@@ -1381,7 +1451,7 @@ function introWarm(){
 introWarm();
 RESET['p-intro'] = () => {                                              // 先顯示封面 (背景用動畫結尾那幕: 網格 + 光點)
   const cw = document.getElementById('coverWrap'); cw.classList.add('on'); cw.querySelectorAll('.a').forEach(el => { el.style.animation = 'none'; void el.offsetWidth; el.style.animation = ''; });
-  introInit(); INTRO.on = true; INTRO.phase = 'cover'; INTRO.t0 = performance.now() - 17000; cancelAnimationFrame(INTRO.raf); INTRO.raf = requestAnimationFrame(introLoop); };
+  introInit(); INTRO.on = true; INTRO.phase = 'cover'; INTRO.t0 = performance.now() - 16000; cancelAnimationFrame(INTRO.raf); INTRO.raf = requestAnimationFrame(introLoop); };
 
 /* ---------- 02 客戶旅程 ---------- */
 RESET['p-journey'] = () => {
@@ -1396,7 +1466,7 @@ RESET['p-mot'] = () => {
   const bubs = [...sl.querySelectorAll('.bub')]; bubs.forEach(b => { b.classList.remove('on', 'hot', 'ok'); b.textContent = ''; });
   const hd = document.getElementById('tlHead'); hd.style.transition = 'none'; hd.style.left = '0'; hd.style.opacity = 0; void hd.offsetWidth; hd.style.transition = '';
   document.getElementById('tlT').textContent = '00:00';
-  const SEG = MOT.SEG, SAY = MOT.SAY, KIND = MOT.KIND, T = 365, DUR = 3400;
+  const SEG = MOT.SEG, SAY = MOT.SAY, KIND = MOT.KIND, T = 393, DUR = 3400;
   const start = i => SEG.slice(0, i).reduce((a, b) => a + b, 0) / T * DUR;
   const segs = sl.querySelectorAll('.seg');
   later(() => {
@@ -2401,7 +2471,7 @@ body{font-family:var(--font)}
     <li><b>排隊</b>：以尖峰小時（占全日 12%）的進線量，用 Erlang C 計算平均等待時間和 20 秒內接聽率。</li>
     <li><b>文字客服</b>：答非所問的客戶平均多來回 2 輪，其中 40% 最後轉真人。導入後答錯率 = 分錯窗口比例 + 5%（知識庫本身沒有答案）。</li>
     <li><b>時間換算</b>：一年以 250 個工作天計算。省下的專員時間用在複雜問題與新人輔導，不換算成人力或成本。</li>
-    <li><b>資料基礎</b>：客服中心通話結束後已有案件分類紀錄；每天用這些紀錄（案件量、處理時長、轉接、重複來電、複雜度）校正以上參數，讓模擬持續貼近現場。</li>
+    <li><b>資料基礎</b>：客服中心已提供 2026/4–9 營業日月均實際值：每日進線 5,847–6,106 通、尖峰 14:00–15:30 約 1,000 通、AHT 257–276 秒、自助通路占比 56%、可自助化潛力 48.5%、滿意度 99.4%；人力配置、平均等候、接聽率、轉介件數暫未提供，仍為假設值。之後每天用案件分類紀錄校正，讓模擬持續貼近現場。</li>
   </ul></div></div>
 <div class="ovl" id="ovlCurve"><div class="card"><button type="button" class="icon x" data-close>✕</button><div class="ch">門檻怎麼設最省時間？</div>
   <div class="muted small">門檻太低，分錯變多；太高，反問和轉人工變多。曲線最低點就是最佳門檻。</div>
@@ -3006,8 +3076,8 @@ $('qAgents').onchange=e=>{qReset(); e.target.blur();};
 /* ---------- 4 數位孿生 ---------- */
 const P={};
 const CTRL=[
-  {k:'vPhone',l:'每日電話進線',min:1000,max:15000,step:500,v:5000,f:v=>fmt(v)+' 通'},
-  {k:'agents',l:'尖峰電話客服人數',min:20,max:120,step:1,v:52,f:v=>v+' 人',h:'拉到 46 人以下，現況會爆線'},
+  {k:'vPhone',l:'每日電話進線',min:1000,max:15000,step:500,v:6000,f:v=>fmt(v)+' 通',h:'實際值：2026/4–9 營業日月均 5,847–6,106 通（客服中心提供）'},
+  {k:'agents',l:'尖峰電話客服人數',min:20,max:120,step:1,v:64,f:v=>v+' 人',h:'人力數未提供，為假設值；拉到 57 人以下，現況會爆線'},
   {k:'acc',l:'Jev 平均準確度',min:0.6,max:0.98,step:0.01,v:0.88,f:v=>(v*100).toFixed(0)+'%',h:'假設值，待以行內資料實測'},
   {k:'autoShare',l:'可導引線上自助的進線比例',min:0,max:0.6,step:0.01,v:0.15,f:v=>(v*100).toFixed(0)+'%',h:'分期、臨時調額、帳單查詢等智慧小豐可辦的常見業務；假設值，待客服中心數據校正'},
 ];
@@ -3018,7 +3088,7 @@ const CTRL_ADV=[
   {k:'missAsis',l:'文字客服答非所問比例',min:0.05,max:0.8,step:0.01,v:0.35,f:v=>(v*100).toFixed(0)+'%'},
   {k:'thAuto',l:'直接分流門檻',min:0.5,max:0.99,step:0.01,v:0.80,f:v=>v.toFixed(2)},
   {k:'thAsk',l:'反問門檻',min:0.2,max:0.9,step:0.01,v:0.50,f:v=>v.toFixed(2)},
-  {k:'aht',l:'專員平均處理時間',min:120,max:600,step:10,v:240,f:v=>v+' 秒'},
+  {k:'aht',l:'專員平均處理時間',min:120,max:600,step:10,v:270,f:v=>v+' 秒',h:'實際值：2026/4–9 AHT 257–276 秒'},
   {k:'tOp',l:'總機人工分類時間',min:20,max:180,step:5,v:60,f:v=>v+' 秒'},
   {k:'tRe',l:'轉錯後重新說明時間',min:30,max:240,step:10,v:90,f:v=>v+' 秒'},
   {k:'ivr',l:'語音選單聆聽時間',min:20,max:120,step:5,v:60,f:v=>v+' 秒'},
@@ -3042,7 +3112,8 @@ function lgamma(z){const g=7,c=[0.99999999999980993,676.5203681218851,-1259.1392
 function betaGrid(m,k=6,n=400){const a=m*k,b=(1-m)*k,lB=lgamma(a)+lgamma(b)-lgamma(a+b);const xs=[],ws=[];let s=0;for(let i=0;i<n;i++){const p=(i+0.5)/n;const w=Math.exp((a-1)*Math.log(p)+(b-1)*Math.log(1-p)-lB);xs.push(p);ws.push(w);s+=w;}return {xs,ws:ws.map(w=>w/s)};}
 function routing(thA,thQ){const G=betaGrid(P.acc);let auto=0,autoErr=0,ask=0,human=0;G.xs.forEach((p,i)=>{const w=G.ws[i];if(p>=thA){auto+=w;autoErr+=w*(1-p);}else if(p>=thQ){ask+=w;}else human+=w;});return {auto,ask,human,mis:autoErr+ask*0.03+human*P.eOp};}
 function erlangC(N,A){if(A>=N) return 1;let sum=0,term=1;for(let k=0;k<N;k++){if(k>0) term*=A/k;sum+=term;}const tN=term*A/N;const last=tN*N/(N-A);return last/(sum+last);}
-function queue(vDay,svc,N){const lam=vDay*0.12/3600;const A=lam*svc;if(A>=N) return {asa:Infinity,sl:0};const C=erlangC(N,A);return {asa:C*svc/(N-A),sl:1-C*Math.exp(-(N-A)*20/svc)};}
+function queue(vDay,svc,N){const lam=vDay*0.112/3600;   // 尖峰每小時約佔全日 11.2%（實際：14:00–15:30 約 1,000 通 / 全日約 6,000 通）
+const A=lam*svc;if(A>=N) return {asa:Infinity,sl:0};const C=erlangC(N,A);return {asa:C*svc/(N-A),sl:1-C*Math.exp(-(N-A)*20/svc)};}
 const W_OP=30;
 function phoneModel(mode,thA,thQ){
   if(mode==='asis'){const mis=P.fOp*P.eOp+(1-P.fOp)*P.eSelf;const svc=P.aht+P.fOp*P.tOp+mis*P.tRe;const q=queue(P.vPhone,svc,P.agents);return {mis,svc,q,vAgent:P.vPhone,autoN:0,cust:P.ivr+P.fOp*(W_OP+P.tOp)+q.asa+P.aht+mis*(q.asa+P.tRe),transfers:P.vPhone*(P.fOp+mis)};}
@@ -3062,7 +3133,7 @@ function recompute(){
   const custHrs=((isFinite(A.cust)&&isFinite(B.cust)?(A.cust-B.cust)*P.vPhone:0)+(TA.cust-TB.cust)*P.vText)*250/3600;
   const dWait=isFinite(A.q.asa)&&isFinite(B.q.asa)?Math.max(0,A.q.asa-B.q.asa):null;
   $('hero').innerHTML=`<div><div class="big">${dWait===null?'不再爆線':fmt(dWait,0)}</div><div class="u">${dWait===null?'尖峰時段接得起來':'秒：尖峰平均等待縮短'}</div></div><div><div class="big">${fmt(Math.max(0,A.transfers-B.transfers))}</div><div class="u">次：每日少轉接</div></div><div><div class="big">${fmt(Math.max(0,custHrs),0)}</div><div class="u">小時：每年客戶少花的等待與溝通時間</div></div>`;
-  $('heroNote').textContent=`效益以服務品質衡量，不以減少人力為目標；省下的專員時間用在複雜問題與新人輔導。Jev 模型費用每則約 500 token，一年約 ${fmt(jevCost*1e4,0)} 元。所有數字為假設值，以通話結束的案件分類紀錄持續校正。`;
+  $('heroNote').textContent=`效益以服務品質衡量，不以減少人力為目標；省下的專員時間用在複雜問題與新人輔導。Jev 模型費用每則約 500 token，一年約 ${fmt(jevCost*1e4,0)} 元。每日進線、尖峰占比、AHT 為客服中心 2026/4–9 營業日實際值；人力、等候、接聽率未提供，為假設值。`;
   const kp=(k,va,vb,better,f)=>{const d=vb-va;const good=better==='low'?d<0:d>0;const pct=va&&isFinite(va)&&isFinite(vb)?Math.abs(d/va*100):null;
     return `<div class="kpi"><div class="k">${k}</div><div class="v"${good?'':' style="color:var(--red)"'}>${f(vb)}</div><div class="c">現況 ${f(va)}</div><div class="d${good?'':' bad'}">${pct===null?'':(good?'改善 ':'惡化 ')+pct.toFixed(0)+'%'}</div></div>`;};
   $('kpis').innerHTML=kp('電話：客戶平均總耗時',A.cust,B.cust,'low',fmtSec)+kp('電話：尖峰平均等待',A.q.asa,B.q.asa,'low',fmtSec)+kp('電話：轉錯窗口比例',A.mis,B.mis,'low',v=>(v*100).toFixed(1)+'%')+kp('文字：每日轉真人',TA.escN,TB.escN,'low',v=>fmt(v)+' 則')+kp('電話：每日線上自助',A.autoN,B.autoN,'high',v=>fmt(v)+' 通');

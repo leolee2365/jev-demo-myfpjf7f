@@ -677,7 +677,7 @@ body{font-family:var(--font)}
     <li><b>排隊</b>：以尖峰小時（占全日 12%）的進線量，用 Erlang C 計算平均等待時間和 20 秒內接聽率。</li>
     <li><b>文字客服</b>：答非所問的客戶平均多來回 2 輪，其中 40% 最後轉真人。導入後答錯率 = 分錯窗口比例 + 5%（知識庫本身沒有答案）。</li>
     <li><b>時間換算</b>：一年以 250 個工作天計算。省下的專員時間用在複雜問題與新人輔導，不換算成人力或成本。</li>
-    <li><b>資料基礎</b>：客服中心通話結束後已有案件分類紀錄；每天用這些紀錄（案件量、處理時長、轉接、重複來電、複雜度）校正以上參數，讓模擬持續貼近現場。</li>
+    <li><b>資料基礎</b>：客服中心已提供 2026/4–9 營業日月均實際值：每日進線 5,847–6,106 通、尖峰 14:00–15:30 約 1,000 通、AHT 257–276 秒、自助通路占比 56%、可自助化潛力 48.5%、滿意度 99.4%；人力配置、平均等候、接聽率、轉介件數暫未提供，仍為假設值。之後每天用案件分類紀錄校正，讓模擬持續貼近現場。</li>
   </ul></div></div>
 <div class="ovl" id="ovlCurve"><div class="card"><button type="button" class="icon x" data-close>✕</button><div class="ch">門檻怎麼設最省時間？</div>
   <div class="muted small">門檻太低，分錯變多；太高，反問和轉人工變多。曲線最低點就是最佳門檻。</div>
@@ -1282,8 +1282,8 @@ $('qAgents').onchange=e=>{qReset(); e.target.blur();};
 /* ---------- 4 數位孿生 ---------- */
 const P={};
 const CTRL=[
-  {k:'vPhone',l:'每日電話進線',min:1000,max:15000,step:500,v:5000,f:v=>fmt(v)+' 通'},
-  {k:'agents',l:'尖峰電話客服人數',min:20,max:120,step:1,v:52,f:v=>v+' 人',h:'拉到 46 人以下，現況會爆線'},
+  {k:'vPhone',l:'每日電話進線',min:1000,max:15000,step:500,v:6000,f:v=>fmt(v)+' 通',h:'實際值：2026/4–9 營業日月均 5,847–6,106 通（客服中心提供）'},
+  {k:'agents',l:'尖峰電話客服人數',min:20,max:120,step:1,v:64,f:v=>v+' 人',h:'人力數未提供，為假設值；拉到 57 人以下，現況會爆線'},
   {k:'acc',l:'Jev 平均準確度',min:0.6,max:0.98,step:0.01,v:0.88,f:v=>(v*100).toFixed(0)+'%',h:'假設值，待以行內資料實測'},
   {k:'autoShare',l:'可導引線上自助的進線比例',min:0,max:0.6,step:0.01,v:0.15,f:v=>(v*100).toFixed(0)+'%',h:'分期、臨時調額、帳單查詢等智慧小豐可辦的常見業務；假設值，待客服中心數據校正'},
 ];
@@ -1294,7 +1294,7 @@ const CTRL_ADV=[
   {k:'missAsis',l:'文字客服答非所問比例',min:0.05,max:0.8,step:0.01,v:0.35,f:v=>(v*100).toFixed(0)+'%'},
   {k:'thAuto',l:'直接分流門檻',min:0.5,max:0.99,step:0.01,v:0.80,f:v=>v.toFixed(2)},
   {k:'thAsk',l:'反問門檻',min:0.2,max:0.9,step:0.01,v:0.50,f:v=>v.toFixed(2)},
-  {k:'aht',l:'專員平均處理時間',min:120,max:600,step:10,v:240,f:v=>v+' 秒'},
+  {k:'aht',l:'專員平均處理時間',min:120,max:600,step:10,v:270,f:v=>v+' 秒',h:'實際值：2026/4–9 AHT 257–276 秒'},
   {k:'tOp',l:'總機人工分類時間',min:20,max:180,step:5,v:60,f:v=>v+' 秒'},
   {k:'tRe',l:'轉錯後重新說明時間',min:30,max:240,step:10,v:90,f:v=>v+' 秒'},
   {k:'ivr',l:'語音選單聆聽時間',min:20,max:120,step:5,v:60,f:v=>v+' 秒'},
@@ -1318,7 +1318,8 @@ function lgamma(z){const g=7,c=[0.99999999999980993,676.5203681218851,-1259.1392
 function betaGrid(m,k=6,n=400){const a=m*k,b=(1-m)*k,lB=lgamma(a)+lgamma(b)-lgamma(a+b);const xs=[],ws=[];let s=0;for(let i=0;i<n;i++){const p=(i+0.5)/n;const w=Math.exp((a-1)*Math.log(p)+(b-1)*Math.log(1-p)-lB);xs.push(p);ws.push(w);s+=w;}return {xs,ws:ws.map(w=>w/s)};}
 function routing(thA,thQ){const G=betaGrid(P.acc);let auto=0,autoErr=0,ask=0,human=0;G.xs.forEach((p,i)=>{const w=G.ws[i];if(p>=thA){auto+=w;autoErr+=w*(1-p);}else if(p>=thQ){ask+=w;}else human+=w;});return {auto,ask,human,mis:autoErr+ask*0.03+human*P.eOp};}
 function erlangC(N,A){if(A>=N) return 1;let sum=0,term=1;for(let k=0;k<N;k++){if(k>0) term*=A/k;sum+=term;}const tN=term*A/N;const last=tN*N/(N-A);return last/(sum+last);}
-function queue(vDay,svc,N){const lam=vDay*0.12/3600;const A=lam*svc;if(A>=N) return {asa:Infinity,sl:0};const C=erlangC(N,A);return {asa:C*svc/(N-A),sl:1-C*Math.exp(-(N-A)*20/svc)};}
+function queue(vDay,svc,N){const lam=vDay*0.112/3600;   // 尖峰每小時約佔全日 11.2%（實際：14:00–15:30 約 1,000 通 / 全日約 6,000 通）
+const A=lam*svc;if(A>=N) return {asa:Infinity,sl:0};const C=erlangC(N,A);return {asa:C*svc/(N-A),sl:1-C*Math.exp(-(N-A)*20/svc)};}
 const W_OP=30;
 function phoneModel(mode,thA,thQ){
   if(mode==='asis'){const mis=P.fOp*P.eOp+(1-P.fOp)*P.eSelf;const svc=P.aht+P.fOp*P.tOp+mis*P.tRe;const q=queue(P.vPhone,svc,P.agents);return {mis,svc,q,vAgent:P.vPhone,autoN:0,cust:P.ivr+P.fOp*(W_OP+P.tOp)+q.asa+P.aht+mis*(q.asa+P.tRe),transfers:P.vPhone*(P.fOp+mis)};}
@@ -1338,7 +1339,7 @@ function recompute(){
   const custHrs=((isFinite(A.cust)&&isFinite(B.cust)?(A.cust-B.cust)*P.vPhone:0)+(TA.cust-TB.cust)*P.vText)*250/3600;
   const dWait=isFinite(A.q.asa)&&isFinite(B.q.asa)?Math.max(0,A.q.asa-B.q.asa):null;
   $('hero').innerHTML=`<div><div class="big">${dWait===null?'不再爆線':fmt(dWait,0)}</div><div class="u">${dWait===null?'尖峰時段接得起來':'秒：尖峰平均等待縮短'}</div></div><div><div class="big">${fmt(Math.max(0,A.transfers-B.transfers))}</div><div class="u">次：每日少轉接</div></div><div><div class="big">${fmt(Math.max(0,custHrs),0)}</div><div class="u">小時：每年客戶少花的等待與溝通時間</div></div>`;
-  $('heroNote').textContent=`效益以服務品質衡量，不以減少人力為目標；省下的專員時間用在複雜問題與新人輔導。Jev 模型費用每則約 500 token，一年約 ${fmt(jevCost*1e4,0)} 元。所有數字為假設值，以通話結束的案件分類紀錄持續校正。`;
+  $('heroNote').textContent=`效益以服務品質衡量，不以減少人力為目標；省下的專員時間用在複雜問題與新人輔導。Jev 模型費用每則約 500 token，一年約 ${fmt(jevCost*1e4,0)} 元。每日進線、尖峰占比、AHT 為客服中心 2026/4–9 營業日實際值；人力、等候、接聽率未提供，為假設值。`;
   const kp=(k,va,vb,better,f)=>{const d=vb-va;const good=better==='low'?d<0:d>0;const pct=va&&isFinite(va)&&isFinite(vb)?Math.abs(d/va*100):null;
     return `<div class="kpi"><div class="k">${k}</div><div class="v"${good?'':' style="color:var(--red)"'}>${f(vb)}</div><div class="c">現況 ${f(va)}</div><div class="d${good?'':' bad'}">${pct===null?'':(good?'改善 ':'惡化 ')+pct.toFixed(0)+'%'}</div></div>`;};
   $('kpis').innerHTML=kp('電話：客戶平均總耗時',A.cust,B.cust,'low',fmtSec)+kp('電話：尖峰平均等待',A.q.asa,B.q.asa,'low',fmtSec)+kp('電話：轉錯窗口比例',A.mis,B.mis,'low',v=>(v*100).toFixed(1)+'%')+kp('文字：每日轉真人',TA.escN,TB.escN,'low',v=>fmt(v)+' 則')+kp('電話：每日線上自助',A.autoN,B.autoN,'high',v=>fmt(v)+' 通');
