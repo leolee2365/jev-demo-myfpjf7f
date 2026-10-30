@@ -459,10 +459,10 @@ h2 em{font-style:normal;color:var(--tealT)}
 .qs{display:flex;flex-direction:column;gap:14px}
 .q{display:grid;grid-template-columns:110px 1fr 230px;align-items:center;gap:16px}
 .q .ql{font-size:17px;font-weight:700;color:var(--ink2)}
-.q .qt{height:34px;border-radius:10px;background:#F4F6FA;position:relative;overflow:hidden;display:flex;align-items:center;gap:4px;padding:0 8px}
-.q .qt i{flex:none;width:16px;height:16px;border-radius:50%;background:#C5CBD8;animation:qin .3s both}
-.q.bad .qt i{background:#E99A9E}
-.q.good .qt i{background:var(--teal)}
+.q .qt{height:34px;border-radius:10px;background:#F4F6FA;position:relative;overflow:hidden}
+.q .qt b{display:block;height:100%;width:0;border-radius:10px;transition:width 2.2s linear}   /* 等待時間長條：長度 = 平均等待秒數 */
+.q.bad .qt b{background:#E99A9E}
+.q.good .qt b{background:var(--teal)}
 @keyframes qin{from{transform:scale(0)}}
 .q .qr{font-size:19px;font-weight:900;font-variant-numeric:tabular-nums}
 .q.bad .qr{color:var(--red)}
@@ -976,8 +976,8 @@ h2 em{font-style:normal;color:var(--tealT)}
   <div class="card stress f" data-s="2">
     <div><div class="sk">壓力測試</div><div class="sh">尖峰進線暴增 3 倍<br>客服維持 10 人</div></div>
     <div class="qs">
-      <div class="q bad" id="qBad"><div class="ql">現況</div><div class="qt"></div><div class="qr">排隊 <span>0</span> 人</div></div>
-      <div class="q good" id="qGood"><div class="ql">導入 Jev</div><div class="qt"></div><div class="qr">排隊不到 1 人　平均等 16 秒</div></div>
+      <div class="q bad" id="qBad"><div class="ql">現況</div><div class="qt"><b></b></div><div class="qr">平均等 0 秒</div></div>
+      <div class="q good" id="qGood"><div class="ql">導入 Jev</div><div class="qt"><b></b></div><div class="qr">平均等 0 秒</div></div>
     </div>
   </div>
   <div class="fn a" style="--i:4">以客服中心 2026/4–9 實際值推算：每月進線約 6,000 通（÷ 20 個營業日 ≈ 每日 300 通）、AHT 268 秒、可自助化潛力 48.5%；假設其中 30% 可全自助處理（≈ 進線的 15%，每月約 900 通）、其餘 70%（約 2,000 通）自助加人工、整體通話自助服務占比 5%，合計每月省約 75 小時；尖峰人力 10 人（壓力情境：尖峰進線暴增 3 倍、人力不變）、語音選單 60 秒、40% 撥總機等（見 Demo 進階參數），等候、接聽率未提供。客戶端每年少等約 2,100 小時；省下的專員時間用在複雜問題與商機轉介，不以裁減人力論述</div>
@@ -1094,6 +1094,7 @@ const MET = [
   ['進線 3 倍', '20 秒內接聽率', 60, 85, v => `${v.toFixed(v >= 99.8 ? 1 : 0)}%`, '%'],
 ];
 const RES = { hero: 900, boom: '平均等 1 分 12 秒' };
+const STRESS = { bad: 72, good: 16, badQ: '排隊約 2 人', goodQ: '排隊不到 1 人', dur: 2200 };   // 壓力測試 (進線 3 倍、10 人) 模型值：尖峰平均等待秒數、排隊人數
 
 // 「特效文字」面板的項目：群組 / 鍵 / 標籤 / 讀 / 寫 / 改完要做的事
 const DATA = [];
@@ -1617,7 +1618,8 @@ RESET['p-res'] = () => {
     later(() => { w.style.width = (a / mx * 100) + '%'; }, 500 + n * 90); });
   document.getElementById('heroV').textContent = '0';
   const qb = document.getElementById('qBad'), qg = document.getElementById('qGood');
-  qb.querySelector('.qt').innerHTML = ''; qg.querySelector('.qt').innerHTML = ''; qb.classList.remove('boom'); qb.querySelector('.qr').innerHTML = '排隊 <span>0</span> 人';
+  [qb, qg].forEach(q => { const b = q.querySelector('.qt b'); b.style.transition = 'none'; b.style.width = '0'; void b.offsetWidth; b.style.transition = ''; q.querySelector('.qr').textContent = '平均等 0 秒'; delete q.dataset.run; });
+  qb.classList.remove('boom');
 };
 HOOK['p-res'] = k => {
   if (k >= 1 && !rows[0].classList.contains('done')){
@@ -1625,15 +1627,16 @@ HOOK['p-res'] = k => {
       later(() => { r.querySelector('.now').style.width = (b / mx * 100) + '%'; count(r.querySelector('.val'), a, b, 1100, fmt); r.classList.add('done'); }, n * 140); });
     count(document.getElementById('heroV'), 0, RES.hero, 1600, v => Math.round(v / 10) * 10 + '');
   }
-  if (k >= 2 && !document.querySelector('#qBad .qt').children.length){
-    const bt = document.querySelector('#qBad .qt'), gt = document.querySelector('#qGood .qt'), bn = document.querySelector('#qBad .qr span');
-    let n = 0;
-    every(() => {
-      n++; if (bt.children.length < 2) bt.appendChild(document.createElement('i'));
-      if (n <= 2) bn.textContent = n; if (n === 2) document.getElementById('qBad').classList.add('boom');
-      if (n > 2) document.querySelector('#qBad .qr').textContent = `排隊約 2 人　${RES.boom}`;
-      if (gt.children.length < 2) gt.appendChild(document.createElement('i')); else if (n % 2) gt.removeChild(gt.firstChild);
-    }, 160);
+  const qb = document.getElementById('qBad');
+  if (k >= 2 && !qb.dataset.run){
+    qb.dataset.run = 1;
+    // 兩條長條同時計時：長度 = 平均等待秒數 (現況 72 秒填滿；導入後 16 秒就停)，右側數字跟著跑
+    const fs = s => s >= 60 ? `${Math.floor(s / 60)} 分 ${Math.round(s % 60)} 秒` : `${Math.round(s)} 秒`;
+    const run = (id, sec, q) => { const el = document.getElementById(id), b = el.querySelector('.qt b'), ms = STRESS.dur * sec / STRESS.bad;
+      b.style.transitionDuration = ms + 'ms'; b.style.width = (sec / STRESS.bad * 100) + '%';
+      count(el.querySelector('.qr'), 0, sec, ms, v => `平均等 ${fs(v)}`, true); later(() => { el.querySelector('.qr').textContent = `平均等 ${fs(sec)}　${q}`; }, ms + 60); };
+    run('qGood', STRESS.good, STRESS.goodQ); run('qBad', STRESS.bad, STRESS.badQ);
+    later(() => qb.classList.add('boom'), STRESS.dur + 80);
   }
 };
 
