@@ -1336,13 +1336,13 @@ let SIM={};
 function recompute(){
   const A=phoneModel('asis'),B=phoneModel('tobe',P.thAuto,P.thAsk),TA=textModel('asis'),TB=textModel('tobe');
   const jevCost=(P.vPhone+P.vText)*500*365/1e6*0.042*32/1e4;
-  const custHrs=((isFinite(A.cust)&&isFinite(B.cust)?(A.cust-B.cust)*P.vPhone:0)+(TA.cust-TB.cust)*P.vText)*250/3600;
+  const custHrs=(isFinite(A.cust)&&isFinite(B.cust)?(A.cust-B.cust)*P.vPhone:0)*250/3600;   // 只算電話 (文字客服未提供資料)
   const dWait=isFinite(A.q.asa)&&isFinite(B.q.asa)?Math.max(0,A.q.asa-B.q.asa):null;
   $('hero').innerHTML=`<div><div class="big">${dWait===null?'不再爆線':fmt(dWait,0)}</div><div class="u">${dWait===null?'尖峰時段接得起來':'秒：尖峰平均等待縮短'}</div></div><div><div class="big">${fmt(Math.max(0,A.transfers-B.transfers))}</div><div class="u">次：每日少轉接</div></div><div><div class="big">${fmt(Math.max(0,custHrs),0)}</div><div class="u">小時：每年客戶少花的等待與溝通時間</div></div>`;
   $('heroNote').textContent=`效益以服務品質衡量，不以減少人力為目標；省下的專員時間用在複雜問題與新人輔導。Jev 模型費用每則約 500 token，一年約 ${fmt(jevCost*1e4,0)} 元。進線量、尖峰占比、AHT 為客服中心 2026/4–9 實際值（每月約 6,000 通 ÷ 20 個營業日 ≈ 每日 300 通）；人力、等候、接聽率、文字量未提供，為假設值。`;
   const kp=(k,va,vb,better,f)=>{const d=vb-va;const good=better==='low'?d<0:d>0;const pct=va&&isFinite(va)&&isFinite(vb)?Math.abs(d/va*100):null;
     return `<div class="kpi"><div class="k">${k}</div><div class="v"${good?'':' style="color:var(--red)"'}>${f(vb)}</div><div class="c">現況 ${f(va)}</div><div class="d${good?'':' bad'}">${pct===null?'':(good?'改善 ':'惡化 ')+pct.toFixed(0)+'%'}</div></div>`;};
-  $('kpis').innerHTML=kp('電話：客戶平均總耗時',A.cust,B.cust,'low',fmtSec)+kp('電話：尖峰平均等待',A.q.asa,B.q.asa,'low',fmtSec)+kp('電話：轉錯窗口比例',A.mis,B.mis,'low',v=>(v*100).toFixed(1)+'%')+kp('文字：每日轉真人',TA.escN,TB.escN,'low',v=>fmt(v)+' 則')+kp('電話：每日線上自助',A.autoN,B.autoN,'high',v=>fmt(v)+' 通');
+  $('kpis').innerHTML=kp('電話：客戶平均總耗時',A.cust,B.cust,'low',fmtSec)+kp('電話：尖峰平均等待',A.q.asa,B.q.asa,'low',fmtSec)+kp('電話：轉錯窗口比例',A.mis,B.mis,'low',v=>(v*100).toFixed(1)+'%')+kp('電話：每日線上自助',A.autoN,B.autoN,'high',v=>fmt(v)+' 通');
   const r=B.r, segs=[['直接分流',r.auto,'var(--accent)'],['反問確認',r.ask,'var(--orange)'],['轉人工分類',r.human,'var(--gray)']];
   $('stack').innerHTML=segs.map(s=>`<div style="flex:0 0 calc(${s[1]*100}% - 2px);background:${s[2]}"></div>`).join('');
   $('stackLegend').innerHTML=segs.map(s=>`<span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${s[2]};margin-right:6px"></span>${s[0]} <b>${(s[1]*100).toFixed(0)}%</b></span>`).join('');

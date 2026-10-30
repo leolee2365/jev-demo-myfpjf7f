@@ -429,16 +429,16 @@ h2 em{font-style:normal;color:var(--tealT)}
 
 /* ---------- 效益評估 ---------- */
 .res{margin-top:30px;display:grid;grid-template-columns:430px 1fr;gap:30px;height:396px}
-.hero{border-radius:22px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;
+.hero{border-radius:22px;padding:24px 28px;color:#fff;position:relative;overflow:hidden;
   background:radial-gradient(500px 300px at 100% 0%,rgba(3,192,175,.35),transparent 70%),linear-gradient(140deg,#1E2761,#24306B 60%,#1A4B6E)}
-.hero .hk{font-size:18px;font-weight:700;letter-spacing:.12em;color:#7FE3D9}
-.hero .hv{margin-top:6px;font-size:88px;font-weight:900;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.02em;white-space:nowrap}
-.hero .hv small{font-size:38px;font-weight:700;margin-left:8px;letter-spacing:0}
-.hero .hd{margin-top:10px;font-size:18px;color:rgba(255,255,255,.75)}
-.deltas{margin-top:26px;display:flex;flex-direction:column;gap:12px}
-.delta{display:flex;align-items:center;gap:16px;background:rgba(255,255,255,.10);border-radius:14px;padding:12px 16px}
-.delta b{font-size:34px;font-weight:900;color:#7FE3D9;min-width:112px}
-.delta span{font-size:16.5px;line-height:1.45;color:rgba(255,255,255,.88)}
+.hero .hk{font-size:16px;font-weight:700;letter-spacing:.12em;color:#7FE3D9}
+.hero .hv{margin-top:4px;font-size:72px;font-weight:900;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.02em;white-space:nowrap}
+.hero .hv small{font-size:30px;font-weight:700;margin-left:8px;letter-spacing:0}
+.hero .hd{margin-top:6px;font-size:14px;color:rgba(255,255,255,.75);white-space:nowrap}
+.deltas{margin-top:14px;display:flex;flex-direction:column;gap:8px}
+.delta{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.10);border-radius:12px;padding:8px 12px}
+.delta b{font-size:24px;font-weight:900;color:#7FE3D9;min-width:96px}
+.delta span{font-size:13.5px;line-height:1.35;color:rgba(255,255,255,.88)}
 .tbl{padding:18px 30px 14px}
 .tr{display:grid;grid-template-columns:250px 1fr 170px;align-items:center;gap:20px;height:58px;border-bottom:1px solid var(--line)}
 .tr:last-child{border-bottom:0}
@@ -958,12 +958,13 @@ h2 em{font-style:normal;color:var(--tealT)}
   <h2 class="a" style="--i:1">服務更快、轉接更少，客戶<em>少等更多時間</em></h2>
   <div class="res">
     <div class="hero a" style="--i:2">
-      <div class="hk">每年客戶少花的時間</div>
-      <div class="hv"><span id="heroV">0</span><small>小時</small></div>
-      <div class="hd">等待與溝通時間合計（假設值）</div>
+      <div class="hk">每月減少的人工進線</div>
+      <div class="hv"><span id="heroV">0</span><small>通</small></div>
+      <div class="hd">6,000 通／月 × 48.5% 可自助潛力 × 30% 直接自助</div>
       <div class="deltas">
-        <div class="delta f" data-s="1"><b>−31%</b><span>電話平均總耗時<br>6 分 28 秒 → 4 分 29 秒</span></div>
-        <div class="delta f" data-s="1" style="transition-delay:.25s"><b>−88%</b><span>每日轉接次數<br>162 → 20 次</span></div>
+        <div class="delta f" data-s="1"><b>67 小時</b><span>每月省下的專員處理時間<br>900 通 × AHT 268 秒，用在複雜問題與商機</span></div>
+        <div class="delta f" data-s="1" style="transition-delay:.2s"><b>−31%</b><span>電話平均總耗時<br>6 分 28 秒 → 4 分 29 秒</span></div>
+        <div class="delta f" data-s="1" style="transition-delay:.4s"><b>−88%</b><span>每日轉接次數<br>162 → 20 次</span></div>
       </div>
     </div>
     <div class="card tbl a" style="--i:3" id="tbl">
@@ -977,7 +978,7 @@ h2 em{font-style:normal;color:var(--tealT)}
       <div class="q good" id="qGood"><div class="ql">導入 Jev</div><div class="qt"></div><div class="qr">平均等 3 分 39 秒</div></div>
     </div>
   </div>
-  <div class="fn a" style="--i:4">以客服中心 2026/4–9 實際值推算：每月進線約 6,000 通（÷ 20 個營業日 ≈ 每日 300 通）、AHT 270 秒；尖峰人力假設 6 人，等候、接聽率未提供，為假設值。保守取 15% 常見業務導引智慧小豐（每日約 36 通；實際可自助化潛力 48.5%）；效益以服務品質衡量，不換算人力</div>
+  <div class="fn a" style="--i:4">以客服中心 2026/4–9 實際值推算：每月進線約 6,000 通（÷ 20 個營業日 ≈ 每日 300 通）、AHT 268 秒、可自助化潛力 48.5%；假設其中 30% 直接自助（≈ 進線的 15%），尖峰人力假設 6 人，等候、接聽率未提供。客戶端每年少等約 2,500 小時；省下的專員時間用在複雜問題與商機轉介，不以裁減人力論述</div>
 </section>
 
 <!-- ================= 11 謝謝聆聽 ================= -->
@@ -1090,10 +1091,8 @@ const MET = [
   ['電話', '尖峰平均等待', 8, 2, v => `${Math.round(v)} 秒`, '秒'],
   ['電話', '轉錯窗口比例', 14.0, 5.3, v => `${v.toFixed(1)}%`, '%'],
   ['電話', '20 秒內接聽率', 93, 98, v => `${v.toFixed(v >= 99.8 ? 1 : 0)}%`, '%'],
-  ['文字', '答非所問比例', 35, 11, v => `${Math.round(v)}%`, '%'],
-  ['文字', '每日轉真人', 56, 24, v => `${Math.round(v).toLocaleString()} 則`, '則'],
 ];
-const RES = { hero: 3600, boom: '平均等 33 分 45 秒' };
+const RES = { hero: 900, boom: '平均等 33 分 45 秒' };
 
 // 「特效文字」面板的項目：群組 / 鍵 / 標籤 / 讀 / 寫 / 改完要做的事
 const DATA = [];
@@ -1113,7 +1112,7 @@ EX.forEach((e, i) => { const g = '07 Jev 判斷流程 · 例子 ' + (i + 1);
 MET.forEach((m, i) => { const g = '10 效益評估 · 指標數字（只填數字）';
   reg(g, 'met.' + i + '.a', m[1] + ' · 現況（' + m[5] + '）', () => String(m[2]), v => m[2] = parseFloat(v) || 0, 'replay');
   reg(g, 'met.' + i + '.b', m[1] + ' · 導入後（' + m[5] + '）', () => String(m[3]), v => m[3] = parseFloat(v) || 0, 'replay'); });
-reg('10 效益評估', 'res.hero', '每年少花的時間（小時，只填數字）', () => String(RES.hero), v => RES.hero = parseFloat(v) || 0, 'replay');
+reg('10 效益評估', 'res.hero', '每月減少的人工進線（通，只填數字）', () => String(RES.hero), v => RES.hero = parseFloat(v) || 0, 'replay');
 reg('10 效益評估', 'res.boom', '壓力測試現況字樣', () => RES.boom, v => RES.boom = v, 'replay');
 
 // 已存的修改：先套到資料上 (畫面文字的修改在後面套)
@@ -1623,7 +1622,7 @@ HOOK['p-res'] = k => {
   if (k >= 1 && !rows[0].classList.contains('done')){
     rows.forEach((r, n) => { const [, , a, b, fmt] = MET[n]; const mx = Math.max(a, b);
       later(() => { r.querySelector('.now').style.width = (b / mx * 100) + '%'; count(r.querySelector('.val'), a, b, 1100, fmt); r.classList.add('done'); }, n * 140); });
-    count(document.getElementById('heroV'), 0, RES.hero, 1600, v => Math.round(v).toLocaleString());
+    count(document.getElementById('heroV'), 0, RES.hero, 1600, v => Math.round(v / 10) * 10 + '');
   }
   if (k >= 2 && !document.querySelector('#qBad .qt').children.length){
     const bt = document.querySelector('#qBad .qt'), gt = document.querySelector('#qGood .qt'), bn = document.querySelector('#qBad .qr span');
@@ -3130,13 +3129,13 @@ let SIM={};
 function recompute(){
   const A=phoneModel('asis'),B=phoneModel('tobe',P.thAuto,P.thAsk),TA=textModel('asis'),TB=textModel('tobe');
   const jevCost=(P.vPhone+P.vText)*500*365/1e6*0.042*32/1e4;
-  const custHrs=((isFinite(A.cust)&&isFinite(B.cust)?(A.cust-B.cust)*P.vPhone:0)+(TA.cust-TB.cust)*P.vText)*250/3600;
+  const custHrs=(isFinite(A.cust)&&isFinite(B.cust)?(A.cust-B.cust)*P.vPhone:0)*250/3600;   // 只算電話 (文字客服未提供資料)
   const dWait=isFinite(A.q.asa)&&isFinite(B.q.asa)?Math.max(0,A.q.asa-B.q.asa):null;
   $('hero').innerHTML=`<div><div class="big">${dWait===null?'不再爆線':fmt(dWait,0)}</div><div class="u">${dWait===null?'尖峰時段接得起來':'秒：尖峰平均等待縮短'}</div></div><div><div class="big">${fmt(Math.max(0,A.transfers-B.transfers))}</div><div class="u">次：每日少轉接</div></div><div><div class="big">${fmt(Math.max(0,custHrs),0)}</div><div class="u">小時：每年客戶少花的等待與溝通時間</div></div>`;
   $('heroNote').textContent=`效益以服務品質衡量，不以減少人力為目標；省下的專員時間用在複雜問題與新人輔導。Jev 模型費用每則約 500 token，一年約 ${fmt(jevCost*1e4,0)} 元。進線量、尖峰占比、AHT 為客服中心 2026/4–9 實際值（每月約 6,000 通 ÷ 20 個營業日 ≈ 每日 300 通）；人力、等候、接聽率、文字量未提供，為假設值。`;
   const kp=(k,va,vb,better,f)=>{const d=vb-va;const good=better==='low'?d<0:d>0;const pct=va&&isFinite(va)&&isFinite(vb)?Math.abs(d/va*100):null;
     return `<div class="kpi"><div class="k">${k}</div><div class="v"${good?'':' style="color:var(--red)"'}>${f(vb)}</div><div class="c">現況 ${f(va)}</div><div class="d${good?'':' bad'}">${pct===null?'':(good?'改善 ':'惡化 ')+pct.toFixed(0)+'%'}</div></div>`;};
-  $('kpis').innerHTML=kp('電話：客戶平均總耗時',A.cust,B.cust,'low',fmtSec)+kp('電話：尖峰平均等待',A.q.asa,B.q.asa,'low',fmtSec)+kp('電話：轉錯窗口比例',A.mis,B.mis,'low',v=>(v*100).toFixed(1)+'%')+kp('文字：每日轉真人',TA.escN,TB.escN,'low',v=>fmt(v)+' 則')+kp('電話：每日線上自助',A.autoN,B.autoN,'high',v=>fmt(v)+' 通');
+  $('kpis').innerHTML=kp('電話：客戶平均總耗時',A.cust,B.cust,'low',fmtSec)+kp('電話：尖峰平均等待',A.q.asa,B.q.asa,'low',fmtSec)+kp('電話：轉錯窗口比例',A.mis,B.mis,'low',v=>(v*100).toFixed(1)+'%')+kp('電話：每日線上自助',A.autoN,B.autoN,'high',v=>fmt(v)+' 通');
   const r=B.r, segs=[['直接分流',r.auto,'var(--accent)'],['反問確認',r.ask,'var(--orange)'],['轉人工分類',r.human,'var(--gray)']];
   $('stack').innerHTML=segs.map(s=>`<div style="flex:0 0 calc(${s[1]*100}% - 2px);background:${s[2]}"></div>`).join('');
   $('stackLegend').innerHTML=segs.map(s=>`<span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${s[2]};margin-right:6px"></span>${s[0]} <b>${(s[1]*100).toFixed(0)}%</b></span>`).join('');
