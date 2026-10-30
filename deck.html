@@ -3187,7 +3187,7 @@ function drawNet(ctx,w,h,hubX,boxes,now){
 function step(now){
   const dt=Math.min(0.05,(now-lastT)/1000); lastT=now; const vis=SC===7;
   LANES.forEach((L,li)=>{
-    spawnAcc[li]+=dt*(P.vPhone||5000)/2500; while(spawnAcc[li]>=1){spawnAcc[li]-=1; if(L.dots.length<90) spawn(L);}
+    spawnAcc[li]+=dt*2.2; while(spawnAcc[li]>=1){spawnAcc[li]-=1; if(L.dots.length<90) spawn(L);}   // 動畫密度固定 (只是示意)，不隨進線量縮放；下方數字仍是模型值
     const {ctx,w,h,hubX,boxes,labels}=laneGeom(L.cv,L.mode); const sp=w*0.33;
     L.dots.forEach(d=>{
       if(d.phase===0){d.x+=sp*dt;if(d.x>=hubX-44) d.phase=1;}
