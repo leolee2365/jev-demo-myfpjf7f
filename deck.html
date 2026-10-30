@@ -989,7 +989,7 @@ const ICONS = {
 };
 document.querySelectorAll('[data-ic]').forEach(el => { el.innerHTML = `<svg viewBox="0 0 24 24">${ICONS[el.dataset.ic] || ''}</svg>`; });
 let editing = false;
-const INTRO = { on: false, t0: 0, skipped: false, raf: 0 };
+const INTRO = { on: false, t0: 0, phase: 'cover', raf: 0 };   // phase: cover → anim → done
 
 /* ---------- 特效才會出現的文字：集中在這裡，編輯模式的「特效文字」面板可以改 ---------- */
 const STAGES = ['痛點與機會', '智慧分流&引導', '提示儀表板', '數位孿生模擬', '效益評估'];
@@ -1115,7 +1115,10 @@ function chapGo(){
 function next(){
   if (chapBusy) return;
   if (chapGo()) return;
-  if (slides[cur].id === 'p-intro' && INTRO.on && !INTRO.skipped && (performance.now() - INTRO.t0) / 1000 < 13.6){ INTRO.skipped = true; INTRO.t0 = performance.now() - 14400; return; }   // 跳到結尾後時間繼續走, 光點才會飄
+  if (slides[cur].id === 'p-intro'){                                   // 封面: 第一下播動畫; 動畫中再按一下: 直接進 PART 1
+    if (INTRO.phase === 'cover'){ INTRO.phase = 'anim'; document.getElementById('coverWrap').classList.remove('on'); introInit(); INTRO.t0 = performance.now(); return; }
+    if (INTRO.phase === 'anim'){ INTRO.phase = 'done'; show(1); return; }
+  }
   const s = slides[cur];
   if (step < +s.dataset.steps){ step++; applyStep(s, step); history.replaceState(null, '', `#${cur + 1}.${step}`); }
   else show(cur + 1);
@@ -1326,8 +1329,7 @@ function introLoop(now){
   if (!INTRO.on) return;
   let t = Math.max(0, (now - INTRO.t0) / 1000);
   introDraw(t);
-  const cw = document.getElementById('coverWrap');
-  if (t >= 11.8 && !cw.classList.contains('on')){ cw.classList.add('on'); cw.querySelectorAll('.a').forEach(el => { el.style.animation = 'none'; void el.offsetWidth; el.style.animation = ''; }); }
+  if (INTRO.phase === 'anim' && t >= 11.8){ INTRO.phase = 'done'; show(1); return; }   // 動畫放完 → PART 1 章節頁
   INTRO.raf = requestAnimationFrame(introLoop);
 }
 // 一般頁面的飄動光點: 深色頁白/青綠, 淺色頁靛藍淡點; 開場頁自己畫所以略過
@@ -1352,7 +1354,9 @@ function introWarm(){
   ['500 12px', '700 21px', '700 22px', '900 44px', '500 13px', '500 14px', '700 14px', '700 15px', '600 18px', '500 13px', '400 16px', '600 26px', '600 11px', '700 17px', '700 18px', '700 30px', '500 17px', '900 96px', '500 18px', '700 19px'].forEach(fs => { x.font = `${fs} ${IF}`; x.fillText(txt, 0, 100); });
 }
 introWarm();
-RESET['p-intro'] = () => { document.getElementById('coverWrap').classList.remove('on'); introInit(); INTRO.on = true; INTRO.skipped = false; INTRO.t0 = performance.now(); cancelAnimationFrame(INTRO.raf); INTRO.raf = requestAnimationFrame(introLoop); };
+RESET['p-intro'] = () => {                                              // 先顯示封面 (背景用動畫結尾那幕: 網格 + 光點)
+  const cw = document.getElementById('coverWrap'); cw.classList.add('on'); cw.querySelectorAll('.a').forEach(el => { el.style.animation = 'none'; void el.offsetWidth; el.style.animation = ''; });
+  introInit(); INTRO.on = true; INTRO.phase = 'cover'; INTRO.t0 = performance.now() - 14400; cancelAnimationFrame(INTRO.raf); INTRO.raf = requestAnimationFrame(introLoop); };
 
 /* ---------- 02 客戶旅程 ---------- */
 RESET['p-journey'] = () => {
@@ -1659,7 +1663,7 @@ function buildNav(){
     cl.querySelectorAll('.f').forEach(e => e.classList.add('show')); const cw = cl.querySelector('.coverwrap'); if (cw) cw.classList.add('on');
     th.appendChild(cl); card.appendChild(th);
     const lb = document.createElement('div'); lb.className = 'lb'; lb.innerHTML = `<b>${String(i + 1).padStart(2, '0')}</b><span>${escn(navTitle(s))}</span>`; card.appendChild(lb);
-    card.onclick = ev => { ev.stopPropagation(); setNav(false); show(i, +s.dataset.steps, false); if (s.id === 'p-intro'){ INTRO.skipped = true; INTRO.t0 = performance.now() - 14400; } };
+    card.onclick = ev => { ev.stopPropagation(); setNav(false); show(i, +s.dataset.steps, false); };
     dg.appendChild(card); });
   loadDemo(); let pages = [], onIdx = -1;
   try { const ps = [...demoFrame.contentDocument.querySelectorAll('.page')]; onIdx = ps.findIndex(p => p.classList.contains('on'));
