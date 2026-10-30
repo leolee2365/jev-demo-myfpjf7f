@@ -674,7 +674,7 @@ body{font-family:var(--font)}
     <li><b>電話導入 Jev</b>：客戶說一句話，信心 ≥ 分流門檻就直接轉分機；介於兩個門檻之間先反問一句（約 15 秒，確認後準確率 97%）；低於反問門檻轉人工分類。</li>
     <li><b>校準</b>：Jev 的信心度經過校準，信心 0.9 的案件約有 90% 會分對，模型直接用信心度當分對的機率。</li>
     <li><b>智慧小豐自助</b>：分期、臨時調額、帳單與額度查詢等常見業務，Jev 傳智慧小豐連結（簡訊／LINE）讓客戶線上辦理，不進專員排隊；客戶要真人（預設 20%）多花約 30 秒後照類別轉專員。</li>
-    <li><b>排隊</b>：以尖峰小時（占全日 12%）的進線量，用 Erlang C 計算平均等待時間和 20 秒內接聽率。</li>
+    <li><b>排隊</b>：以尖峰小時的進線量（占全日約 11%：實際尖峰 14:00–15:30 每月約 1,000 通 ÷ 每月約 6,000 通 ÷ 1.5 小時）用 Erlang C 計算平均等待時間和 20 秒內接聽率。</li>
     <li><b>文字客服</b>：答非所問的客戶平均多來回 2 輪，其中 40% 最後轉真人。導入後答錯率 = 分錯窗口比例 + 5%（知識庫本身沒有答案）。</li>
     <li><b>時間換算</b>：一年以 250 個工作天計算。省下的專員時間用在複雜問題與新人輔導，不換算成人力或成本。</li>
     <li><b>資料基礎</b>：客服中心已提供 2026/4–9 實際值：每月進線 5,847–6,106 通（÷ 20 個營業日 ≈ 每日 300 通）、尖峰 14:00–15:30 每月約 1,000 通（≈ 每日 50 通）、AHT 257–276 秒、自助通路占比 56%、可自助化潛力 48.5%、滿意度 99.4%；人力配置、平均等候、接聽率、轉介件數暫未提供，仍為假設值。之後每天用案件分類紀錄校正，讓模擬持續貼近現場。</li>
@@ -1283,7 +1283,7 @@ $('qAgents').onchange=e=>{qReset(); e.target.blur();};
 const P={};
 const CTRL=[
   {k:'vPhone',l:'每日電話進線',min:50,max:3000,step:10,v:300,f:v=>fmt(v)+' 通',h:'實際值：2026/4–9 每月 5,847–6,106 通（客服中心提供），÷ 20 個營業日 ≈ 每日 300 通'},
-  {k:'agents',l:'尖峰電話客服人數',min:1,max:30,step:1,v:6,f:v=>v+' 人',h:'人力數未提供，為假設值；拉到 3 人現況要等逾 30 分鐘，2 人會爆線'},
+  {k:'agents',l:'尖峰電話客服人數',min:1,max:30,step:1,v:6,f:v=>v+' 人',h:'人力數未提供，為假設值；拉到 3 人現況要等近 30 分鐘，2 人會爆線'},
   {k:'acc',l:'Jev 平均準確度',min:0.6,max:0.98,step:0.01,v:0.88,f:v=>(v*100).toFixed(0)+'%',h:'假設值，待以行內資料實測'},
   {k:'autoShare',l:'可導引線上自助的進線比例',min:0,max:0.6,step:0.01,v:0.15,f:v=>(v*100).toFixed(0)+'%',h:'分期、臨時調額、帳單查詢等智慧小豐可辦的常見業務；假設值，待客服中心數據校正'},
 ];
@@ -1294,7 +1294,7 @@ const CTRL_ADV=[
   {k:'missAsis',l:'文字客服答非所問比例',min:0.05,max:0.8,step:0.01,v:0.35,f:v=>(v*100).toFixed(0)+'%'},
   {k:'thAuto',l:'直接分流門檻',min:0.5,max:0.99,step:0.01,v:0.80,f:v=>v.toFixed(2)},
   {k:'thAsk',l:'反問門檻',min:0.2,max:0.9,step:0.01,v:0.50,f:v=>v.toFixed(2)},
-  {k:'aht',l:'專員平均處理時間',min:120,max:600,step:10,v:270,f:v=>v+' 秒',h:'實際值：2026/4–9 AHT 257–276 秒'},
+  {k:'aht',l:'專員平均處理時間',min:120,max:600,step:1,v:268,f:v=>v+' 秒',h:'實際值：2026/4–9 AHT 257–276 秒，平均 268 秒'},
   {k:'tOp',l:'總機人工分類時間',min:20,max:180,step:5,v:60,f:v=>v+' 秒'},
   {k:'tRe',l:'轉錯後重新說明時間',min:30,max:240,step:10,v:90,f:v=>v+' 秒'},
   {k:'ivr',l:'語音選單聆聽時間',min:20,max:120,step:5,v:60,f:v=>v+' 秒'},
@@ -1339,7 +1339,7 @@ function recompute(){
   const custHrs=(isFinite(A.cust)&&isFinite(B.cust)?(A.cust-B.cust)*P.vPhone:0)*250/3600;   // 只算電話 (文字客服未提供資料)
   const dWait=isFinite(A.q.asa)&&isFinite(B.q.asa)?Math.max(0,A.q.asa-B.q.asa):null;
   $('hero').innerHTML=`<div><div class="big">${dWait===null?'不再爆線':fmt(dWait,0)}</div><div class="u">${dWait===null?'尖峰時段接得起來':'秒：尖峰平均等待縮短'}</div></div><div><div class="big">${fmt(Math.max(0,A.transfers-B.transfers))}</div><div class="u">次：每日少轉接</div></div><div><div class="big">${fmt(Math.max(0,custHrs),0)}</div><div class="u">小時：每年客戶少花的等待與溝通時間</div></div>`;
-  $('heroNote').textContent=`效益以服務品質衡量，不以減少人力為目標；省下的專員時間用在複雜問題與新人輔導。Jev 模型費用每則約 500 token，一年約 ${fmt(jevCost*1e4,0)} 元。進線量、尖峰占比、AHT 為客服中心 2026/4–9 實際值（每月約 6,000 通 ÷ 20 個營業日 ≈ 每日 300 通）；人力、等候、接聽率、文字量未提供，為假設值。`;
+  $('heroNote').textContent=`效益以服務品質衡量，不以減少人力為目標；省下的專員時間用在複雜問題與新人輔導。進線量、尖峰占比、AHT 為客服中心 2026/4–9 實際值（每月約 6,000 通 ÷ 20 個營業日 ≈ 每日 300 通）；人力、等候、接聽率、文字量未提供，為假設值。`;
   const kp=(k,va,vb,better,f)=>{const d=vb-va;const good=better==='low'?d<0:d>0;const pct=va&&isFinite(va)&&isFinite(vb)?Math.abs(d/va*100):null;
     return `<div class="kpi"><div class="k">${k}</div><div class="v"${good?'':' style="color:var(--red)"'}>${f(vb)}</div><div class="c">現況 ${f(va)}</div><div class="d${good?'':' bad'}">${pct===null?'':(good?'改善 ':'惡化 ')+pct.toFixed(0)+'%'}</div></div>`;};
   $('kpis').innerHTML=kp('電話：客戶平均總耗時',A.cust,B.cust,'low',fmtSec)+kp('電話：尖峰平均等待',A.q.asa,B.q.asa,'low',fmtSec)+kp('電話：轉錯窗口比例',A.mis,B.mis,'low',v=>(v*100).toFixed(1)+'%')+kp('電話：每日線上自助',A.autoN,B.autoN,'high',v=>fmt(v)+' 通');
