@@ -524,7 +524,7 @@ h2 em{font-style:normal;color:var(--tealT)}
 #stage.demoOn #nav,#stage.demoOn #btnFs,#stage.demoOn #help,#stage.demoOn #editbar,#stage.demoOn #edithint{display:none}
 
 /* ---------- 投影片跳轉 (Ctrl+F) ---------- */
-#navgrid{position:absolute;inset:0;z-index:80;background:rgba(14,20,64,.96);display:none;padding:30px 60px 0;color:#fff;overflow:hidden}
+#navgrid{position:absolute;inset:0;z-index:80;background:rgba(14,20,64,.985);display:none;padding:30px 60px 0;color:#fff;overflow:hidden}
 #stage.navg #navgrid{display:block}
 #navgrid h3{margin:0 0 10px;font-size:14px;letter-spacing:.3em;color:var(--teal);font-weight:700;display:flex;align-items:center;gap:14px}
 #navgrid h3 small{letter-spacing:0;font-weight:400;color:rgba(255,255,255,.45)}
@@ -1649,7 +1649,7 @@ let NAVG = false;
 const navgEl = document.getElementById('navgrid');
 const escn = t => String(t || '').replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
 const DEMO_PAGES = [['1-1', '01｜客戶開口', '客戶說一句話，系統就知道他要問什麼'], ['1-2', '01｜客戶開口', '同一句話，還讀出急件、可否自助和商機'], ['1-3', '01｜客戶開口', '標準化問題自助辦好，複雜問題依客觀條件排給專員'], ['2-1', '02｜電話接通', '電話接通，專員已經知道他是誰、要什麼'], ['2-2', '02｜電話接通', '專員不用想，系統給出步驟和開場話術'], ['3', '03｜主管監控', '主管看見全中心，急件永遠排第一'], ['4-1', '04｜數位孿生推演', '模擬不同情境：人力怎麼排，客戶才留得住'], ['4-2', '04｜數位孿生推演', '同樣的進線量，導入後少轉錯、少流失']];
-function navTitle(s){ if (s.id === 'p-intro') return '開場動畫・封面'; if (s.id === 'p-thanks') return '謝謝聆聽・Q&A'; if (s.id === 'p-end') return '結尾'; const h = s.querySelector('h2') || s.querySelector('h1'); return h ? h.textContent.trim() : s.id; }
+function navTitle(s){ if (s.id === 'p-intro') return '開場動畫・封面'; if (s.id === 'p-thanks') return '謝謝聆聽・Q&A'; if (s.id === 'p-end') return '結尾'; if (s.id === 'p-mot') return '關鍵時刻 MOMENT OF TRUTH'; if (s.id === 'p-hmw') return 'HMW 我們如何幫助客戶'; const h = s.querySelector('h2') || s.querySelector('h1'); return h ? h.textContent.trim() : s.id; }
 function buildNav(){
   const dg = document.getElementById('ngDeck'), gg = document.getElementById('ngDemo'); dg.innerHTML = ''; gg.innerHTML = '';
   slides.forEach((s, i) => { if (s.id === 'p-demo') return;
