@@ -1200,17 +1200,41 @@ function introDraw(t){
   c.fillStyle = 'rgba(255,255,255,.055)'; for (let x = 20; x < W; x += 26) for (let y = 20; y < H; y += 26) c.fillRect(x, y, 1.5, 1.5);
   drawAmbient(c, t, t < 11.8 ? 0.45 : 0.45 + 0.55 * seg(t, 11.8, 12.6));
   c.textBaseline = 'middle';
-  /* A. 一通電話打進來 (0–2.2) */
+  /* A. 來電顯示 (0–2.2)：客服中心的來電面板 */
   const A = 1 - seg(t, 2.0, 2.3);
   if (A > 0){
     c.globalAlpha = A;
     IP.forEach(p => { const q = ease(seg(t - p.d, 0, 1.3)); const r = p.r * (1 - q) + 60 * q; const x = W / 2 + Math.cos(p.a) * r, y = H / 2 + Math.sin(p.a) * r * 0.62;
-      c.globalAlpha = A * Math.min(1, q * 3) * (1 - q * 0.9); c.fillStyle = irnd() < 0.08 ? '#03C0AF' : '#C9D3F2'; c.beginPath(); c.arc(x, y, 1.6 * p.s, 0, 7); c.fill(); });
-    c.globalAlpha = A;
-    for (let i = 0; i < 4; i++){ const q = ((t * 0.7 + i / 4) % 1); c.strokeStyle = `rgba(3,192,175,${(1 - q) * 0.5})`; c.lineWidth = 2; c.beginPath(); c.ellipse(W / 2, H / 2, 60 + q * 260, (60 + q * 260) * 0.62, 0, 0, 7); c.stroke(); }
-    c.fillStyle = '#03C0AF'; c.shadowColor = '#03C0AF'; c.shadowBlur = 30; c.beginPath(); c.arc(W / 2, H / 2, 52, 0, 7); c.fill(); c.shadowBlur = 0;
-    c.save(); c.translate(W / 2 - 30, H / 2 - 30); c.scale(2.5, 2.5); c.strokeStyle = '#0E1440'; c.lineWidth = 2; c.lineJoin = 'round'; c.lineCap = 'round'; c.stroke(PHONE); c.restore();
-    c.globalAlpha = A * seg(t, 1.0, 1.5); c.fillStyle = 'rgba(255,255,255,.75)'; c.font = `500 20px ${IF}`; c.textAlign = 'center'; c.fillText('每 天 5,000 通 進 線 ・ 每 一 通 都 在 等', W / 2, H / 2 + 150);
+      c.globalAlpha = A * Math.min(1, q * 3) * (1 - q * 0.9) * 0.5; c.fillStyle = irnd() < 0.08 ? '#03C0AF' : '#C9D3F2'; c.beginPath(); c.arc(x, y, 1.4 * p.s, 0, 7); c.fill(); });
+    const inq = ease(seg(t, 0.15, 0.7)), CX = W / 2, CY = H / 2 - 20, CW = 720, CHh = 200;
+    c.save(); c.globalAlpha = A * inq; c.translate(CX, CY + (1 - inq) * 24); c.scale(0.96 + 0.04 * inq, 0.96 + 0.04 * inq);
+    // 面板
+    c.fillStyle = 'rgba(255,255,255,.05)'; c.shadowColor = 'rgba(3,192,175,.25)'; c.shadowBlur = 40; c.beginPath(); c.roundRect(-CW / 2, -CHh / 2, CW, CHh, 18); c.fill(); c.shadowBlur = 0;
+    c.strokeStyle = 'rgba(255,255,255,.14)'; c.lineWidth = 1; c.stroke();
+    c.fillStyle = '#03C0AF'; c.fillRect(-CW / 2, -CHh / 2 + 24, 3, CHh - 48);
+    // 標題列
+    c.textAlign = 'left'; c.textBaseline = 'middle';
+    c.fillStyle = '#03C0AF'; c.shadowColor = '#03C0AF'; c.shadowBlur = 8 + 6 * Math.sin(t * 6); c.beginPath(); c.arc(-CW / 2 + 34, -CHh / 2 + 36, 5, 0, 7); c.fill(); c.shadowBlur = 0;
+    c.font = `700 13px ${IF}`; c.fillStyle = '#03C0AF'; c.fillText('I N C O M I N G   C A L L', -CW / 2 + 50, -CHh / 2 + 36);
+    c.textAlign = 'right'; c.fillStyle = 'rgba(255,255,255,.5)'; c.font = `500 13px ${IF}`; c.fillText('客服中心 ・ 尖峰時段', CW / 2 - 28, -CHh / 2 + 36);
+    // 號碼 + 狀態
+    c.textAlign = 'left'; c.fillStyle = '#fff'; c.font = `700 44px ${IF}`; c.fillText('0912 ••• 456', -CW / 2 + 34, -4);
+    c.font = `500 15px ${IF}`; c.fillStyle = 'rgba(255,255,255,.6)'; c.fillText('行動電話 ・ 未驗證身分', -CW / 2 + 36, 32);
+    const wt = Math.max(0, t - 0.5); c.fillStyle = '#F59F6B'; c.font = `700 15px ${IF}`; c.fillText(`等待中 ${mmss2(wt * 9)}`, -CW / 2 + 36, 62);
+    c.fillStyle = 'rgba(255,255,255,.4)'; c.font = `500 13px ${IF}`; c.fillText('語音選單 › 按 0 總機 › 排隊', -CW / 2 + 150, 62);
+    // 聲波
+    const bars = 22, bx0 = CW / 2 - 28 - bars * 11;
+    for (let i = 0; i < bars; i++){ const h = 6 + 30 * Math.abs(Math.sin(t * 7 + i * 0.9) * Math.sin(t * 2.3 + i * 0.35)); c.fillStyle = `rgba(3,192,175,${0.35 + 0.65 * (h / 36)})`; c.beginPath(); c.roundRect(bx0 + i * 11, -h / 2, 6, h, 3); c.fill(); }
+    c.textAlign = 'right'; c.fillStyle = 'rgba(255,255,255,.45)'; c.font = `500 12px ${IF}`; c.fillText('L I V E   A U D I O', CW / 2 - 28, 46);
+    c.restore();
+    // 下方: 其他排隊中的來電
+    const Q = [['0987 ••• 221', '00:34'], ['02-2•••-8810', '00:51'], ['0933 ••• 097', '01:12']];
+    Q.forEach((r, i) => { const q = ease(seg(t, 0.8 + i * 0.18, 1.2 + i * 0.18)); if (q <= 0) return; c.globalAlpha = A * q * 0.7; const y = CY + CHh / 2 + 34 + i * 34;
+      c.fillStyle = 'rgba(255,255,255,.04)'; c.beginPath(); c.roundRect(CX - CW / 2, y - 13, CW, 28, 8); c.fill();
+      c.textAlign = 'left'; c.font = `500 14px ${IF}`; c.fillStyle = 'rgba(255,255,255,.7)'; c.fillText(r[0], CX - CW / 2 + 20, y + 1);
+      c.fillStyle = 'rgba(255,255,255,.4)'; c.fillText('等待中', CX - CW / 2 + 200, y + 1);
+      c.textAlign = 'right'; c.fillStyle = '#F59F6B'; c.font = `700 14px ${IF}`; c.fillText(r[1], CX + CW / 2 - 20, y + 1); });
+    c.globalAlpha = A * seg(t, 1.4, 1.9); c.fillStyle = 'rgba(255,255,255,.75)'; c.font = `500 20px ${IF}`; c.textAlign = 'center'; c.fillText('每 天 5,000 通 進 線 ・ 每 一 通 都 在 等', W / 2, CY + CHh / 2 + 160);
     c.globalAlpha = 1;
   }
   /* B. 現況 (2.2–4.6) → C1. 加上兩個功能、人潮減少 (4.6–6.6) → C2. 參數調整、人潮更少 (6.6–9.2) → C3. 創造商機 (9.3–11.0) */
