@@ -177,12 +177,15 @@ h2 em{font-style:normal;color:var(--tealT)}
 .bar4 b{position:absolute;left:0;right:0;top:-26px;text-align:center;font-size:14.5px;color:var(--navy)}
 .bar4 i{position:absolute;left:0;right:0;bottom:-28px;text-align:center;font-style:normal;font-size:14px;color:var(--muted)}
 .dnote{font-size:15px;color:var(--ink2);display:flex;align-items:center;gap:8px}.dnote i{width:12px;height:12px;border-radius:3px;background:var(--gold)}
-.dk{display:grid;grid-template-rows:repeat(4,1fr);gap:14px}
+.dk{display:grid;grid-template-rows:repeat(3,1fr);gap:14px}
 .dt{background:#fff;border-radius:16px;box-shadow:0 8px 26px rgba(30,39,97,.08);padding:12px 18px;display:flex;flex-direction:column;justify-content:center}
 .dt .l{font-size:14px;color:var(--muted)}.dt .v{font-size:31px;font-weight:900;color:var(--tealT);line-height:1.15}.dt .s{font-size:12.5px;color:var(--dim)}
 .dtop{padding:20px 24px;display:flex;flex-direction:column;gap:10px}
 .dtop ol{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:7px}
-.dtop li{display:grid;grid-template-columns:22px minmax(0,1fr) 120px 52px;align-items:center;gap:10px;font-size:14.5px;color:var(--ink2)}
+.dtop li{display:grid;grid-template-columns:22px minmax(0,1fr) 56px 104px 52px;align-items:center;gap:10px;font-size:14.5px;color:var(--ink2)}
+.dtop u{text-decoration:none;font-size:11.5px;font-weight:700;text-align:center;padding:2px 0;border-radius:999px;white-space:nowrap}
+.dtop u.ok{background:#E3F5F1;color:var(--tealT)}.dtop u.part{background:#FFF1DC;color:#B4650E}.dtop u.no{background:#EEF0F7;color:var(--dim)}
+.dtop .lg{display:flex;gap:10px;align-items:center;font-size:12px;color:var(--dim);margin-left:auto}.dtop .lg u{font-size:11px;padding:1px 8px}
 .dtop li em{font-style:normal;width:22px;height:22px;border-radius:50%;background:var(--soft);color:var(--navy);font-size:12px;font-weight:700;display:grid;place-items:center}
 .dtop li span{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.dtop li span small{color:var(--dim);margin-left:6px}
 .dtop li .pb{height:7px;border-radius:4px;background:#EEF0F7;overflow:hidden}.dtop li .pb i{display:block;height:100%;background:var(--navy);border-radius:4px;width:var(--w)}
@@ -732,32 +735,31 @@ h2 em{font-style:normal;color:var(--tealT)}
       <div class="dnote"><i></i>尖峰 14:00–15:30 每月約 1,000 通（每日約 50 通），佔 17%</div>
     </div>
     <div class="dk">
-      <div class="dt a" style="--i:4"><div class="l">每案平均處理時間 AHT</div><div class="v">4 分 28 秒</div><div class="s">平均 268 秒（257–276 秒，逐月微升）</div></div>
+      <div class="dt a" style="--i:4"><div class="l">每案平均處理時間 AHT</div><div class="v">約 5 分鐘</div><div class="s">平均 268 秒（257–276 秒，逐月微升）</div></div>
       <div class="dt a" style="--i:5"><div class="l">自助通路占比（IVR／網銀／智慧小豐）</div><div class="v">56%</div><div class="s">2026 年 1–9 月</div></div>
       <div class="dt a" style="--i:6"><div class="l">可標準化、具自助化潛力案件</div><div class="v">48.5%</div><div class="s">以 IVR 活動鍵統計，可能高估</div></div>
-      <div class="dt a" style="--i:7"><div class="l">客戶滿意度</div><div class="v">99.4%</div><div class="s">2026 年 1–9 月</div></div>
     </div>
     <div class="card dtop a" style="--i:8">
-      <div class="dh">前五大進線類別<small>占比</small></div>
+      <div class="dh" style="display:flex;align-items:baseline">前五大進線類別<small>占比</small><span class="lg">智慧小豐<u class="sf ok">可自助</u><u class="sf part">部分</u><u class="sf no">需專人</u></span></div>
       <div class="dh" style="font-size:15px;color:var(--tealT)">信用卡</div>
       <ol>
-        <li><em>1</em><span>刷卡記錄查詢<small>查詢/索取</small></span><div class="pb"><i style="--w:100%"></i></div><b>11.1%</b></li>
-        <li><em>2</em><span>帳單明細<small>帳務處理</small></span><div class="pb"><i style="--w:69%"></i></div><b>7.7%</b></li>
-        <li><em>3</em><span>付款入帳／未結帳消費<small>帳務處理</small></span><div class="pb"><i style="--w:49%"></i></div><b>5.4%</b></li>
-        <li><em>4</em><span>掛失／撤掛<small>變更</small></span><div class="pb"><i style="--w:41%"></i></div><b>4.6%</b></li>
-        <li><em>5</em><span>調改利息／違約金／手續費<small>帳務處理</small></span><div class="pb"><i style="--w:41%"></i></div><b>4.5%</b></li>
+        <li><em>1</em><span>刷卡記錄查詢<small>查詢/索取</small></span><u class="sf ok">可自助</u><div class="pb"><i style="--w:100%"></i></div><b>11.1%</b></li>
+        <li><em>2</em><span>帳單明細<small>帳務處理</small></span><u class="sf ok">可自助</u><div class="pb"><i style="--w:69%"></i></div><b>7.7%</b></li>
+        <li><em>3</em><span>付款入帳／未結帳消費<small>帳務處理</small></span><u class="sf ok">可自助</u><div class="pb"><i style="--w:49%"></i></div><b>5.4%</b></li>
+        <li><em>4</em><span>掛失／撤掛<small>變更</small></span><u class="sf part">部分</u><div class="pb"><i style="--w:41%"></i></div><b>4.6%</b></li>
+        <li><em>5</em><span>調改利息／違約金／手續費<small>帳務處理</small></span><u class="sf no">需專人</u><div class="pb"><i style="--w:41%"></i></div><b>4.5%</b></li>
       </ol>
       <div class="dh" style="font-size:15px;color:var(--tealT);margin-top:4px">銀行</div>
       <ol>
-        <li><em>1</em><span>視訊約定帳號<small>申請項目</small></span><div class="pb"><i style="--w:100%"></i></div><b>6.3%</b></li>
-        <li><em>2</em><span>帳戶各項設定查詢<small>存款-台幣</small></span><div class="pb"><i style="--w:71%"></i></div><b>4.5%</b></li>
-        <li><em>3</em><span>往來明細<small>存款-台幣</small></span><div class="pb"><i style="--w:65%"></i></div><b>4.1%</b></li>
-        <li><em>4</em><span>金融卡設定查詢<small>自動化設備</small></span><div class="pb"><i style="--w:54%"></i></div><b>3.4%</b></li>
-        <li><em>5</em><span>視訊裝置綁定<small>申請項目</small></span><div class="pb"><i style="--w:52%"></i></div><b>3.3%</b></li>
+        <li><em>1</em><span>視訊約定帳號<small>申請項目</small></span><u class="sf no">需專人</u><div class="pb"><i style="--w:100%"></i></div><b>6.3%</b></li>
+        <li><em>2</em><span>帳戶各項設定查詢<small>存款-台幣</small></span><u class="sf ok">可自助</u><div class="pb"><i style="--w:71%"></i></div><b>4.5%</b></li>
+        <li><em>3</em><span>往來明細<small>存款-台幣</small></span><u class="sf ok">可自助</u><div class="pb"><i style="--w:65%"></i></div><b>4.1%</b></li>
+        <li><em>4</em><span>金融卡設定查詢<small>自動化設備</small></span><u class="sf ok">可自助</u><div class="pb"><i style="--w:54%"></i></div><b>3.4%</b></li>
+        <li><em>5</em><span>視訊裝置綁定<small>申請項目</small></span><u class="sf no">需專人</u><div class="pb"><i style="--w:52%"></i></div><b>3.3%</b></li>
       </ol>
     </div>
   </div>
-  <div class="fn a" style="--i:9">註：可自助化占比以 IVR 活動鍵統計，同一通可能點選多個子項目，比率可能高估；現行商機轉介有「房信貸轉介」「信貸貼標客戶轉介」，件數未提供</div>
+  <div class="fn a" style="--i:9">註：可自助化占比以 IVR 活動鍵統計，同一通可能點選多個子項目，比率可能高估；智慧小豐可否自助依現行自助功能盤點（查詢類可自助、掛失可自助但撤掛需專人、調改費用與視訊驗證類需專人），待客服中心確認；現行商機轉介有「房信貸轉介」「信貸貼標客戶轉介」，件數未提供</div>
 </section>
 
 <!-- ================= 03 關鍵時刻 ================= -->
@@ -2470,7 +2472,7 @@ body{font-family:var(--font)}
     <li><b>排隊</b>：以尖峰小時的進線量（占全日約 11%：實際尖峰 14:00–15:30 每月約 1,000 通 ÷ 每月約 6,000 通 ÷ 1.5 小時）用 Erlang C 計算平均等待時間和 20 秒內接聽率。</li>
     <li><b>文字客服</b>：答非所問的客戶平均多來回 2 輪，其中 40% 最後轉真人。導入後答錯率 = 分錯窗口比例 + 5%（知識庫本身沒有答案）。</li>
     <li><b>時間換算</b>：一年以 250 個工作天計算。省下的專員時間用在複雜問題與新人輔導，不換算成人力或成本。</li>
-    <li><b>資料基礎</b>：客服中心已提供 2026/4–9 實際值：每月進線 5,847–6,106 通（÷ 20 個營業日 ≈ 每日 300 通）、尖峰 14:00–15:30 每月約 1,000 通（≈ 每日 50 通）、AHT 257–276 秒、自助通路占比 56%、可自助化潛力 48.5%、滿意度 99.4%；人力配置、平均等候、接聽率、轉介件數暫未提供，仍為假設值。之後每天用案件分類紀錄校正，讓模擬持續貼近現場。</li>
+    <li><b>資料基礎</b>：客服中心已提供 2026/4–9 實際值：每月進線 5,847–6,106 通（÷ 20 個營業日 ≈ 每日 300 通）、尖峰 14:00–15:30 每月約 1,000 通（≈ 每日 50 通）、AHT 257–276 秒、自助通路占比 56%、可自助化潛力 48.5%；人力配置、平均等候、接聽率、轉介件數暫未提供，仍為假設值。之後每天用案件分類紀錄校正，讓模擬持續貼近現場。</li>
   </ul></div></div>
 <div class="ovl" id="ovlCurve"><div class="card"><button type="button" class="icon x" data-close>✕</button><div class="ch">門檻怎麼設最省時間？</div>
   <div class="muted small">門檻太低，分錯變多；太高，反問和轉人工變多。曲線最低點就是最佳門檻。</div>
