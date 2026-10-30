@@ -523,6 +523,28 @@ h2 em{font-style:normal;color:var(--tealT)}
 .slide.demopage iframe{position:absolute;inset:0;width:1600px;height:900px;border:0;background:#f3f5f8}
 #stage.demoOn #nav,#stage.demoOn #btnFs,#stage.demoOn #help,#stage.demoOn #editbar,#stage.demoOn #edithint{display:none}
 
+/* ---------- 投影片跳轉 (Ctrl+F) ---------- */
+#navgrid{position:absolute;inset:0;z-index:80;background:rgba(14,20,64,.96);display:none;padding:30px 60px 0;color:#fff;overflow:hidden}
+#stage.navg #navgrid{display:block}
+#navgrid h3{margin:0 0 10px;font-size:14px;letter-spacing:.3em;color:var(--teal);font-weight:700;display:flex;align-items:center;gap:14px}
+#navgrid h3 small{letter-spacing:0;font-weight:400;color:rgba(255,255,255,.45)}
+#navgrid .ng{display:grid;grid-template-columns:repeat(6,236px);justify-content:space-between;gap:12px;margin-bottom:22px}
+#navgrid .nc{cursor:pointer;border-radius:10px;overflow:hidden;background:#fff;border:2px solid rgba(255,255,255,.14);transition:transform .15s,border-color .15s,box-shadow .15s;position:relative}
+#navgrid .nc:hover{transform:translateY(-3px);border-color:var(--teal)}
+#navgrid .nc.cur{border-color:var(--teal);box-shadow:0 0 0 3px rgba(3,192,175,.35)}
+#navgrid .th{width:236px;height:133px;overflow:hidden;position:relative;background:#F4F6FA}
+#navgrid .th .slide{position:absolute;left:0;top:0;width:1600px;height:900px;transform:scale(.1475);transform-origin:0 0;visibility:visible;opacity:1;pointer-events:none;transition:none}
+#navgrid .lb{display:flex;align-items:center;gap:8px;padding:7px 10px;font-size:12.5px;color:var(--navy);background:#fff;border-top:1px solid var(--line)}
+#navgrid .lb b{background:var(--navy);color:#fff;border-radius:999px;padding:1px 8px;font-size:11px;flex:none}
+#navgrid .lb span{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+#navgrid .dth{width:236px;height:133px;background:linear-gradient(160deg,#fff,#EEF0F7);padding:12px 14px;position:relative}
+#navgrid .dth .k{font-size:10px;letter-spacing:.1em;color:var(--tealT);font-weight:700}
+#navgrid .dth .t{margin-top:6px;font-size:13px;font-weight:900;color:var(--navy);line-height:1.4}
+#navgrid .dth .bar{position:absolute;left:14px;right:14px;bottom:12px;height:5px;border-radius:3px;background:#DDE2EC}
+#navgrid .dth .bar i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,var(--navy),var(--teal))}
+#navgrid .dth .ico{position:absolute;right:12px;top:10px;width:26px;height:26px;border-radius:8px;background:var(--navy);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:900}
+#navgrid .close{position:absolute;right:60px;top:26px;font-size:13px;color:rgba(255,255,255,.55)}
+
 /* ---------- 簡報筆 (Ctrl+P) ---------- */
 #penCv{position:absolute;inset:0;width:1600px;height:900px;z-index:70;display:none;cursor:none}
 #penDot{position:absolute;z-index:72;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;background:#03C0AF;box-shadow:0 0 10px 3px rgba(3,192,175,.9),0 0 26px 8px rgba(3,192,175,.45);pointer-events:none;display:none}
@@ -918,11 +940,12 @@ h2 em{font-style:normal;color:var(--tealT)}
 </section>
 
 <canvas id="ambCv"></canvas>
+<div id="navgrid"><div class="close">Esc 或 Ctrl+F 關閉</div><h3>簡報<small>點縮圖跳到該頁</small></h3><div class="ng" id="ngDeck"></div><h3>DEMO<small>點縮圖進 Demo 的該頁</small></h3><div class="ng" id="ngDemo"></div></div>
 <canvas id="penCv"></canvas><div id="penDot"></div><div id="penTip">✎ 簡報筆　拖曳畫線 · Delete 清除 · Ctrl+P 關閉</div>
 <div id="chap"><div class="cn" id="chN">01</div><div class="ct"><div class="ck" id="chK">PART 1</div><h1 id="chT"></h1><p id="chP"></p><div class="ln"></div></div></div>
 <div id="nav"><button id="btnPrev" title="上一步 (←)"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button><button id="btnNext" title="下一步 (→)"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button></div>
 <button id="btnFs" title="全螢幕 (F)"><svg class="o" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><svg class="x" viewBox="0 0 24 24"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg></button>
-<div id="help">← → 或點畫面翻頁　·　F 全螢幕　·　Ctrl+E 編輯文字</div>
+<div id="help">← → 或點畫面翻頁　·　F 全螢幕　·　Ctrl+F 跳頁　·　Ctrl+P 簡報筆</div>
 <div id="editbar"><button id="btnEdit" title="修改這份簡報的文字">✎ 編輯文字</button><button id="btnDl" class="hid" title="把修改寫進檔案，下載後覆蓋原檔">⬇ 下載修改後的檔案</button><button id="btnDp" class="hid" title="改動畫跑到一半才出現的文字">⚙ 特效文字</button><button id="btnRv" class="hid">還原全部</button></div>
 <div id="datapanel"><div class="dh">特效才出現的文字<button id="btnDpClose">關閉</button></div><div class="db" id="dpBody"></div></div>
 <div id="edithint">編輯模式：直接點文字修改，Enter 換行；特效後才出現的字按「⚙ 特效文字」改；按「完成」儲存。翻頁請用進度條或底部按鈕。</div>
@@ -1107,6 +1130,8 @@ function prev(){
 addEventListener('keydown', e => {
   if ((e.ctrlKey || e.metaKey) && (e.key === 'e' || e.key === 'E')){ e.preventDefault(); setEditing(!editing); return; }   // Ctrl+E 進出編輯模式
   if ((e.ctrlKey || e.metaKey) && (e.key === 'p' || e.key === 'P')){ e.preventDefault(); setPen(!PEN.on); return; }      // Ctrl+P 簡報筆
+  if ((e.ctrlKey || e.metaKey) && (e.key === 'f' || e.key === 'F')){ e.preventDefault(); setNav(!NAVG); return; }      // Ctrl+F 投影片跳轉
+  if (NAVG){ if (e.key === 'Escape') setNav(false); return; }
   if (PEN.on && (e.key === 'Delete' || e.key === 'Backspace')){ e.preventDefault(); penClear(); return; }
   if (PEN.on && e.key === 'Escape'){ setPen(false); return; }
   if (editing) return;                                   // 編輯中: 鍵盤留給打字
@@ -1514,7 +1539,7 @@ HOOK['p-res'] = k => {
 };
 
 /* ---------- 編輯文字模式：改完存在瀏覽器，也可下載成新檔 ---------- */
-const ED_SKIP = '#demoFrame,#tbl .val,#exs,#bubble,#out,.slot,#tv,#heroV,#ctm,#tlT,.calltl .bub,.prog,.foot,.token,.track,#qBad,#chap,#datapanel';
+const ED_SKIP = '#navgrid,#demoFrame,#tbl .val,#exs,#bubble,#out,.slot,#tv,#heroV,#ctm,#tlT,.calltl .bub,.prog,.foot,.token,.track,#qBad,#chap,#datapanel';
 function edKey(el){ const parts = []; let e = el; while (e && !e.classList.contains('slide')){ parts.unshift([...e.parentElement.children].indexOf(e)); e = e.parentElement; } return (e ? e.id : '?') + '/' + parts.join('.'); }
 function edTargets(){
   const out = [];
@@ -1607,6 +1632,7 @@ addEventListener('message', e => {
   if (d.type === 'backDeck') show(slides.findIndex(s => s.id === 'p-thanks'), 0, false);
   else if (d.type === 'fs'){ document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); }
   else if (d.type === 'pen') setPen(!PEN.on);
+  else if (d.type === 'navgrid') setNav(!NAVG);
 });
 const demoLink = document.querySelector('#p-thanks a.demo'); if (demoLink){ demoLink.setAttribute('href', '#demo'); demoLink.onclick = ev => { ev.preventDefault(); show(slides.length - 1); }; }
 
@@ -1617,6 +1643,36 @@ const demoLink = document.querySelector('#p-thanks a.demo'); if (demoLink){ demo
   for (let k = 1; k <= 6; k++){ const y = 600 + Math.pow(k / 6, 1.8) * 300; g.beginPath(); g.moveTo(0, y); g.lineTo(W, y); g.stroke(); } })();
 // Demo 最後一頁再按 → : 進結尾頁
 addEventListener('message', e => { if ((e.data || {}).type === 'endDeck') show(slides.findIndex(s => s.id === 'p-end'), 0, false); });
+
+/* ---------- 投影片跳轉 (Ctrl+F) ---------- */
+let NAVG = false;
+const navgEl = document.getElementById('navgrid');
+const escn = t => String(t || '').replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
+const DEMO_PAGES = [['1-1', '01｜客戶開口', '客戶說一句話，系統就知道他要問什麼'], ['1-2', '01｜客戶開口', '同一句話，還讀出急件、可否自助和商機'], ['1-3', '01｜客戶開口', '標準化問題自助辦好，複雜問題依客觀條件排給專員'], ['2-1', '02｜電話接通', '電話接通，專員已經知道他是誰、要什麼'], ['2-2', '02｜電話接通', '專員不用想，系統給出步驟和開場話術'], ['3', '03｜主管監控', '主管看見全中心，急件永遠排第一'], ['4-1', '04｜數位孿生推演', '模擬不同情境：人力怎麼排，客戶才留得住'], ['4-2', '04｜數位孿生推演', '同樣的進線量，導入後少轉錯、少流失']];
+function navTitle(s){ if (s.id === 'p-intro') return '開場動畫・封面'; if (s.id === 'p-thanks') return '謝謝聆聽・Q&A'; if (s.id === 'p-end') return '結尾'; const h = s.querySelector('h2') || s.querySelector('h1'); return h ? h.textContent.trim() : s.id; }
+function buildNav(){
+  const dg = document.getElementById('ngDeck'), gg = document.getElementById('ngDemo'); dg.innerHTML = ''; gg.innerHTML = '';
+  slides.forEach((s, i) => { if (s.id === 'p-demo') return;
+    const card = document.createElement('div'); card.className = 'nc' + (i === cur ? ' cur' : '');
+    const th = document.createElement('div'); th.className = 'th';
+    const cl = s.cloneNode(true); cl.classList.add('on'); cl.classList.remove('enter'); cl.querySelectorAll('[id]').forEach(e => e.removeAttribute('id')); cl.querySelectorAll('canvas').forEach(e => e.remove());
+    cl.querySelectorAll('.f').forEach(e => e.classList.add('show')); const cw = cl.querySelector('.coverwrap'); if (cw) cw.classList.add('on');
+    th.appendChild(cl); card.appendChild(th);
+    const lb = document.createElement('div'); lb.className = 'lb'; lb.innerHTML = `<b>${String(i + 1).padStart(2, '0')}</b><span>${escn(navTitle(s))}</span>`; card.appendChild(lb);
+    card.onclick = ev => { ev.stopPropagation(); setNav(false); show(i, +s.dataset.steps, false); if (s.id === 'p-intro'){ INTRO.skipped = true; INTRO.t0 = performance.now() - 14400; } };
+    dg.appendChild(card); });
+  loadDemo(); let pages = [], onIdx = -1;
+  try { const ps = [...demoFrame.contentDocument.querySelectorAll('.page')]; onIdx = ps.findIndex(p => p.classList.contains('on'));
+    pages = ps.map(p => { const no = p.querySelector('.phk .no'), k = p.querySelector('.phk'), h = p.querySelector('h2'); return [no ? no.textContent.trim() : '', k ? k.textContent.replace(no ? no.textContent : '', '').trim() : '', h ? h.textContent.trim() : '']; }); } catch (e) {}
+  if (!pages.length) pages = DEMO_PAGES;
+  const onDemo = slides[cur] && slides[cur].id === 'p-demo';
+  pages.forEach((p, i) => { const card = document.createElement('div'); card.className = 'nc' + (onDemo && i === onIdx ? ' cur' : '');
+    card.innerHTML = `<div class="dth"><div class="k">${escn(p[1])}</div><div class="t">${escn(p[2])}</div><div class="ico">▶</div><div class="bar"><i style="width:${(i + 1) / pages.length * 100}%"></i></div></div><div class="lb"><b>${escn(p[0])}</b><span>Demo</span></div>`;
+    card.onclick = ev => { ev.stopPropagation(); setNav(false); const di = slides.findIndex(s => s.id === 'p-demo'); show(di, 0, false); setTimeout(() => { try { demoFrame.contentWindow.postMessage({ type: 'goto', i }, '*'); } catch (e) {} }, 400); };
+    gg.appendChild(card); });
+}
+function setNav(on){ NAVG = on; if (on){ if (PEN.on) setPen(false); buildNav(); window.focus(); } stage.classList.toggle('navg', on); if (!on && slides[cur] && slides[cur].id === 'p-demo') try { demoFrame.contentWindow.focus(); } catch (e) {} }
+navgEl.addEventListener('click', e => { e.stopPropagation(); if (e.target === navgEl) setNav(false); });
 
 /* ---------- 簡報筆 ---------- */
 const PEN = { on: false, down: false, last: null };
@@ -3151,7 +3207,8 @@ document.addEventListener('keydown',e=>{
   else if(e.key==='f'||e.key==='F') toggleFS();
 });
 document.getElementById('app').appendChild(document.getElementById('fsBtn'));   // 移出 header，定位到右下角
-if(window.parent!==window) addEventListener('keydown',e=>{ if((e.ctrlKey||e.metaKey)&&(e.key==='p'||e.key==='P')){ e.preventDefault(); parent.postMessage({type:'pen'},'*'); } }, true);   // 內嵌在簡報裡時，Ctrl+P 交給簡報的簡報筆
+if(window.parent!==window){ addEventListener('keydown',e=>{ if((e.ctrlKey||e.metaKey)&&(e.key==='p'||e.key==='P')){ e.preventDefault(); parent.postMessage({type:'pen'},'*'); } if((e.ctrlKey||e.metaKey)&&(e.key==='f'||e.key==='F')){ e.preventDefault(); parent.postMessage({type:'navgrid'},'*'); } }, true);   // 內嵌在簡報裡時，Ctrl+P 簡報筆、Ctrl+F 跳頁都交給簡報
+  addEventListener('message',e=>{ const m=e.data||{}; if(m.type==='goto') go(+m.i); }); }
 function toggleFS(){if(window.parent!==window){parent.postMessage({type:'fs'},'*');return;} if(document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();}
 $('fsBtn').onclick=toggleFS;
 function fit(){S=Math.min(innerWidth/1600,innerHeight/900); app.style.setProperty('--s',S);}
