@@ -166,7 +166,7 @@ h2 em{font-style:normal;color:var(--tealT)}
 .bucket.hetero .r{color:var(--navy)}
 
 /* ---------- 客服中心實際數據 ---------- */
-.dgrid{margin-top:24px;display:grid;grid-template-columns:470px 290px minmax(0,1fr);gap:22px;height:505px}
+.dgrid{margin-top:24px;display:grid;grid-template-columns:440px minmax(0,1fr);gap:24px;height:505px}
 .dchart{padding:22px 24px;display:flex;flex-direction:column}
 .dh{font-size:19px;font-weight:900;color:var(--navy)}.dh small{font-weight:500;color:var(--muted);margin-left:8px;font-size:14px}
 .bars4{flex:1;display:grid;grid-template-columns:repeat(6,1fr);align-items:end;gap:14px;margin:34px 0 30px;position:relative}
@@ -177,11 +177,11 @@ h2 em{font-style:normal;color:var(--tealT)}
 .bar4 b{position:absolute;left:0;right:0;top:-26px;text-align:center;font-size:14.5px;color:var(--navy)}
 .bar4 i{position:absolute;left:0;right:0;bottom:-28px;text-align:center;font-style:normal;font-size:14px;color:var(--muted)}
 .dnote{font-size:15px;color:var(--ink2);display:flex;align-items:center;gap:8px}.dnote i{width:12px;height:12px;border-radius:3px;background:var(--gold)}
-.dk{display:grid;grid-template-rows:repeat(3,1fr);gap:14px}
-.dt{background:#fff;border-radius:16px;box-shadow:0 8px 26px rgba(30,39,97,.08);padding:12px 18px;display:flex;flex-direction:column;justify-content:center}
-.dt .l{font-size:14px;color:var(--muted)}.dt .v{font-size:31px;font-weight:900;color:var(--tealT);line-height:1.15}.dt .s{font-size:12.5px;color:var(--dim)}
+.dk{display:grid;grid-template-rows:repeat(2,1fr);gap:24px}
+.dt{background:#fff;border-radius:20px;box-shadow:0 8px 26px rgba(30,39,97,.08);padding:26px 32px;display:flex;flex-direction:column;justify-content:center;gap:6px}
+.dt .l{font-size:18px;font-weight:700;color:var(--muted)}.dt .v{font-size:74px;font-weight:900;color:var(--tealT);line-height:1.05;letter-spacing:-.01em}.dt .s{font-size:15px;color:var(--dim)}
 .dtop{padding:20px 24px;display:flex;flex-direction:column;gap:10px}
-.dtop ol{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:7px}
+.dtop ol{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:7px;flex:1;justify-content:space-evenly}
 .dtop li{display:grid;grid-template-columns:22px minmax(0,1fr) 56px 104px 52px;align-items:center;gap:10px;font-size:14.5px;color:var(--ink2)}
 .dtop u{text-decoration:none;font-size:11.5px;font-weight:700;text-align:center;padding:2px 0;border-radius:999px;white-space:nowrap}
 .dtop u.ok{background:#E3F5F1;color:var(--tealT)}.dtop u.part{background:#FFF1DC;color:#B4650E}.dtop u.no{background:#EEF0F7;color:var(--dim)}
@@ -724,20 +724,7 @@ h2 em{font-style:normal;color:var(--tealT)}
   <h2 class="a" style="--i:1">每月 <em>6,000 通</em>進線，近半有自助潛力</h2>
   <div class="sub a" style="--i:2">每月約數千通進線，其中 48.5% 落在可標準化、可自助的案件，真實數據顯示：量大、集中、可標準化，正是數位分流與孿生模擬最適合切入的場景</div>
   <div class="dgrid">
-    <div class="card dchart a" style="--i:3">
-      <div class="dh">每月進線量<small>營業日・通</small></div>
-      <div class="bars4">
-        <div class="bar4" style="--h:93%;--p:16.8%;--i:0"><b>6,047</b><div class="pk"></div><i>4 月</i></div>
-        <div class="bar4" style="--h:94%;--p:17.0%;--i:1"><b>6,104</b><div class="pk"></div><i>5 月</i></div>
-        <div class="bar4" style="--h:91.5%;--p:17.1%;--i:2"><b>5,957</b><div class="pk"></div><i>6 月</i></div>
-        <div class="bar4" style="--h:94%;--p:16.6%;--i:3"><b>6,106</b><div class="pk"></div><i>7 月</i></div>
-        <div class="bar4" style="--h:90%;--p:16.7%;--i:4"><b>5,847</b><div class="pk"></div><i>8 月</i></div>
-        <div class="bar4" style="--h:91.5%;--p:16.7%;--i:5"><b>5,957</b><div class="pk"></div><i>9 月</i></div>
-      </div>
-      <div class="dnote"><i></i>尖峰 14:00–15:30 每月約 1,000 通（每日約 50 通），佔 17%</div>
-    </div>
     <div class="dk">
-      <div class="dt a" style="--i:4"><div class="l">每案平均處理時間 AHT（專員通話）</div><div class="v">約 5 分鐘</div><div class="s">平均 268 秒，不含語音選單與等候（257–276 秒，逐月微升）</div></div>
       <div class="dt a" style="--i:5"><div class="l">自助通路占比（IVR／網銀／智慧小豐）</div><div class="v">56%</div><div class="s">2026 年 1–9 月</div></div>
       <div class="dt a" style="--i:6"><div class="l">可標準化、具自助化潛力案件</div><div class="v">48.5%</div><div class="s">以 IVR 活動鍵統計，可能高估</div></div>
     </div>
