@@ -1279,7 +1279,7 @@ $('qAgents').onchange=e=>{qReset(); e.target.blur();};
 const P={};
 const CTRL=[
   {k:'vPhone',l:'每日電話進線',min:50,max:3000,step:10,v:300,f:v=>fmt(v)+' 通',h:'實際值：2026/4–9 每月 5,847–6,106 通（客服中心提供），÷ 20 個營業日 ≈ 每日 300 通'},
-  {k:'agents',l:'尖峰電話客服人數',min:1,max:30,step:1,v:10,f:v=>v+' 人',h:'人力數未提供，為假設值；10 人時尖峰不需排隊；壓力測試請把每日進線拉到 900 通（3 倍）'},
+  {k:'agents',l:'尖峰電話客服人數',min:1,max:30,step:1,v:10,f:v=>v+' 人',h:'人力數未提供，為假設值；10 人時尖峰不需排隊；壓力測試請把每日進線拉到 990 通（約 3 倍）'},
   {k:'acc',l:'Jev 平均準確度',min:0.6,max:0.98,step:0.01,v:0.88,f:v=>(v*100).toFixed(0)+'%',h:'假設值，待以行內資料實測'},
   {k:'autoShare',l:'可導引線上自助的進線比例',min:0,max:0.6,step:0.01,v:0.15,f:v=>(v*100).toFixed(0)+'%',h:'分期、臨時調額、帳單查詢等智慧小豐可辦的常見業務；假設值，待客服中心數據校正'},
 ];
@@ -1331,7 +1331,7 @@ function recompute(){
   const jevCost=(P.vPhone+P.vText)*500*365/1e6*0.042*32/1e4;
   const custHrs=(isFinite(A.cust)&&isFinite(B.cust)?(A.cust-B.cust)*P.vPhone:0)*250/3600;   // 只算電話 (文字客服未提供資料)
   const dWait=isFinite(A.q.asa)&&isFinite(B.q.asa)?Math.max(0,A.q.asa-B.q.asa):null;
-  const q3a=queue(A.vAgent*3,A.svc,P.agents),q3b=queue(B.vAgent*3,B.svc,P.agents),d3=isFinite(q3a.asa)&&isFinite(q3b.asa)?Math.max(0,q3a.asa-q3b.asa):null;   // 人力充足時改看「進線暴增 3 倍」壓力情境
+  const q3a=queue(A.vAgent*3.3,A.svc,P.agents),q3b=queue(B.vAgent*3.3,B.svc,P.agents),d3=isFinite(q3a.asa)&&isFinite(q3b.asa)?Math.max(0,q3a.asa-q3b.asa):null;   // 人力充足時改看「進線暴增 3 倍」壓力情境
   const w1=dWait===null?['不再爆線','尖峰時段接得起來']:dWait>=120?[fmt(dWait/60,0),'分：尖峰平均等待縮短']:dWait>=1?[fmt(dWait,0),'秒：尖峰平均等待縮短']:d3===null?['不再爆線','進線暴增 3 倍時仍接得起來']:d3>=120?[fmt(d3/60,0),'分：進線暴增 3 倍時尖峰少等']:[fmt(d3,0),'秒：進線暴增 3 倍時尖峰少等'];
   $('hero').innerHTML=`<div><div class="big">${w1[0]}</div><div class="u">${w1[1]}</div></div><div><div class="big">${fmt(Math.max(0,B.autoN))}</div><div class="u">通：每日線上自助辦好</div></div><div><div class="big">${fmt(Math.max(0,custHrs),0)}</div><div class="u">小時：每年客戶少花的等待與溝通時間</div></div>`;
   $('heroNote').textContent=`效益以服務品質衡量，不以減少人力為目標；省下的專員時間用在複雜問題與新人輔導。進線量、尖峰占比、AHT 為客服中心 2026/4–9 實際值（每月約 6,000 通 ÷ 20 個營業日 ≈ 每日 300 通）；人力、等候、接聽率、文字量未提供，為假設值。`;
