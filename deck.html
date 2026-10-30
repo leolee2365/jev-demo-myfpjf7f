@@ -524,9 +524,11 @@ h2 em{font-style:normal;color:var(--tealT)}
 #stage.demoOn #nav,#stage.demoOn #btnFs,#stage.demoOn #help,#stage.demoOn #editbar,#stage.demoOn #edithint{display:none}
 
 /* ---------- 簡報筆 (Ctrl+P) ---------- */
-#penCv{position:absolute;inset:0;width:1600px;height:900px;z-index:70;display:none;cursor:crosshair}
+#penCv{position:absolute;inset:0;width:1600px;height:900px;z-index:70;display:none;cursor:none}
+#penDot{position:absolute;z-index:72;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;background:#03C0AF;box-shadow:0 0 10px 3px rgba(3,192,175,.9),0 0 26px 8px rgba(3,192,175,.45);pointer-events:none;display:none}
+#stage.pen #penDot{display:block}
 #stage.pen #penCv{display:block}
-#penTip{position:absolute;left:24px;bottom:16px;z-index:71;display:none;padding:8px 14px;border-radius:999px;background:#E53935;color:#fff;font-size:14px;font-weight:700;pointer-events:none}
+#penTip{position:absolute;left:24px;bottom:16px;z-index:71;display:none;padding:8px 14px;border-radius:999px;background:#03C0AF;color:#0E1440;font-size:14px;font-weight:700;pointer-events:none}
 #stage.pen #penTip{display:block}
 
 /* ---------- 章節過場 ---------- */
@@ -884,7 +886,7 @@ h2 em{font-style:normal;color:var(--tealT)}
 </section>
 
 <canvas id="ambCv"></canvas>
-<canvas id="penCv"></canvas><div id="penTip">✎ 簡報筆　拖曳畫線 · Delete 清除 · Ctrl+P 關閉</div>
+<canvas id="penCv"></canvas><div id="penDot"></div><div id="penTip">✎ 簡報筆　拖曳畫線 · Delete 清除 · Ctrl+P 關閉</div>
 <div id="chap"><div class="cn" id="chN">01</div><div class="ct"><div class="ck" id="chK">PART 1</div><h1 id="chT"></h1><p id="chP"></p><div class="ln"></div></div></div>
 <div id="nav"><button id="btnPrev" title="上一步 (←)"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button><button id="btnNext" title="下一步 (→)"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button></div>
 <button id="btnFs" title="全螢幕 (F)"><svg class="o" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><svg class="x" viewBox="0 0 24 24"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg></button>
@@ -1579,12 +1581,13 @@ const demoLink = document.querySelector('#p-thanks a.demo'); if (demoLink){ demo
 /* ---------- 簡報筆 ---------- */
 const PEN = { on: false, down: false, last: null };
 const penCv = document.getElementById('penCv'), penCtx = penCv.getContext('2d'); penCv.width = 3200; penCv.height = 1800;
-penCtx.setTransform(2, 0, 0, 2, 0, 0); penCtx.lineCap = 'round'; penCtx.lineJoin = 'round'; penCtx.strokeStyle = '#E53935'; penCtx.lineWidth = 4; penCtx.shadowColor = 'rgba(229,57,53,.5)'; penCtx.shadowBlur = 4;
+penCtx.setTransform(2, 0, 0, 2, 0, 0); penCtx.lineCap = 'round'; penCtx.lineJoin = 'round'; penCtx.strokeStyle = '#03C0AF'; penCtx.lineWidth = 4; penCtx.shadowColor = 'rgba(3,192,175,.8)'; penCtx.shadowBlur = 10;
+const penDot = document.getElementById('penDot');
 function penClear(){ penCtx.save(); penCtx.setTransform(1, 0, 0, 1, 0, 0); penCtx.clearRect(0, 0, penCv.width, penCv.height); penCtx.restore(); }
 function setPen(on){ PEN.on = on; stage.classList.toggle('pen', on); if (!on){ penClear(); PEN.down = false; if (slides[cur] && slides[cur].id === 'p-demo') try { demoFrame.contentWindow.focus(); } catch (e) {} } else window.focus(); }
 const penPos = e => { const r = penCv.getBoundingClientRect(); return [(e.clientX - r.left) / r.width * 1600, (e.clientY - r.top) / r.height * 900]; };
-penCv.addEventListener('pointerdown', e => { e.stopPropagation(); PEN.down = true; PEN.last = penPos(e); penCv.setPointerCapture(e.pointerId); penCtx.beginPath(); penCtx.arc(PEN.last[0], PEN.last[1], 2, 0, 7); penCtx.fillStyle = '#E53935'; penCtx.fill(); });
-penCv.addEventListener('pointermove', e => { if (!PEN.down) return; const p = penPos(e); penCtx.beginPath(); penCtx.moveTo(PEN.last[0], PEN.last[1]); penCtx.lineTo(p[0], p[1]); penCtx.stroke(); PEN.last = p; });
+penCv.addEventListener('pointerdown', e => { e.stopPropagation(); PEN.down = true; PEN.last = penPos(e); penCv.setPointerCapture(e.pointerId); penCtx.beginPath(); penCtx.arc(PEN.last[0], PEN.last[1], 2, 0, 7); penCtx.fillStyle = '#03C0AF'; penCtx.fill(); });
+penCv.addEventListener('pointermove', e => { const p = penPos(e); penDot.style.left = p[0] + 'px'; penDot.style.top = p[1] + 'px'; if (!PEN.down) return; penCtx.beginPath(); penCtx.moveTo(PEN.last[0], PEN.last[1]); penCtx.lineTo(p[0], p[1]); penCtx.stroke(); PEN.last = p; });
 ['pointerup', 'pointercancel'].forEach(ev => penCv.addEventListener(ev, e => { PEN.down = false; }));
 penCv.addEventListener('click', e => e.stopPropagation());          // 畫線時不要翻頁
 const _showPen = show; show = function(...a){ if (PEN.on) penClear(); return _showPen.apply(this, a); };
