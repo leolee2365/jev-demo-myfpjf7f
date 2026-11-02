@@ -1333,7 +1333,7 @@ function recompute(){
   const dWait=isFinite(A.q.asa)&&isFinite(B.q.asa)?Math.max(0,A.q.asa-B.q.asa):null;
   const q3a=queue(A.vAgent*3.3,A.svc,P.agents),q3b=queue(B.vAgent*3.3,B.svc,P.agents),d3=isFinite(q3a.asa)&&isFinite(q3b.asa)?Math.max(0,q3a.asa-q3b.asa):null;   // 人力充足時改看「進線暴增 3 倍」壓力情境
   const w1=dWait===null?['不再爆線','尖峰時段接得起來']:dWait>=120?[fmt(dWait/60,0),'分：尖峰平均等待縮短']:dWait>=1?[fmt(dWait,0),'秒：尖峰平均等待縮短']:d3===null?['不再爆線','進線暴增 3 倍時仍接得起來']:d3>=120?[fmt(d3/60,0),'分：進線暴增 3 倍時尖峰少等']:[fmt(d3,0),'秒：進線暴增 3 倍時尖峰少等'];
-  $('hero').innerHTML=`<div><div class="big">${w1[0]}</div><div class="u">${w1[1]}</div></div><div><div class="big">${fmt(Math.max(0,B.autoN))}</div><div class="u">通：每日線上自助辦好</div></div><div><div class="big">${fmt(Math.max(0,custHrs),0)}</div><div class="u">小時：每年客戶少花的等待與溝通時間</div></div>`;
+  $('hero').innerHTML=`<div><div class="big">${w1[0]}</div><div class="u">${w1[1]}</div></div><div><div class="big">${fmt(Math.max(0,B.autoN))}</div><div class="u">通：每日線上自助辦好</div></div><div><div class="big">${isFinite(A.cust)&&isFinite(B.cust)&&A.cust>0?Math.max(0,Math.round((1-B.cust/A.cust)*100)):0}</div><div class="u">%：客戶平均總耗時縮短</div></div>`;   // 客戶端年度小時數已拿掉 (與專員 75 小時主體不同，易混淆)
   $('heroNote').textContent=`效益以服務品質衡量，不以減少人力為目標；省下的專員時間用在複雜問題與新人輔導。進線量、尖峰占比、AHT 為客服中心 2026/4–9 實際值（每月約 6,000 通 ÷ 20 個營業日 ≈ 每日 300 通）；人力、等候、接聽率、文字量未提供，為假設值。`;
   const kp=(k,va,vb,better,f)=>{const d=vb-va;const good=better==='low'?d<0:d>0;const pct=va&&isFinite(va)&&isFinite(vb)&&!(f===fmtSec&&Math.abs(va)<1&&Math.abs(vb)<1)?Math.abs(d/va*100):null;   // 秒數型指標兩邊都不到 1 秒就不算改善 %
     const pctS=pct!==null&&pct>=0.5?pct:null;
