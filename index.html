@@ -674,10 +674,10 @@ body{font-family:var(--font)}
     <li><b>電話導入 Jev</b>：客戶說一句話，信心 ≥ 分流門檻就直接轉分機；介於兩個門檻之間先反問一句（約 15 秒，確認後準確率 97%）；低於反問門檻轉人工分類。</li>
     <li><b>校準</b>：Jev 的信心度經過校準，信心 0.9 的案件約有 90% 會分對，模型直接用信心度當分對的機率。</li>
     <li><b>智慧小豐自助</b>：分期、臨時調額、帳單與額度查詢等常見業務，Jev 傳智慧小豐連結（簡訊／LINE）讓客戶線上辦理，不進專員排隊；客戶要真人（預設 20%）多花約 30 秒後照類別轉專員。</li>
-    <li><b>排隊</b>：以尖峰小時的進線量（占全日約 11%：實際尖峰 14:00–15:30 每月約 1,000 通 ÷ 每月約 6,000 通 ÷ 1.5 小時）用 Erlang C 計算平均等待時間和 20 秒內接聽率。</li>
+    <li><b>排隊</b>：以尖峰小時的進線量（占全日約 11.2%：實際尖峰 14:00–15:30 每月約 1,000 通 ÷ 每月約 6,000 通 ÷ 1.5 小時）用 Erlang C 排隊模型（客服人數固定、來電隨機到達）計算平均等待時間和 20 秒內接聽率；每通占用專員的時間 ＝ AHT ＋ 撥總機比例 × 人工分類時間（導入後改為 ＋ 轉人工分類與分類錯誤重講的時間）；排隊人數 ＝ 每小時進線 × 平均等待時間（Little 法則）。壓力測試（每日 1,050 通、10 人）：現況每小時約 118 通 × 292 秒，負載 95% → 平均等 8 分 51 秒、排隊約 17 人、接聽率 19%；導入後 12% 改線上自助，每小時約 104 通 × 274 秒，負載 79% → 平均等 50 秒、排隊約 1–2 人、接聽率 67%。負載一超過 100% 即顯示「爆線」。</li>
     <li><b>文字客服</b>：答非所問的客戶平均多來回 2 輪，其中 40% 最後轉真人。導入後答錯率 = 分類錯誤率 + 5%（知識庫本身沒有答案）。</li>
     <li><b>時間換算</b>：一年以 250 個工作天計算。省下的專員時間用在複雜問題與新人輔導，不換算成人力或成本。</li>
-    <li><b>資料基礎</b>：客服中心已提供 2026/4–9 實際值：每月進線 5,847–6,106 通（÷ 20 個營業日 ≈ 每日 300 通）、尖峰 14:00–15:30 每月約 1,000 通（≈ 每日 50 通）、AHT 257–276 秒、自助通路占比 56%、可自助化潛力 48.5%；人力配置、平均等候、接聽率、轉介件數暫未提供，仍為假設值。簡報上的現況等待採 Worldmetrics 2026 銀行客服平均約 7 分鐘（一通電話 ≈ 7 分 ＋ AHT 268 秒 ＝ 11 分 28 秒）；Demo 的總耗時為本行進線量的模型值，10 人在線時尖峰不排隊。之後每天用案件分類紀錄校正，讓模擬持續貼近現場。</li>
+    <li><b>資料基礎</b>：客服中心已提供 2026/4–9 實際值：每月進線 5,847–6,106 通（÷ 20 個營業日 ≈ 每日 300 通）、尖峰 14:00–15:30 每月約 1,000 通（≈ 每日 50 通）、AHT 257–276 秒、自助通路占比 56%、可自助化潛力 48.5%；人力配置、平均等候、接聽率、轉介件數暫未提供，仍為假設值。現況等待採 Worldmetrics 2026 銀行客服平均約 7 分鐘（撥通到專員接起）：模型算出的語音選單＋總機＋排隊低於 7 分時，現況以 7 分計（一通電話 ≈ 7 分 ＋ AHT 268 秒 ＝ 11 分 28 秒），導入後依壓力情境的縮短比例（約 91%）推算約 40 秒；進線拉高到模型排隊時間超過 7 分時，改用模型值（進階參數可調或設 0）。之後每天用案件分類紀錄校正，讓模擬持續貼近現場。</li>
   </ul></div></div>
 <div class="ovl" id="ovlCurve"><div class="card"><button type="button" class="icon x" data-close>✕</button><div class="ch">門檻怎麼設最省時間？</div>
   <div class="muted small">門檻太低，分類錯誤變多；太高，反問和轉人工變多。曲線最低點就是最佳門檻。</div>
@@ -1294,6 +1294,7 @@ const CTRL_ADV=[
   {k:'ivr',l:'語音選單聆聽時間',min:20,max:120,step:5,v:60,f:v=>v+' 秒'},
   {k:'autoDone',l:'客戶接受線上自助比例',min:0.3,max:1,step:0.01,v:0.80,f:v=>(v*100).toFixed(0)+'%'},
   {k:'tAuto',l:'線上自助辦理時間',min:30,max:240,step:10,v:90,f:v=>v+' 秒'},
+  {k:'waitAsis',l:'現況撥通到專員接起（業界平均）',min:0,max:900,step:10,v:420,f:v=>v>=60?`${Math.floor(v/60)} 分 ${Math.round(v%60)} 秒`:v+' 秒',h:'客服中心未提供等候時間，採 Worldmetrics 2026 銀行客服平均約 7 分鐘；模型算出的語音選單＋總機＋排隊低於此值時，現況以此為準，導入後依壓力情境（進線 3.5 倍）的縮短比例推算；設 0 即純用模型值'},
 ];
 function buildCtl(list,el){
   el.innerHTML=list.map(c=>`<div class="ctl"><label for="c_${c.k}">${c.l}<output id="o_${c.k}"></output></label><input type="range" id="c_${c.k}" min="${c.min}" max="${c.max}" step="${c.step}" value="${c.v}">${c.h?`<div class="hint">${c.h}</div>`:''}</div>`).join('');
@@ -1315,12 +1316,17 @@ function queue(vDay,svc,N){const lam=vDay*0.112/3600;   // 尖峰每小時約佔
 const A=lam*svc;if(A>=N) return {asa:Infinity,sl:0};const C=erlangC(N,A);return {asa:C*svc/(N-A),sl:1-C*Math.exp(-(N-A)*20/svc)};}
 const W_OP=30, T_RE=90;   // 總機接聽前等待 / 分類錯誤後重新說明 (秒)
 function phoneModel(mode,thA,thQ){
-  if(mode==='asis'){const svc=P.aht+P.fOp*P.tOp;const q=queue(P.vPhone,svc,P.agents);return {mis:0,svc,q,vAgent:P.vPhone,autoN:0,cust:P.ivr+P.fOp*(W_OP+P.tOp)+q.asa+P.aht,transfers:P.vPhone*P.fOp};}   // 現況：語音選單 → (撥總機) → 排隊 → 專員；不設轉錯
+  const svcA=P.aht+P.fOp*P.tOp, floor=P.waitAsis||0;   // 現況「撥通到專員接起」低於業界平均 (預設 7 分) 時以業界平均計：客服中心未提供等候資料，10 人時模型算不出排隊
+  if(mode==='asis'){const svc=svcA;const q=queue(P.vPhone,svc,P.agents);const pre=P.ivr+P.fOp*(W_OP+P.tOp)+q.asa;return {mis:0,svc,q,wait:Math.max(q.asa,floor),floored:q.asa<floor,vAgent:P.vPhone,autoN:0,cust:Math.max(pre,floor)+P.aht,transfers:P.vPhone*P.fOp};}   // 現況：語音選單 → (撥總機) → 排隊 → 專員；不設轉錯
   // 線上自助：可自助的進線中，接受連結的不進專員排隊；要真人的多花 30 秒後轉專員
   const sa=(P.autoShare||0)*(P.autoDone||0), fail=(P.autoShare||0)-sa, vAgent=P.vPhone*(1-sa);
   const r=routing(thA,thQ);const svc=P.aht+r.human*P.tOp+r.mis*T_RE;const q=queue(vAgent,svc,P.agents);
-  const human=10+r.ask*15+r.human*(W_OP+P.tOp)+q.asa+P.aht+r.mis*(q.asa+T_RE);
-  return {mis:r.mis*(1-sa),svc,q,r,vAgent,autoN:P.vPhone*sa,cust:sa*P.tAuto+(1-sa)*human+fail*(P.tAuto/3),transfers:vAgent*(r.human+r.mis)};
+  // 導入後的等待下限 = 業界平均 × 壓力情境 (進線 3.5 倍) 現況→導入後的縮短比例；模型排隊時間更長時用模型值
+  const a3=queue(P.vPhone*3.5,svcA,P.agents), b3=queue(vAgent*3.5,svc,P.agents);
+  const ratio=!isFinite(a3.asa)?(isFinite(b3.asa)?0.1:1):a3.asa>1?Math.min(1,(isFinite(b3.asa)?b3.asa:a3.asa)/a3.asa):0;
+  const wait=Math.max(q.asa,floor*ratio);
+  const human=10+r.ask*15+r.human*(W_OP+P.tOp)+wait+P.aht+r.mis*(wait+T_RE);
+  return {mis:r.mis*(1-sa),svc,q,wait,floored:q.asa<floor*ratio,r,vAgent,autoN:P.vPhone*sa,cust:sa*P.tAuto+(1-sa)*human+fail*(P.tAuto/3),transfers:vAgent*(r.human+r.mis)};
 }
 function textModel(mode){const base=90;if(mode==='asis'){const m=P.missAsis,esc=m*0.4;return {miss:m,cust:base+m*80+esc*300,escN:P.vText*esc,agentSec:P.vText*esc*300};}
   const r=routing(P.thAuto,P.thAsk);const m=Math.min(1,r.mis+0.05),esc=m*0.4+r.human;return {miss:m,cust:base+r.ask*15+m*80+esc*300,escN:P.vText*esc,agentSec:P.vText*esc*300};}
@@ -1330,7 +1336,7 @@ function recompute(){
   const A=phoneModel('asis'),B=phoneModel('tobe',P.thAuto,P.thAsk),TA=textModel('asis'),TB=textModel('tobe');
   const jevCost=(P.vPhone+P.vText)*500*365/1e6*0.042*32/1e4;
   const custHrs=(isFinite(A.cust)&&isFinite(B.cust)?(A.cust-B.cust)*P.vPhone:0)*250/3600;   // 只算電話 (文字客服未提供資料)
-  const dWait=isFinite(A.q.asa)&&isFinite(B.q.asa)?Math.max(0,A.q.asa-B.q.asa):null;
+  const dWait=isFinite(A.wait)&&isFinite(B.wait)?Math.max(0,A.wait-B.wait):null;
   const q3a=queue(A.vAgent*3.5,A.svc,P.agents),q3b=queue(B.vAgent*3.5,B.svc,P.agents),d3=isFinite(q3a.asa)&&isFinite(q3b.asa)?Math.max(0,q3a.asa-q3b.asa):null;   // 人力充足時改看「進線暴增 3.5 倍」壓力情境
   const w1=dWait===null?['不再爆線','尖峰時段接得起來']:dWait>=120?[fmt(dWait/60,0),'分：尖峰平均等待縮短']:dWait>=1?[fmt(dWait,0),'秒：尖峰平均等待縮短']:d3===null?['不再爆線','進線暴增 3.5 倍時仍接得起來']:d3>=120?[fmt(d3/60,0),'分：進線暴增 3.5 倍時尖峰少等']:[fmt(d3,0),'秒：進線暴增 3.5 倍時尖峰少等'];
   $('hero').innerHTML=`<div><div class="big">${w1[0]}</div><div class="u">${w1[1]}</div></div><div><div class="big">${fmt(Math.max(0,B.autoN))}</div><div class="u">通：每日線上自助辦好</div></div><div><div class="big">${isFinite(A.cust)&&isFinite(B.cust)&&A.cust>0?Math.max(0,Math.round((1-B.cust/A.cust)*100)):0}</div><div class="u">%：客戶平均總耗時縮短</div></div>`;   // 客戶端年度小時數已拿掉 (與專員 75 小時主體不同，易混淆)
@@ -1338,7 +1344,7 @@ function recompute(){
   const kp=(k,va,vb,better,f)=>{const d=vb-va;const good=better==='low'?d<0:d>0;const pct=va&&isFinite(va)&&isFinite(vb)&&!(f===fmtSec&&Math.abs(va)<1&&Math.abs(vb)<1)?Math.abs(d/va*100):null;   // 秒數型指標兩邊都不到 1 秒就不算改善 %
     const pctS=pct!==null&&pct>=0.5?pct:null;
     return `<div class="kpi"><div class="k">${k}</div><div class="v"${good?'':' style="color:var(--red)"'}>${f(vb)}</div><div class="c">現況 ${f(va)}</div><div class="d${good?'':' bad'}">${pctS===null?'':(good?'改善 ':'惡化 ')+pctS.toFixed(0)+'%'}</div></div>`;};
-  $('kpis').innerHTML=kp('電話：客戶平均總耗時',A.cust,B.cust,'low',fmtSec)+kp('電話：尖峰平均等待',A.q.asa,B.q.asa,'low',fmtSec)+kp('電話：20 秒內接聽率',A.q.sl,B.q.sl,'high',v=>(v*100).toFixed(0)+'%')+kp('電話：每日線上自助',A.autoN,B.autoN,'high',v=>fmt(v)+' 通');
+  $('kpis').innerHTML=kp('電話：客戶平均總耗時',A.cust,B.cust,'low',fmtSec)+kp('電話：尖峰平均等待',A.wait,B.wait,'low',fmtSec)+(A.floored||B.floored?`<div class="kpi"><div class="k">電話：20 秒內接聽率</div><div class="v" style="color:var(--dim)">—</div><div class="c">客服中心未提供；進線拉高到需排隊時由模型推算</div><div class="d"></div></div>`:kp('電話：20 秒內接聽率',A.q.sl,B.q.sl,'high',v=>(v*100).toFixed(0)+'%'))+kp('電話：每日線上自助',A.autoN,B.autoN,'high',v=>fmt(v)+' 通');
   const r=B.r, segs=[['直接分流',r.auto,'var(--accent)'],['反問確認',r.ask,'var(--orange)'],['轉人工分類',r.human,'var(--gray)']];
   $('stack').innerHTML=segs.map(s=>`<div style="flex:0 0 calc(${s[1]*100}% - 2px);background:${s[2]}"></div>`).join('');
   $('stackLegend').innerHTML=segs.map(s=>`<span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${s[2]};margin-right:6px"></span>${s[0]} <b>${(s[1]*100).toFixed(0)}%</b></span>`).join('');
