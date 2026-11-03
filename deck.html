@@ -456,7 +456,43 @@ h2 em{font-style:normal;color:var(--tealT)}
 .bar2 .now{position:absolute;inset:0 auto 0 0;border-radius:8px;background:linear-gradient(90deg,var(--teal),#5AD8CC);width:0;transition:width 1.1s cubic-bezier(.2,.7,.2,1)}
 .tr .val{text-align:right;font-size:30px;font-weight:900;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
 .tr.done .val{color:var(--tealT)}
-#p-res .fn{position:absolute;left:72px;right:72px;bottom:50px;margin-top:0}   /* 試算說明貼在頁尾上方，不壓到左下角標題 */
+#p-res .calcbtn{position:absolute;right:72px;bottom:58px;font-family:inherit;font-size:14px;color:var(--muted);background:transparent;border:1px solid var(--line);border-radius:999px;padding:5px 16px;cursor:pointer;letter-spacing:.02em}   /* 試算說明改成低調按鈕，第 2 步 (壓力測試出現後) 才顯示 */
+#p-res .calcbtn:hover{color:var(--navy);background:var(--soft);border-color:#C8CDE0}
+/* ---------- 效益計算明細 (點試算說明才出現；開著時左右鍵無效) ---------- */
+#calc{position:absolute;inset:0;z-index:70;display:none;align-items:center;justify-content:center;background:rgba(14,20,64,.72);cursor:default}
+#calc.on{display:flex}
+#calc .cw{position:relative;width:1380px;max-height:820px;overflow:auto;background:#fff;border-radius:24px;padding:28px 40px 30px;box-shadow:0 30px 80px rgba(0,0,0,.4);animation:tileIn .3s both}
+#calc .ct{font-size:28px;font-weight:900;color:var(--navy)}
+#calc .ct small{font-size:14px;font-weight:500;color:var(--muted);margin-left:14px}
+#calc .cx{position:absolute;right:22px;top:20px;width:38px;height:38px;border-radius:50%;border:0;background:var(--soft);color:var(--navy);font-size:20px;font-weight:700;cursor:pointer;font-family:inherit}
+#calc .cx:hover{background:#DDE1EC}
+#calc .cg{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:16px}
+#calc .cc{border:1px solid var(--line);border-radius:16px;padding:14px 20px;background:#FAFBFD}
+#calc .cc .ch{font-size:14px;font-weight:700;letter-spacing:.1em;color:var(--tealT)}
+#calc .cc .cv{font-size:30px;font-weight:900;color:var(--navy);margin-top:2px}
+#calc .cc .cv small{font-size:15px;font-weight:700;color:var(--muted);margin-left:8px}
+#calc .cst{margin:10px 0 0;padding:0;list-style:none;font-size:15px;color:var(--ink2);line-height:1.6}
+#calc .cst li{display:grid;grid-template-columns:22px 1fr auto;gap:10px;align-items:baseline;padding:3px 0;border-top:1px dashed var(--line)}
+#calc .cst li:first-child{border-top:0}
+#calc .cst li i{font-style:normal;width:22px;height:22px;border-radius:50%;background:var(--navy);color:#fff;font-size:12px;font-weight:700;display:grid;place-items:center;align-self:center}
+#calc .cst li b{font-variant-numeric:tabular-nums;color:var(--navy);white-space:nowrap}
+#calc .cst li.sum{border-top:2px solid var(--navy);font-weight:700}
+#calc .cst li.sum b{color:var(--tealT);font-size:17px}
+#calc .vs{margin-top:18px;border:1px solid var(--line);border-radius:16px;overflow:hidden}
+#calc .vs .vh{display:grid;grid-template-columns:250px 1fr 1fr 330px;gap:16px;padding:10px 20px;background:var(--navy);color:#fff;font-size:14px;font-weight:700;letter-spacing:.06em}
+#calc .vs .vh span:nth-child(3){color:#7FE3D9}
+#calc .vs .vr{display:grid;grid-template-columns:250px 1fr 1fr 330px;gap:16px;padding:7px 20px;border-top:1px solid var(--line);align-items:center;font-size:15px}
+#calc .vs .vr.sec{grid-template-columns:1fr;background:var(--soft);font-weight:700;color:var(--navy);padding:6px 20px;font-size:14px;letter-spacing:.06em}
+#calc .vs .vr.sec span:empty{display:none}
+#calc .vs .vr .lab{font-weight:700;color:var(--ink2)}
+#calc .vs .vr .how{font-size:13.5px;color:var(--muted);line-height:1.45}
+#calc .vs .vr .val{font-size:19px;font-weight:900;font-variant-numeric:tabular-nums;color:var(--muted)}
+#calc .vs .vr .val.jev{color:var(--tealT)}
+#calc .vs .vr .val small{font-size:12px;font-weight:600;color:var(--dim);margin-left:6px}
+#calc .vs .vr .mb{height:8px;border-radius:4px;background:#EEF0F7;margin-top:4px;overflow:hidden}
+#calc .vs .vr .mb i{display:block;height:100%;border-radius:4px;background:#C5CBD8}
+#calc .vs .vr .val.jev + .mb i,#calc .vs .vr .jev .mb i{background:linear-gradient(90deg,var(--teal),#5AD8CC)}
+#calc .cf{margin-top:12px;font-size:13.5px;color:var(--dim);line-height:1.55}
 .stress{margin-top:22px;height:150px;padding:18px 30px;display:grid;grid-template-columns:250px 1fr;column-gap:24px;align-items:center}
 .stress .sk{font-size:16px;font-weight:700;color:var(--red);letter-spacing:.1em}
 .stress .sh{margin-top:4px;font-size:24px;font-weight:900;color:var(--navy);line-height:1.3}
@@ -648,7 +684,7 @@ h2 em{font-style:normal;color:var(--tealT)}
 #btnFs .x{display:none}
 :fullscreen #btnFs .o{display:none}:fullscreen #btnFs .x{display:block}
 #help{position:absolute;right:24px;bottom:58px;z-index:45;font-size:14px;color:var(--muted);background:rgba(255,255,255,.92);border:1px solid var(--line);border-radius:10px;padding:8px 14px;transition:opacity .8s}
-#help.off{opacity:0}
+#help.off{opacity:0;pointer-events:none}   /* 淡出後不能再擋住底下的按鈕 (效益頁的「詳細計算方式」) */
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important;transition-duration:.01s!important}}
 </style>
 </head>
@@ -968,7 +1004,42 @@ h2 em{font-style:normal;color:var(--tealT)}
       <div class="q good" id="qGood"><div class="ql">導入 Jev</div><div class="qt"></div><div class="qr">平均等 0 秒</div></div>
     </div>
   </div>
-  <div class="fn a" style="--i:4;font-size:13.5px;line-height:1.5">以客服中心 2026/4–9 實際值推算：每月進線約 6,000 通（÷ 20 個營業日 ≈ 每日 300 通）、AHT 268 秒、可自助化潛力 48.5%；假設其中 30% 可全自助處理（≈ 進線的 15%，每月約 900 通）、其餘 70%（約 2,000 通）自助加人工、整體通話自助服務占比 5%，合計每月省約 75 小時；尖峰人力 10 人（壓力情境：尖峰進線暴增 3.5 倍、每日 1,050 通、人力不變）、客服中心未提供等候與接聽率，現況等待採 Worldmetrics 2026 銀行客服平均約 7 分鐘，一通電話 ≈ 7 分 ＋ AHT 268 秒 ＝ 11 分 28 秒；導入後等待依模型縮短 91% → 約 5 分 8 秒。壓力測試的等待、排隊人數、接聽率皆為 Erlang C 排隊模型推算值：尖峰 1 小時約占全日進線 11.2%（每日 1,050 通 → 每小時約 118 通），每通占用專員 292 秒（AHT 268 秒 ＋ 40% 撥總機 × 人工分類 60 秒），10 人負載 95% → 平均等 8 分 51 秒、排隊人數 ＝ 每小時進線 × 平均等待 ≈ 17 人、20 秒內接聽率 19%；導入後 12% 進線改線上自助（15% 可自助 × 80% 接受連結），進專員每小時約 104 通、每通 274 秒，負載 79% → 平均等 50 秒、排隊約 1–2 人、接聽率 67%。省下的專員時間用在複雜問題與商機轉介，不以裁減人力論述</div>
+  <button type="button" class="calcbtn f" data-s="2" id="calcBtn">詳細計算方式請點此 ›</button>
+  <div id="calc"><div class="cw">
+    <button type="button" class="cx" id="calcX" title="關閉 (Esc)">✕</button>
+    <div class="ct">效益怎麼算<small>進線量、尖峰占比、AHT、可自助化潛力為客服中心 2026/4–9 實際值；人力 10 人與其餘比例為假設值，皆可在 Demo 的數位孿生頁調整</small></div>
+    <div class="cg">
+      <div class="cc"><div class="ch">每月減少的人工進線</div><div class="cv">約 900 通<small>≈ 進線的 15%</small></div>
+        <ul class="cst">
+          <li><i>1</i><span>每月進線（2026/4–9 實際 5,847–6,106 通）</span><b>約 6,000 通</b></li>
+          <li><i>2</i><span>× 可自助化潛力 48.5%（IVR 活動鍵統計：分期、調額、帳單查詢等）</span><b>2,910 通</b></li>
+          <li><i>3</i><span>× 30% 客戶願意全程線上自助（假設值）</span><b>873 通</b></li>
+          <li class="sum"><i>＝</i><span>每月不用進專員的電話</span><b>≈ 900 通</b></li>
+          <li><i>4</i><span>其餘 70%（2,910 − 873 ＝ 2,037 通）仍會進專員，但先在線上自助過一部分</span><b>≈ 2,000 通</b></li>
+        </ul></div>
+      <div class="cc"><div class="ch">每月省下的專員處理時間</div><div class="cv">約 75 小時<small>以 AHT 268 秒計</small></div>
+        <ul class="cst">
+          <li><i>1</i><span>全自助：900 通 × 268 秒 ＝ 241,200 秒</span><b>67.0 小時</b></li>
+          <li><i>2</i><span>自助加人工：2,000 通 × 268 秒 × 5%（整體通話自助服務占比，假設值）＝ 26,800 秒</span><b>7.4 小時</b></li>
+          <li class="sum"><i>＝</i><span>每月省下的專員時間</span><b>≈ 75 小時</b></li>
+          <li><i>※</i><span>不換算成人力或成本；省下的時間用在複雜問題、商機轉介與新人輔導</span><b></b></li>
+        </ul></div>
+    </div>
+    <div class="vs">
+      <div class="vh"><span>指標</span><span>現況</span><span>導入 Jev</span><span>怎麼算</span></div>
+      <div class="vr sec"><span>一般日：每日 300 通、尖峰 10 人（客服中心未提供等候資料，現況等待採業界平均）</span><span></span><span></span><span></span></div>
+      <div class="vr"><span class="lab">撥通到專員接起</span><div><div class="val">7 分 0 秒</div><div class="mb"><i style="width:100%"></i></div></div><div class="jev"><div class="val jev">約 40 秒<small>−91%</small></div><div class="mb"><i style="width:9.4%"></i></div></div><span class="how">現況：Worldmetrics 2026 銀行客服平均 7 分鐘。導入後：7 分 × 壓力情境算出的縮短比例（50 秒 ÷ 531 秒 ＝ 9.4%）</span></div>
+      <div class="vr"><span class="lab">客戶平均總耗時</span><div><div class="val">11 分 28 秒</div><div class="mb"><i style="width:100%"></i></div></div><div class="jev"><div class="val jev">約 5 分 8 秒<small>−55%</small></div><div class="mb"><i style="width:44.8%"></i></div></div><span class="how">撥通到接起 ＋ AHT 268 秒：420 ＋ 268 ＝ 688 秒；40 ＋ 268 ＝ 308 秒</span></div>
+      <div class="vr sec"><span>壓力測試：尖峰進線暴增 3.5 倍（每日 1,050 通）、客服維持 10 人 → Erlang C 排隊模型</span><span></span><span></span><span></span></div>
+      <div class="vr"><span class="lab">尖峰每小時進線</span><div><div class="val">118 通</div><div class="mb"><i style="width:100%"></i></div></div><div class="jev"><div class="val jev">104 通<small>−12%</small></div><div class="mb"><i style="width:88%"></i></div></div><span class="how">1,050 通 × 尖峰占比 11.2%（14:00–15:30 每月約 1,000 通 ÷ 6,000 通 ÷ 1.5 小時）；導入後 15% 可自助 × 80% 接受連結 ＝ 12% 不進專員</span></div>
+      <div class="vr"><span class="lab">每通占用專員時間</span><div><div class="val">292 秒</div><div class="mb"><i style="width:100%"></i></div></div><div class="jev"><div class="val jev">274 秒</div><div class="mb"><i style="width:93.8%"></i></div></div><span class="how">現況：AHT 268 ＋ 40% 撥總機 × 人工分類 60 秒。導入後：AHT 268 ＋ 少量轉人工分類與分錯重講</span></div>
+      <div class="vr"><span class="lab">專員負載</span><div><div class="val">95%</div><div class="mb"><i style="width:95%"></i></div></div><div class="jev"><div class="val jev">79%</div><div class="mb"><i style="width:79%"></i></div></div><span class="how">每小時進線 × 每通占用時間 ÷ 10 人 ÷ 3,600 秒；接近 100% 時等待會暴增</span></div>
+      <div class="vr"><span class="lab">尖峰平均等待</span><div><div class="val">8 分 51 秒</div><div class="mb"><i style="width:100%"></i></div></div><div class="jev"><div class="val jev">50 秒<small>−91%</small></div><div class="mb"><i style="width:9.4%"></i></div></div><span class="how">Erlang C：要等的機率 × 每通占用時間 ÷（人數 − 負載人數）；現況 84% 的人要等，導入後 38%</span></div>
+      <div class="vr"><span class="lab">排隊人數</span><div><div class="val">約 17 人</div><div class="mb"><i style="width:100%"></i></div></div><div class="jev"><div class="val jev">約 1–2 人<small>模型值 1.4</small></div><div class="mb"><i style="width:8.3%"></i></div></div><span class="how">Little 法則：每小時進線 × 平均等待 ＝ 118 × 531 秒 ÷ 3,600 ＝ 17.3；104 × 50 ÷ 3,600 ＝ 1.4</span></div>
+      <div class="vr"><span class="lab">20 秒內接聽率</span><div><div class="val">19%</div><div class="mb"><i style="width:19%"></i></div></div><div class="jev"><div class="val jev">67%</div><div class="mb"><i style="width:67%"></i></div></div><span class="how">Erlang C：1 − 要等的機率 × e^(−(人數 − 負載人數) × 20 秒 ÷ 每通占用時間)</span></div>
+    </div>
+    <div class="cf">Erlang C 是客服中心排班常用的排隊公式，假設客服人數固定、來電隨機到達。數字都是模型推估值，導入後每天用實際案件紀錄校正參數。按 Esc 或 ✕ 關閉。</div>
+  </div></div>
 </section>
 
 <!-- ================= 11 謝謝聆聽 ================= -->
@@ -1142,6 +1213,7 @@ function applyStep(s, k){
 function show(i, k = 0, withChap = true){
   if (i < 0 || i >= slides.length) return;
   if (editing && cur >= 0) commitEdits();
+  if (CALC_ON) calcOpen(false);
   if (chapPending){ chapPending = null; document.getElementById('chap').classList.remove('show'); }
   INTRO.on = false; cancelAnimationFrame(INTRO.raf);
   clearAll();
@@ -1194,6 +1266,7 @@ addEventListener('keydown', e => {
   if ((e.ctrlKey || e.metaKey) && (e.key === 'p' || e.key === 'P')){ e.preventDefault(); setPen(!PEN.on); return; }      // Ctrl+P 簡報筆
   if ((e.ctrlKey || e.metaKey) && (e.key === 'f' || e.key === 'F')){ e.preventDefault(); setNav(!NAVG); return; }      // Ctrl+F 投影片跳轉
   if (NAVG){ if (e.key === 'Escape') setNav(false); return; }
+  if (CALC_ON){ if (e.key === 'Escape') calcOpen(false); e.preventDefault(); return; }   // 效益計算明細開著：左右鍵不翻頁
   if (PEN.on && (e.key === 'Delete' || e.key === 'Backspace')){ e.preventDefault(); penClear(); return; }
   if (PEN.on && e.key === 'Escape'){ setPen(false); return; }
   if (editing) return;                                   // 編輯中: 鍵盤留給打字
@@ -1594,6 +1667,12 @@ MET.forEach(([ch, lab]) => {
   tbl.appendChild(r);
 });
 const rows = [...tbl.querySelectorAll('.tr:not(.th)')];
+/* ---------- 10 效益評估：點試算說明 → 效益計算明細 (開著時左右鍵、點空白都不翻頁) ---------- */
+let CALC_ON = false;
+const calcEl = document.getElementById('calc');
+function calcOpen(on){ CALC_ON = on; calcEl.classList.toggle('on', on); if (on) calcEl.querySelector('.cw').scrollTop = 0; }
+document.getElementById('calcBtn').addEventListener('click', e => { if (editing) return; e.stopPropagation(); e.currentTarget.blur(); calcOpen(true); });
+calcEl.addEventListener('click', e => { e.stopPropagation(); if (e.target === calcEl || e.target.closest('#calcX')) calcOpen(false); });
 RESET['p-res'] = () => {
   rows.forEach((r, n) => { const [, , a, b, fmt] = MET[n]; const mx = Math.max(a, b);
     r.classList.remove('done'); r.querySelector('.val').textContent = fmt(a);
@@ -1629,7 +1708,7 @@ HOOK['p-res'] = k => {
 };
 
 /* ---------- 編輯文字模式：改完存在瀏覽器，也可下載成新檔 ---------- */
-const ED_SKIP = '#navgrid,#demoFrame,#tbl .val,#exs,#bubble,#out,.slot,#tv,#heroV,#ctm,#tlT,.calltl .bub,.prog,.foot,.token,.track,#qBad,#chap,#datapanel';
+const ED_SKIP = '#calc,#navgrid,#demoFrame,#tbl .val,#exs,#bubble,#out,.slot,#tv,#heroV,#ctm,#tlT,.calltl .bub,.prog,.foot,.token,.track,#qBad,#chap,#datapanel';
 function edKey(el){ const parts = []; let e = el; while (e && !e.classList.contains('slide')){ parts.unshift([...e.parentElement.children].indexOf(e)); e = e.parentElement; } return (e ? e.id : '?') + '/' + parts.join('.'); }
 function edTargets(){
   const out = [];
