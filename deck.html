@@ -684,6 +684,7 @@ h2 em{font-style:normal;color:var(--tealT)}
 #btnFs .x{display:none}
 :fullscreen #btnFs .o{display:none}:fullscreen #btnFs .x{display:block}
 #help{position:absolute;right:24px;bottom:58px;z-index:45;font-size:14px;color:var(--muted);background:rgba(255,255,255,.92);border:1px solid var(--line);border-radius:10px;padding:8px 14px;transition:opacity .8s}
+html.print #nav,html.print #btnFs,html.print #help,html.print #editbar,html.print #edithint,html.print #calcBtn{display:none!important}   /* ?print=1：輸出 PDF 截圖用，藏掉操作按鈕 */
 #help.off{opacity:0;pointer-events:none}   /* 淡出後不能再擋住底下的按鈕 (效益頁的「詳細計算方式」) */
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important;transition-duration:.01s!important}}
 </style>
@@ -928,17 +929,17 @@ h2 em{font-style:normal;color:var(--tealT)}
     <div class="callhd" id="callhd">
       <div class="idle"><i></i>等待來電…</div>
       <div class="ct"><span class="ring"><i></i>來電中 <span id="ctm">00:42</span></span></div>
-      <div class="ct"><div class="nm">客戶乙<small>貴賓理財 · 高資產高貢獻</small></div><div class="say">「定存下個月到期 不知道要怎麼放」</div></div>
+      <div class="ct"><div class="nm">客戶乙<small>貴賓理財 · 高資產高貢獻</small></div><div class="say">「自動續存的定儲，如何更改新一期的利率別？」</div></div>
       <div class="ct kv">問題類別<b>存款外匯 › 台幣存款</b><br>信心<b class="t">91%</b>　近 7 天進線<b>1 次</b></div>
       <div class="ct pr">P2 貴賓優先</div>
     </div>
     <div class="panes">
       <div class="pane" id="pn1"><div class="ph"><i class="ic sm" data-ic="list"></i>處理方式</div>
         <div class="sk"><i></i><i></i><i></i><i></i></div>
-        <div class="bd"><div class="steps"><div><b>1</b>確認定存帳號與到期日</div><div><b>2</b>說明到期續存、解約方式與牌告利率</div><div><b>3</b>問題解決後，再提資產配置諮詢</div><div><b>4</b>結束後通知專屬理專 林○○ 跟進</div></div></div></div>
+        <div class="bd"><div class="steps"><div><b>1</b>確認定儲帳號與自動續存設定</div><div><b>2</b>說明固定／機動利率別差異與變更方式</div><div><b>3</b>問題解決後，再提資產配置諮詢</div><div><b>4</b>結束後通知專屬理專 林○○ 跟進</div></div></div></div>
       <div class="pane" id="pn2"><div class="ph"><i class="ic sm teal" data-ic="chat"></i>推薦回覆</div>
         <div class="sk"><i></i><i></i><i></i><i></i></div>
-        <div class="bd"><div class="rl">開場</div><div class="rb" id="rb1">「客戶乙您好，我是專員○○，了解您想詢問定存到期的問題，我來為您說明。」</div>
+        <div class="bd"><div class="rl">開場</div><div class="rb" id="rb1">「客戶乙您好，我是專員○○，了解您想變更自動續存定儲的利率別，我來為您說明。」</div>
         <div class="rl">問題解決後（轉介話術）</div><div class="rb" id="rb2">「理專可以依您的風險屬性，比較定存、債券和基金，要安排理專跟您聊聊嗎？」</div></div></div>
       <div class="pane opp" id="pn3"><div class="ph"><i class="ic sm gold" data-ic="bulb"></i>商機</div>
         <div class="sk"><i></i><i></i><i></i></div>
@@ -1089,6 +1090,7 @@ h2 em{font-style:normal;color:var(--tealT)}
 const PRISTINE = '<!doctype html>\n' + document.documentElement.outerHTML;
 const stage = document.getElementById('stage');
 function fit(){ stage.style.zoom = Math.min(innerWidth / 1600, innerHeight / 900); }
+if (new URLSearchParams(location.search).has('print')) document.documentElement.classList.add('print');   // 網址加 ?print=1 → 藏操作按鈕 (輸出 PDF 用)
 addEventListener('resize', fit); fit();
 
 /* ---------- 圖示 ---------- */
@@ -1143,7 +1145,7 @@ const EX = [
   { tab: '盜刷', say: '我的卡好像被盜刷，身分證 A123456789', s1: ['c-none', '轉文字：…身分證 <span class="mask">A12****789</span>'], mask: true, hit2: 'urgent', s2: ['c-urgent', '急件 · 疑似盜刷'],
     hit3: 'noopp', s3: ['c-none', '只記錄、不推銷'], hit4: 'crm', s4: ['c-urgent', 'P1 緊急優先'],
     out: ['k-urgent', '直接轉 24 小時真人專線', '不走自助、不再反問；急件一律排第一，不論客戶等級'] },
-  { tab: '定存到期', say: '定存下個月到期，不知道要怎麼放', s1: ['c-none', '轉文字：定存下個月到期…'], hit2: 'complex', s2: ['c-cx', '複雜 · 存款外匯 › 台幣存款'],
+  { tab: '定儲續存', say: '自動續存的定儲，如何更改新一期的利率別？', s1: ['c-none', '轉文字：自動續存的定儲…'], hit2: 'complex', s2: ['c-cx', '複雜 · 存款外匯 › 台幣存款'],
     hit3: 'opp', s3: ['c-opp', '有商機 · 財富管理需求'], hit4: 'crm', s4: ['c-cx', 'P2 貴賓優先 · 指派專屬理專'],
     out: ['k-cx', '轉給對的專員，接聽前帶出資料與建議', '問題解決後才提資產配置諮詢，客戶同意才建轉介單'] },
 ];
@@ -1190,6 +1192,7 @@ const every = (fn, ms) => { const t = setInterval(fn, ms); intervals.push(t); re
 const clearAll = () => { timers.forEach(clearTimeout); timers.length = 0; intervals.forEach(clearInterval); intervals.length = 0; };
 
 // 右上進度條 (有 PART 的頁才有) + 頁尾
+const NUMBERED = slides.filter(s => !s.classList.contains('demopage') && !s.classList.contains('endpage')).length;
 slides.forEach((s, i) => {
   const part = +s.dataset.part;
   if (part > 0){
@@ -1200,7 +1203,7 @@ slides.forEach((s, i) => {
   }
   if (s.classList.contains('intro') || s.classList.contains('cover') || s.classList.contains('demopage') || s.classList.contains('endpage')) return;
   const ft = document.createElement('div'); ft.className = 'foot';
-  ft.innerHTML = `<span>${FOOT.t}</span><span><b>${String(i + 1).padStart(2, '0')}</b> / ${slides.length}</span>`;
+  ft.innerHTML = `<span>${FOOT.t}</span><span><b>${String(i + 1).padStart(2, '0')}</b> / ${NUMBERED}</span>`;   // 總頁數不算 Demo 頁與結尾頁，謝謝聆聽剛好是最後一頁
   s.appendChild(ft);
 });
 
@@ -2700,7 +2703,7 @@ const SVC={
    {n:'紅利點數',k:'3',kw:[['紅利',3],['點數',3],['兌換',2.5],['豐點',3],['里程',2.5]],tip:'查詢點數餘額與到期日，說明兌換方式'},
    {n:'掛失與盜刷',k:'4',kw:[['盜刷',3.5],['被盜',3],['掛失',3],['遺失',2.5],['不見',2.5],['冒用',3],['異常交易',3],['詐騙',2.5],['不是我刷的',3],['不認得',3.5],['爭議',3]],tip:'立即協助止付掛失，再說明爭議款與補發新卡流程'}]},
  '存款外匯':{line:'bank',key:'1',desk:'存款外匯專員',tip:'查詢帳戶交易紀錄、匯款狀態或存款資訊',subs:[
-   {n:'台幣存款',k:'1',kw:[['定存',3],['活存',2.5],['存款',2],['利率',2],['利息',2],['到期',1.5],['解約',1.5],['餘額',2],['存錢',2],['放銀行',1.5]],tip:'確認存款種類，說明利率、到期與解約方式'},
+   {n:'台幣存款',k:'1',kw:[['定存',3],['定儲',3],['續存',2],['利率別',2.5],['活存',2.5],['存款',2],['利率',2],['利息',2],['到期',1.5],['解約',1.5],['餘額',2],['存錢',2],['放銀行',1.5]],tip:'確認存款種類，說明利率、到期與解約方式'},
    {n:'外幣與換匯',k:'2',kw:[['外幣',3],['換匯',3],['換外幣',3],['美金',2.5],['日幣',3],['日圓',3],['歐元',2.5],['匯率',2.5],['出國',2],['去日本',2],['現鈔',2]],tip:'說明即時匯率、線上換匯與外幣提領方式'},
    {n:'轉帳匯款查詢',k:'3',kw:[['轉帳',3],['匯款',3],['入帳',3],['沒到',2.5],['還沒到',2.5],['被扣',2],['扣了',2],['扣款',2],['跨行',2],['退匯',3]],tip:'取得交易時間與金額，查詢入帳或退匯狀態'},
    {n:'薪轉與金融卡',k:'4',kw:[['薪轉',3],['薪資',2.5],['金融卡',3],['提款卡',3],['提款',2],['atm',2.5],['吃卡',3]],tip:'確認金融卡狀態，說明補發、提款或薪轉設定'},
@@ -2784,7 +2787,7 @@ const ABUSE_RE=/幹你|幹恁|幹拎|幹林|操你|他媽|他馬|媽的|馬的|�
 const OPPS=[
   {id:'保障需求',kw:[['理賠',3],['保單',2.5],['保險',2],['保費',1.5],['住院',2],['意外險',2.5],['醫療險',2.5]],action:'轉介理專',owner:'理財專員',offer:'免費保障健檢',pitch:'理賠的問題已經幫您處理。另外，要不要請理專幫您免費檢視一下，目前的保障夠不夠？',yes:'請理專聯繫我'},
   {id:'外幣需求',kw:[['出國',3],['旅遊',2],['換外幣',3],['外幣現鈔',2.5],['日圓',2.5],['日幣',2.5],['歐元',2],['留學',2.5],['機票',1.5],['換匯',2.5],['去日本',2],['去美國',2]],action:'推薦外幣定存專案',owner:'外幣定存專案（示意）',offer:'外幣定存優惠利率＋線上換匯、機場領鈔',pitch:'出國前可以先把預計要用的外幣存成外幣定存，匯率好的時候分批換，出發前再領現鈔。要看看目前的外幣定存優惠嗎？',yes:'查看專案'},
-  {id:'財富管理需求',kw:[['退休',3],['定存到期',3],['到期',1.2],['閒錢',2.5],['一筆錢',2],['資產配置',3],['年終',2],['獎金',2],['利息太少',2.5],['穩一點',1.2],['怎麼放',1.5]],action:'轉介理專',owner:'理財專員',offer:'一對一資產配置諮詢',pitch:'如果這筆錢暫時用不到，理專可以依您的風險屬性，幫您比較定存、債券和基金的組合。要安排理專跟您聊聊嗎？',yes:'請理專聯繫我'},
+  {id:'財富管理需求',kw:[['退休',3],['定存到期',3],['定儲',2],['續存',1.5],['利率別',1.5],['到期',1.2],['閒錢',2.5],['一筆錢',2],['資產配置',3],['年終',2],['獎金',2],['利息太少',2.5],['穩一點',1.2],['怎麼放',1.5]],action:'轉介理專',owner:'理財專員',offer:'一對一資產配置諮詢',pitch:'如果這筆錢暫時用不到，理專可以依您的風險屬性，幫您比較定存、債券和基金的組合。要安排理專跟您聊聊嗎？',yes:'請理專聯繫我'},
   {id:'子女教育金',kw:[['小孩',2],['孩子',2],['教育基金',3],['學費',2.2],['讀大學',2.5]],action:'推薦定期定額',owner:'基金定期定額（示意）',offer:'每月小額定期定額',pitch:'教育金的準備時間通常很長，可以考慮每月小額定期定額。要看看試算嗎？',yes:'查看試算'},
 ];
 function detectOpp(s){let best=null;for(const o of OPPS){let v=-2;for(const [k,w] of o.kw) if(s.includes(k)) v+=w;const p=1/(1+Math.exp(-v));if(!best||p>best.p) best={o,p};}return best;}
@@ -2870,7 +2873,7 @@ const MAIN_SAMPLES=[
   {q:'定存到期了 想續存',t:'商機',c:'var(--green)',id:'F123456784'},
   {q:'下個月要去日本 想換日幣',t:'商機',c:'var(--green)',id:'B200000004'},
 ];
-const MORE_SAMPLES=['下個月要買家電 想臨時調高額度','我這期信用卡帳單要繳多少','分期的事我上週打過兩次了還沒好','新卡要怎麼開卡','網銀密碼忘記了','房貸寬限期可以再延長嗎','我想看這個月的刷卡明細','上個月帳戶被扣了一筆錢不知道是什麼','新青安現在還能申請嗎','我想借30萬周轉','卡費可以分期嗎','想開數位帳戶要帶什麼','美金定存利率多少','我要找真人','我已經打三次了都沒人處理信用卡的問題 到底要怎樣','你們房貸利率也太扯了吧 我要找人講','保險理賠要準備什麼文件','定存下個月到期 不知道要怎麼放','保險理賠拖了兩個月還沒下來 到底要等多久'];
+const MORE_SAMPLES=['下個月要買家電 想臨時調高額度','我這期信用卡帳單要繳多少','分期的事我上週打過兩次了還沒好','新卡要怎麼開卡','網銀密碼忘記了','房貸寬限期可以再延長嗎','我想看這個月的刷卡明細','上個月帳戶被扣了一筆錢不知道是什麼','新青安現在還能申請嗎','我想借30萬周轉','卡費可以分期嗎','想開數位帳戶要帶什麼','美金定存利率多少','我要找真人','我已經打三次了都沒人處理信用卡的問題 到底要怎樣','你們房貸利率也太扯了吧 我要找人講','保險理賠要準備什麼文件','自動續存的定儲 如何更改新一期的利率別','保險理賠拖了兩個月還沒下來 到底要等多久'];
 $('qChips').innerHTML=MAIN_SAMPLES.map((s,i)=>`<button type="button" class="chip" data-q="${s.q}" data-id="${s.id||''}"><i style="color:${s.c}">${s.t}</i>${s.q}</button>`).join('');
 $('qMore').innerHTML=MORE_SAMPLES.map(q=>`<button type="button" class="chip" data-q="${q}">${q}</button>`).join('');
 // 改走範例或手動輸入時，取消評審來電的「進行中」標記
